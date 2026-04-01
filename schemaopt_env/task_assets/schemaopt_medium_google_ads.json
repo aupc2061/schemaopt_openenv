@@ -1,0 +1,2458 @@
+{
+  "task_id": "schemaopt_medium_google_ads",
+  "difficulty": "medium",
+  "domain": "google_ads",
+  "objective": "Optimize the google ads workload over the real DuckDB source database by materializing derived objects that reduce measured execution cost while preserving exact query results.",
+  "seed_source": "datasets/dacomp-de/dacomp-de-impl-005",
+  "dataset_dir": "datasets/dacomp-de/dacomp-de-impl-005",
+  "database_path": "datasets/dacomp-de/dacomp-de-impl-005/google_ads_start.duckdb",
+  "tables": [
+    {
+      "name": "raw.account_history_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "auto_tagging_enabled",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "currency_code",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "descriptive_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "final_url_suffix",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "hidden",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "manager",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "manager_customer_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "optimization_score",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "pay_per_conversion_eligibility_failure_reasons",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "test_account",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "time_zone",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "tracking_url_template",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.account_stats_data",
+      "columns": [
+        {
+          "name": "customer_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "active_view_impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_view_measurability",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "active_view_measurable_cost_micros",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_view_measurable_impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_view_viewability",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "ad_network_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "clicks",
+          "type": "BIGINT"
+        },
+        {
+          "name": "conversions",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "conversions_value",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "cost_micros",
+          "type": "BIGINT"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "interaction_event_types",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "interactions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "view_through_conversions",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ad_group_criterion_history_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ad_group_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "base_campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "keyword_match_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "keyword_text",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ad_group_history_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ad_group_stats_data",
+      "columns": [
+        {
+          "name": "customer_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "active_view_impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_view_measurability",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "active_view_measurable_cost_micros",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_view_measurable_impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_view_viewability",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "ad_network_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "base_ad_group",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_base_campaign",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "clicks",
+          "type": "BIGINT"
+        },
+        {
+          "name": "conversions",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "conversions_value",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "cost_micros",
+          "type": "BIGINT"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "interaction_event_types",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "interactions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "view_through_conversions",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ad_history_data",
+      "columns": [
+        {
+          "name": "ad_group_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "display_url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "final_urls",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ad_stats_data",
+      "columns": [
+        {
+          "name": "customer_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ad_group_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ad_group",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "keyword_ad_group_criterion",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ad_network_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ad_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "clicks",
+          "type": "BIGINT"
+        },
+        {
+          "name": "cost_micros",
+          "type": "BIGINT"
+        },
+        {
+          "name": "impressions",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.campaign_history_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "customer_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "advertising_channel_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "advertising_channel_subtype",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "start_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "end_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "serving_status",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "tracking_url_template",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.campaign_stats_data",
+      "columns": [
+        {
+          "name": "customer_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "active_view_impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_view_measurability",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "active_view_measurable_cost_micros",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_view_measurable_impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_view_viewability",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "ad_network_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "base_campaign",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "clicks",
+          "type": "BIGINT"
+        },
+        {
+          "name": "conversions",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "conversions_value",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "cost_micros",
+          "type": "BIGINT"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "interaction_event_types",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "interactions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "view_through_conversions",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.keyword_stats_data",
+      "columns": [
+        {
+          "name": "customer_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "active_view_impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_view_measurability",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "active_view_measurable_cost_micros",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_view_measurable_impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_view_viewability",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "ad_group_base_ad_group",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ad_group_criterion_criterion_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ad_group_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ad_network_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_base_campaign",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "clicks",
+          "type": "BIGINT"
+        },
+        {
+          "name": "conversions",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "conversions_value",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "cost_micros",
+          "type": "BIGINT"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "interaction_event_types",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "interactions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "view_through_conversions",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.search_term_keyword_stats_data",
+      "columns": [
+        {
+          "name": "ad_group_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "clicks",
+          "type": "BIGINT"
+        },
+        {
+          "name": "conversions",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "conversions_value",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "cost_micros",
+          "type": "BIGINT"
+        },
+        {
+          "name": "customer_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "impressions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "info_text",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "keyword_ad_group_criterion",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "search_term",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "search_term_match_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "view_through_conversions",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    }
+  ],
+  "visible_queries": [
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period, ad_group_base_ad_group",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period, ad_group_base_ad_group",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
+      "business_tag": "google_ads keyword_stats_data analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.keyword_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_group_base_ad_group",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_group_base_ad_group"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_group_base_ad_group\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_group_base_ad_group\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads keyword_stats_data analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
+      "business_tag": "google_ads keyword_stats_data analytics",
+      "frequency_weight": 1.6,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.keyword_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_group_base_ad_group\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_group_base_ad_group\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads keyword_stats_data analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c01_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period, ad_group_base_ad_group",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period, ad_group_base_ad_group",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
+      "business_tag": "google_ads keyword_stats_data analytics",
+      "frequency_weight": 1.75,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.keyword_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_group_base_ad_group",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_group_base_ad_group"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_group_base_ad_group\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_group_base_ad_group\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads keyword_stats_data analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c01_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
+      "business_tag": "google_ads keyword_stats_data analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.keyword_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_group_base_ad_group\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_group_base_ad_group\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads keyword_stats_data analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c01_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period, ad_group_base_ad_group",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period, ad_group_base_ad_group",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
+      "business_tag": "google_ads keyword_stats_data analytics",
+      "frequency_weight": 1.6,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.keyword_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_group_base_ad_group",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_group_base_ad_group"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_group_base_ad_group\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_group_base_ad_group\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads keyword_stats_data analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c01_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
+      "business_tag": "google_ads keyword_stats_data analytics",
+      "frequency_weight": 1.75,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.keyword_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_group_base_ad_group\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_group_base_ad_group\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads keyword_stats_data analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
+      "business_tag": "google_ads ad_group_stats_data analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.ad_group_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads ad_group_stats_data analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
+      "business_tag": "google_ads ad_group_stats_data analytics",
+      "frequency_weight": 2.05,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.ad_group_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads ad_group_stats_data analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c02_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
+      "business_tag": "google_ads ad_group_stats_data analytics",
+      "frequency_weight": 2.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.ad_group_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads ad_group_stats_data analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c02_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
+      "business_tag": "google_ads ad_group_stats_data analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.ad_group_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads ad_group_stats_data analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c02_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
+      "business_tag": "google_ads ad_group_stats_data analytics",
+      "frequency_weight": 2.05,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.ad_group_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads ad_group_stats_data analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c02_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
+      "business_tag": "google_ads ad_group_stats_data analytics",
+      "frequency_weight": 2.2,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.ad_group_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads ad_group_stats_data analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
+      "business_tag": "google_ads campaign_stats_data analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.campaign_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads campaign_stats_data analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
+      "business_tag": "google_ads campaign_stats_data analytics",
+      "frequency_weight": 2.5,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.campaign_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads campaign_stats_data analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c03_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
+      "business_tag": "google_ads campaign_stats_data analytics",
+      "frequency_weight": 2.65,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.campaign_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads campaign_stats_data analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c03_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
+      "business_tag": "google_ads campaign_stats_data analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.campaign_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads campaign_stats_data analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c03_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
+      "business_tag": "google_ads campaign_stats_data analytics",
+      "frequency_weight": 2.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.campaign_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads campaign_stats_data analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c03_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
+      "business_tag": "google_ads campaign_stats_data analytics",
+      "frequency_weight": 2.65,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.campaign_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads campaign_stats_data analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c04_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
+      "business_tag": "google_ads account_stats_data analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.account_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads account_stats_data analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c04_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
+      "business_tag": "google_ads account_stats_data analytics",
+      "frequency_weight": 2.95,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.account_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads account_stats_data analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c04_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
+      "business_tag": "google_ads account_stats_data analytics",
+      "frequency_weight": 3.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.account_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads account_stats_data analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c04_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
+      "business_tag": "google_ads account_stats_data analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.account_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads account_stats_data analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c04_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
+      "business_tag": "google_ads account_stats_data analytics",
+      "frequency_weight": 2.95,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.account_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads account_stats_data analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_vq_c04_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
+      "business_tag": "google_ads account_stats_data analytics",
+      "frequency_weight": 3.1,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.account_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads account_stats_data analytics variant 2 visible 6"
+    }
+  ],
+  "holdout_queries": [
+    {
+      "query_id": "schemaopt_medium_google_ads_hq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
+      "business_tag": "google_ads keyword_stats_data analytics",
+      "frequency_weight": 1.1,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.keyword_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_group_base_ad_group\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_group_base_ad_group\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads keyword_stats_data analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_hq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period, ad_group_base_ad_group",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period, ad_group_base_ad_group",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
+      "business_tag": "google_ads keyword_stats_data analytics",
+      "frequency_weight": 1.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.keyword_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_group_base_ad_group",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_group_base_ad_group"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_group_base_ad_group\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_group_base_ad_group\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads keyword_stats_data analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_hq_c01_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
+      "business_tag": "google_ads keyword_stats_data analytics",
+      "frequency_weight": 1.1,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.keyword_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_group_base_ad_group\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_group_base_ad_group\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads keyword_stats_data analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_hq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
+      "business_tag": "google_ads ad_group_stats_data analytics",
+      "frequency_weight": 1.4,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.ad_group_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads ad_group_stats_data analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_hq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
+      "business_tag": "google_ads ad_group_stats_data analytics",
+      "frequency_weight": 1.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.ad_group_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads ad_group_stats_data analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_hq_c02_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
+      "business_tag": "google_ads ad_group_stats_data analytics",
+      "frequency_weight": 1.4,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.ad_group_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads ad_group_stats_data analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_hq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
+      "business_tag": "google_ads campaign_stats_data analytics",
+      "frequency_weight": 1.7,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.campaign_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads campaign_stats_data analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_hq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
+      "business_tag": "google_ads campaign_stats_data analytics",
+      "frequency_weight": 1.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.campaign_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads campaign_stats_data analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_hq_c03_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
+      "business_tag": "google_ads campaign_stats_data analytics",
+      "frequency_weight": 1.7,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.campaign_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads campaign_stats_data analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_hq_c04_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
+      "business_tag": "google_ads account_stats_data analytics",
+      "frequency_weight": 2.0,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.account_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads account_stats_data analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_hq_c04_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
+      "business_tag": "google_ads account_stats_data analytics",
+      "frequency_weight": 2.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.account_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "google_ads account_stats_data analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_medium_google_ads_hq_c04_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where try_cast(b.\"date\" as timestamp) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
+      "business_tag": "google_ads account_stats_data analytics",
+      "frequency_weight": 2.0,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.account_stats_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"ad_network_type\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"ad_network_type\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "google_ads account_stats_data analytics variant 2 holdout 3"
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
+      "label": "account_stats_data workload",
+      "business_label": "google_ads account_stats_data analytics",
+      "query_ids": [
+        "schemaopt_medium_google_ads_vq_c04_01",
+        "schemaopt_medium_google_ads_vq_c04_02",
+        "schemaopt_medium_google_ads_vq_c04_03",
+        "schemaopt_medium_google_ads_vq_c04_04",
+        "schemaopt_medium_google_ads_vq_c04_05",
+        "schemaopt_medium_google_ads_vq_c04_06"
+      ],
+      "query_count": 6,
+      "total_frequency_weight": 17.7,
+      "total_weighted_baseline_cost": 18.585,
+      "top_tables": [
+        "raw.account_stats_data"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "hotspot_rank": 1,
+      "preferred_object_kind": "join_matview"
+    },
+    {
+      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
+      "label": "campaign_stats_data workload",
+      "business_label": "google_ads campaign_stats_data analytics",
+      "query_ids": [
+        "schemaopt_medium_google_ads_vq_c03_01",
+        "schemaopt_medium_google_ads_vq_c03_02",
+        "schemaopt_medium_google_ads_vq_c03_03",
+        "schemaopt_medium_google_ads_vq_c03_04",
+        "schemaopt_medium_google_ads_vq_c03_05",
+        "schemaopt_medium_google_ads_vq_c03_06"
+      ],
+      "query_count": 6,
+      "total_frequency_weight": 15.0,
+      "total_weighted_baseline_cost": 15.75,
+      "top_tables": [
+        "raw.campaign_stats_data"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "hotspot_rank": 2,
+      "preferred_object_kind": "agg_matview"
+    },
+    {
+      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
+      "label": "ad_group_stats_data workload",
+      "business_label": "google_ads ad_group_stats_data analytics",
+      "query_ids": [
+        "schemaopt_medium_google_ads_vq_c02_01",
+        "schemaopt_medium_google_ads_vq_c02_02",
+        "schemaopt_medium_google_ads_vq_c02_03",
+        "schemaopt_medium_google_ads_vq_c02_04",
+        "schemaopt_medium_google_ads_vq_c02_05",
+        "schemaopt_medium_google_ads_vq_c02_06"
+      ],
+      "query_count": 6,
+      "total_frequency_weight": 12.3,
+      "total_weighted_baseline_cost": 12.915,
+      "top_tables": [
+        "raw.ad_group_stats_data"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "ad_network_type"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "hotspot_rank": 3,
+      "preferred_object_kind": "denorm_table"
+    },
+    {
+      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
+      "label": "keyword_stats_data workload",
+      "business_label": "google_ads keyword_stats_data analytics",
+      "query_ids": [
+        "schemaopt_medium_google_ads_vq_c01_01",
+        "schemaopt_medium_google_ads_vq_c01_02",
+        "schemaopt_medium_google_ads_vq_c01_03",
+        "schemaopt_medium_google_ads_vq_c01_04",
+        "schemaopt_medium_google_ads_vq_c01_05",
+        "schemaopt_medium_google_ads_vq_c01_06"
+      ],
+      "query_count": 6,
+      "total_frequency_weight": 9.6,
+      "total_weighted_baseline_cost": 10.08,
+      "top_tables": [
+        "raw.keyword_stats_data"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "ad_group_base_ad_group"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "hotspot_rank": 4,
+      "preferred_object_kind": "agg_matview"
+    }
+  ],
+  "budgets": {
+    "max_new_derived_objects": 4,
+    "max_storage_bytes": 24000000,
+    "max_refresh_runtime_ms": 15000.0,
+    "max_steps": 24
+  },
+  "allowed_object_kinds": [
+    "join_matview",
+    "agg_matview",
+    "filtered_projection",
+    "denorm_table"
+  ],
+  "engine_capabilities": {
+    "engine": "duckdb",
+    "uses_real_duckdb_database": true,
+    "uses_real_query_execution": true,
+    "uses_explain_plan_metrics": true,
+    "rewrite_model": "explicit_rewritten_sql"
+  }
+}

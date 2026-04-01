@@ -1,0 +1,4744 @@
+{
+  "task_id": "schemaopt_hard_hubspot",
+  "difficulty": "hard",
+  "domain": "hubspot",
+  "objective": "Optimize the hubspot workload over the real DuckDB source database by materializing derived objects that reduce measured execution cost while preserving exact query results.",
+  "seed_source": "datasets/dacomp-de/dacomp-de-impl-010",
+  "dataset_dir": "datasets/dacomp-de/dacomp-de-impl-010",
+  "database_path": "datasets/dacomp-de/dacomp-de-impl-010/hubspot_start.duckdb",
+  "tables": [
+    {
+      "name": "raw.company_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "is_deleted",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "property_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_createdate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_industry",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_address",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_address_2",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_city",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_state",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_annualrevenue",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hs_all-funky-a9384-syntax",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.company_data_databricks",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_deleted",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "property_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_createdate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_industry",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_address",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_address_2",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_city",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_state",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_annualrevenue",
+          "type": "BIGINT"
+        },
+        {
+          "name": "`property_hs_all-funky-a9384-syntax`",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.company_data_postgres",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_deleted",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "property_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_createdate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_industry",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_address",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_address_2",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_city",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_state",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_annualrevenue",
+          "type": "BIGINT"
+        },
+        {
+          "name": "\"property_hs_all-funky-a9384-syntax\"",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.company_data_snowflake",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_deleted",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "property_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_createdate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_industry",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_address",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_address_2",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_city",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_state",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_annualrevenue",
+          "type": "BIGINT"
+        },
+        {
+          "name": "\"PROPERTY_HS_ALL-FUNKY-A833\"",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.company_property_history_data",
+      "columns": [
+        {
+          "name": "company_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "value",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.contact_data",
+      "columns": [
+        {
+          "name": "property_email",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_company",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_firstname",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_lastname",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_email_1",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_createdate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_jobtitle",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_annualrevenue",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "property_hs_calculated_merged_vids",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_first_conversion_date",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.contact_form_submission_data",
+      "columns": [
+        {
+          "name": "timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "form_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "contact_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "conversion_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "page_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "page_url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "portal_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "title",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.contact_list_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_by_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "object_type_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "processing_status",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "processing_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "list_version",
+          "type": "BIGINT"
+        },
+        {
+          "name": "filters_updated_at",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.contact_list_member_data",
+      "columns": [
+        {
+          "name": "contact_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "contact_list_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "added_at",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.contact_merge_audit_data",
+      "columns": [
+        {
+          "name": "canonical_vid",
+          "type": "BIGINT"
+        },
+        {
+          "name": "contact_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "vid_to_merge",
+          "type": "BIGINT"
+        },
+        {
+          "name": "entity_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "first_name",
+          "type": "BIGINT"
+        },
+        {
+          "name": "last_name",
+          "type": "BIGINT"
+        },
+        {
+          "name": "num_properties_moved",
+          "type": "BIGINT"
+        },
+        {
+          "name": "timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.contact_property_history_data",
+      "columns": [
+        {
+          "name": "contact_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.deal_company_data",
+      "columns": [
+        {
+          "name": "company_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "deal_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "type_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.deal_contact_data",
+      "columns": [
+        {
+          "name": "contact_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "deal_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "type_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.deal_data",
+      "columns": [
+        {
+          "name": "deal_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "is_deleted",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "deal_pipeline_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "deal_pipeline_stage_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "owner_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "portal_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_dealname",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_amount",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "property_closedate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_createdate",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.deal_pipeline_data",
+      "columns": [
+        {
+          "name": "pipeline_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "active",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "display_order",
+          "type": "BIGINT"
+        },
+        {
+          "name": "label",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.deal_pipeline_stage_data",
+      "columns": [
+        {
+          "name": "stage_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "pipeline_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "label",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "display_order",
+          "type": "BIGINT"
+        },
+        {
+          "name": "probability",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "active",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "closed_won",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_closed",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.deal_property_history_data",
+      "columns": [
+        {
+          "name": "deal_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "value",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.deal_stage_data",
+      "columns": [
+        {
+          "name": "deal_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "date_entered",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "value",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_campaign_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "content_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "num_included",
+          "type": "BIGINT"
+        },
+        {
+          "name": "num_queued",
+          "type": "BIGINT"
+        },
+        {
+          "name": "sub_type",
+          "type": "BIGINT"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subject",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_bounce_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status",
+          "type": "BIGINT"
+        },
+        {
+          "name": "response",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_click_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "referer",
+          "type": "BIGINT"
+        },
+        {
+          "name": "browser",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "location",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ip_address",
+          "type": "BIGINT"
+        },
+        {
+          "name": "url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "caused_by_created",
+          "type": "BIGINT"
+        },
+        {
+          "name": "caused_by_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "created",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email_campaign_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "obsoleted_by_created",
+          "type": "BIGINT"
+        },
+        {
+          "name": "obsoleted_by_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "portal_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "sent_by_created",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "sent_by_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "filtered_event",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "recipient",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_deferred_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "attempt",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "response",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_delivered_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "response",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "smtp_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_dropped_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "drop_reason",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "bcc",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "cc",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "drop_message",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "from",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "reply_to",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subject",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_dropped_data_postgres",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "drop_reason",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "bcc",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "cc",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "drop_message",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "\"from\"",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "reply_to",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subject",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_dropped_data_snowflake",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "drop_reason",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "bcc",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "cc",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "drop_message",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "\"FROM\"",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "reply_to",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subject",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_forward_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "browser",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ip_address",
+          "type": "BIGINT"
+        },
+        {
+          "name": "location",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_open_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "duration",
+          "type": "BIGINT"
+        },
+        {
+          "name": "browser",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ip_address",
+          "type": "BIGINT"
+        },
+        {
+          "name": "location",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_print_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "browser",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ip_address",
+          "type": "BIGINT"
+        },
+        {
+          "name": "location",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_sent_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "bcc",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "cc",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "from",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "reply_to",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subject",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_sent_data_postgres",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "bcc",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "cc",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "\"from\"",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "reply_to",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subject",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_sent_data_snowflake",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "bcc",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "cc",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "\"FROM\"",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "reply_to",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subject",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_spam_report_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ip_address",
+          "type": "BIGINT"
+        },
+        {
+          "name": "user_agent",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.email_event_status_change_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "bounced",
+          "type": "BIGINT"
+        },
+        {
+          "name": "portal_subscription_status",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "requested_by",
+          "type": "BIGINT"
+        },
+        {
+          "name": "source",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscriptions",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.engagement_call_data",
+      "columns": [
+        {
+          "name": "engagement_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hs_createdate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.engagement_communication_data",
+      "columns": [
+        {
+          "name": "engagement_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hs_createdate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.engagement_company_data",
+      "columns": [
+        {
+          "name": "company_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "engagement_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "engagement_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.engagement_contact_data",
+      "columns": [
+        {
+          "name": "contact_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "engagement_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "engagement_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.engagement_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "portal_id",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.engagement_deal_data",
+      "columns": [
+        {
+          "name": "deal_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "engagement_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "engagement_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.engagement_email_data",
+      "columns": [
+        {
+          "name": "engagement_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hs_all_owner_ids",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hs_all_team_ids",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hs_createdate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_email_subject",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_email_text",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_lastmodifieddate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_modified_by",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hs_timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hubspot_owner_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hubspot_team_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.engagement_meeting_data",
+      "columns": [
+        {
+          "name": "engagement_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "created_from_link_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "end_time",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "pre_meeting_prospect_reminders",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "start_time",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "web_conference_meeting_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "meeting_outcome",
+          "type": "BIGINT"
+        },
+        {
+          "name": "body",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "external_url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "title",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.engagement_note_data",
+      "columns": [
+        {
+          "name": "engagement_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hs_body_preview",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_createdate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_lastmodifieddate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_note_body",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hubspot_owner_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hubspot_team_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.engagement_task_data",
+      "columns": [
+        {
+          "name": "engagement_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hs_createdate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_object_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hs_task_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hubspot_owner_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hubspot_team_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "task_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_engagement_source",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.form_data",
+      "columns": [
+        {
+          "name": "guid",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "portal_id",
+          "type": "INTEGER"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "form_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "method",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "action",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "redirect",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "lead_nurturing_campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "follow_up_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "css_class",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "notify_recipients",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "submit_text",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.merged_deal_data",
+      "columns": [
+        {
+          "name": "deal_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "merged_deal_id",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.owner_data",
+      "columns": [
+        {
+          "name": "owner_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "portal_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "first_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "active_user_id",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.owner_team_data",
+      "columns": [
+        {
+          "name": "owner_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "team_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "is_team_primary",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.property_data",
+      "columns": [
+        {
+          "name": "calculated",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "field_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "group_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "hubspot_defined",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "hubspot_object",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "label",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "show_currency_symbol",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.property_option_data",
+      "columns": [
+        {
+          "name": "label",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "display_order",
+          "type": "BIGINT"
+        },
+        {
+          "name": "hidden",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "value",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.role_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "requires_billing_write",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.team_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.team_user_data",
+      "columns": [
+        {
+          "name": "user_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "team_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "is_secondary_user",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ticket_company_data",
+      "columns": [
+        {
+          "name": "ticket_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "company_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ticket_contact_data",
+      "columns": [
+        {
+          "name": "ticket_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "contact_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ticket_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_deleted",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_closed_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_createdate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_first_agent_reply_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_pipeline",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_pipeline_stage",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_ticket_category",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_hs_ticket_priority",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_hubspot_owner_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "property_subject",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "property_content",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ticket_deal_data",
+      "columns": [
+        {
+          "name": "ticket_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "deal_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ticket_engagement_data",
+      "columns": [
+        {
+          "name": "ticket_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "engagement_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "category",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ticket_pipeline_data",
+      "columns": [
+        {
+          "name": "pipeline_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "object_type_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "label",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "display_order",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ticket_pipeline_stage_data",
+      "columns": [
+        {
+          "name": "stage_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "pipeline_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "label",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "ticket_state",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "display_order",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "is_closed",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.ticket_property_history_data",
+      "columns": [
+        {
+          "name": "ticket_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "timestamp_instant",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "value",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.users_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_team_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "role_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "first_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_name",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    }
+  ],
+  "visible_queries": [
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"guid\" AS guid, COUNT(*) AS row_count FROM raw.form_data b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"guid\" IS NOT NULL GROUP BY metric_period, guid",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"guid\" as guid, count(*) as row_count from raw.form_data b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"guid\" is not null group by metric_period, guid",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_01",
+      "business_tag": "hubspot form_data analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.form_data"
+      ],
+      "columns": [
+        "metric_period",
+        "guid",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "guid"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"guid\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"guid\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot form_data analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.form_data b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"guid\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count from raw.form_data b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"guid\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_01",
+      "business_tag": "hubspot form_data analytics",
+      "frequency_weight": 1.6,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.form_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"guid\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"guid\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "hubspot form_data analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c01_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"guid\" AS guid, COUNT(*) AS row_count FROM raw.form_data b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"guid\" IS NOT NULL GROUP BY metric_period, guid",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"guid\" as guid, count(*) as row_count from raw.form_data b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"guid\" is not null group by metric_period, guid",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_01",
+      "business_tag": "hubspot form_data analytics",
+      "frequency_weight": 1.75,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.form_data"
+      ],
+      "columns": [
+        "metric_period",
+        "guid",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "guid"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"guid\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"guid\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot form_data analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c01_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.form_data b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"guid\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count from raw.form_data b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"guid\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_01",
+      "business_tag": "hubspot form_data analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.form_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"guid\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"guid\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "hubspot form_data analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c01_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"guid\" AS guid, COUNT(*) AS row_count FROM raw.form_data b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"guid\" IS NOT NULL GROUP BY metric_period, guid",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"guid\" as guid, count(*) as row_count from raw.form_data b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"guid\" is not null group by metric_period, guid",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_01",
+      "business_tag": "hubspot form_data analytics",
+      "frequency_weight": 1.6,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.form_data"
+      ],
+      "columns": [
+        "metric_period",
+        "guid",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "guid"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"guid\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"guid\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot form_data analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c01_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.form_data b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"guid\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count from raw.form_data b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"guid\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_01",
+      "business_tag": "hubspot form_data analytics",
+      "frequency_weight": 1.75,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.form_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"guid\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"guid\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "hubspot form_data analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c01_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"guid\" AS guid, COUNT(*) AS row_count FROM raw.form_data b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"guid\" IS NOT NULL GROUP BY metric_period, guid",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"guid\" as guid, count(*) as row_count from raw.form_data b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"guid\" is not null group by metric_period, guid",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_01",
+      "business_tag": "hubspot form_data analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.form_data"
+      ],
+      "columns": [
+        "metric_period",
+        "guid",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "guid"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"guid\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"guid\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot form_data analytics variant 1 visible 7"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_02",
+      "business_tag": "hubspot company_data analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_02",
+      "business_tag": "hubspot company_data analytics",
+      "frequency_weight": 2.05,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.company_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c02_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_02",
+      "business_tag": "hubspot company_data analytics",
+      "frequency_weight": 2.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c02_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_02",
+      "business_tag": "hubspot company_data analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.company_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c02_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_02",
+      "business_tag": "hubspot company_data analytics",
+      "frequency_weight": 2.05,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c02_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_02",
+      "business_tag": "hubspot company_data analytics",
+      "frequency_weight": 2.2,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.company_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c02_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_02",
+      "business_tag": "hubspot company_data analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data analytics variant 1 visible 7"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_databricks b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_databricks b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_03",
+      "business_tag": "hubspot company_data_databricks analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_databricks"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_databricks analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_databricks b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_databricks b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_03",
+      "business_tag": "hubspot company_data_databricks analytics",
+      "frequency_weight": 2.5,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.company_data_databricks"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_databricks analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c03_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_databricks b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_databricks b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_03",
+      "business_tag": "hubspot company_data_databricks analytics",
+      "frequency_weight": 2.65,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_databricks"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_databricks analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c03_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_databricks b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_databricks b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_03",
+      "business_tag": "hubspot company_data_databricks analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.company_data_databricks"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_databricks analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c03_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_databricks b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_databricks b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_03",
+      "business_tag": "hubspot company_data_databricks analytics",
+      "frequency_weight": 2.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_databricks"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_databricks analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c03_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_databricks b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_databricks b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_03",
+      "business_tag": "hubspot company_data_databricks analytics",
+      "frequency_weight": 2.65,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.company_data_databricks"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_databricks analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c03_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_databricks b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_databricks b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_03",
+      "business_tag": "hubspot company_data_databricks analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_databricks"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_databricks analytics variant 1 visible 7"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c04_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_postgres b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_postgres b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_04",
+      "business_tag": "hubspot company_data_postgres analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_postgres"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_postgres analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c04_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_postgres b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_postgres b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_04",
+      "business_tag": "hubspot company_data_postgres analytics",
+      "frequency_weight": 2.95,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.company_data_postgres"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_postgres analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c04_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_postgres b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_postgres b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_04",
+      "business_tag": "hubspot company_data_postgres analytics",
+      "frequency_weight": 3.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_postgres"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_postgres analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c04_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_postgres b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_postgres b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_04",
+      "business_tag": "hubspot company_data_postgres analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.company_data_postgres"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_postgres analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c04_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_postgres b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_postgres b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_04",
+      "business_tag": "hubspot company_data_postgres analytics",
+      "frequency_weight": 2.95,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_postgres"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_postgres analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c04_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_postgres b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_postgres b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_04",
+      "business_tag": "hubspot company_data_postgres analytics",
+      "frequency_weight": 3.1,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.company_data_postgres"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_postgres analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c04_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_postgres b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_postgres b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_04",
+      "business_tag": "hubspot company_data_postgres analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_postgres"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_postgres analytics variant 1 visible 7"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c05_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_snowflake b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_snowflake b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_05",
+      "business_tag": "hubspot company_data_snowflake analytics",
+      "frequency_weight": 3.25,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_snowflake"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_snowflake analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c05_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_snowflake b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_snowflake b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_05",
+      "business_tag": "hubspot company_data_snowflake analytics",
+      "frequency_weight": 3.4,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.company_data_snowflake"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_snowflake analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c05_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_snowflake b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_snowflake b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_05",
+      "business_tag": "hubspot company_data_snowflake analytics",
+      "frequency_weight": 3.55,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_snowflake"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_snowflake analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c05_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_snowflake b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_snowflake b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_05",
+      "business_tag": "hubspot company_data_snowflake analytics",
+      "frequency_weight": 3.25,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.company_data_snowflake"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_snowflake analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c05_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_snowflake b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_snowflake b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_05",
+      "business_tag": "hubspot company_data_snowflake analytics",
+      "frequency_weight": 3.4,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_snowflake"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_snowflake analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c05_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_snowflake b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_snowflake b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_05",
+      "business_tag": "hubspot company_data_snowflake analytics",
+      "frequency_weight": 3.55,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.company_data_snowflake"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_snowflake analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_vq_c05_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_snowflake b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_snowflake b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_05",
+      "business_tag": "hubspot company_data_snowflake analytics",
+      "frequency_weight": 3.25,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_snowflake"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_snowflake analytics variant 1 visible 7"
+    }
+  ],
+  "holdout_queries": [
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.form_data b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"guid\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count from raw.form_data b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"guid\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_01",
+      "business_tag": "hubspot form_data analytics",
+      "frequency_weight": 1.1,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.form_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"guid\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"guid\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "hubspot form_data analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"guid\" AS guid, COUNT(*) AS row_count FROM raw.form_data b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"guid\" IS NOT NULL GROUP BY metric_period, guid",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"guid\" as guid, count(*) as row_count from raw.form_data b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"guid\" is not null group by metric_period, guid",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_01",
+      "business_tag": "hubspot form_data analytics",
+      "frequency_weight": 1.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.form_data"
+      ],
+      "columns": [
+        "metric_period",
+        "guid",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "guid"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"guid\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"guid\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot form_data analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c01_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.form_data b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"guid\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count from raw.form_data b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"guid\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_01",
+      "business_tag": "hubspot form_data analytics",
+      "frequency_weight": 1.1,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.form_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"guid\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"guid\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "hubspot form_data analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c01_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"guid\" AS guid, COUNT(*) AS row_count FROM raw.form_data b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"guid\" IS NOT NULL GROUP BY metric_period, guid",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"guid\" as guid, count(*) as row_count from raw.form_data b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"guid\" is not null group by metric_period, guid",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_01",
+      "business_tag": "hubspot form_data analytics",
+      "frequency_weight": 1.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.form_data"
+      ],
+      "columns": [
+        "metric_period",
+        "guid",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "guid"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"guid\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"guid\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot form_data analytics variant 1 holdout 4"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_02",
+      "business_tag": "hubspot company_data analytics",
+      "frequency_weight": 1.4,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.company_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_02",
+      "business_tag": "hubspot company_data analytics",
+      "frequency_weight": 1.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c02_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_02",
+      "business_tag": "hubspot company_data analytics",
+      "frequency_weight": 1.4,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.company_data"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c02_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_02",
+      "business_tag": "hubspot company_data analytics",
+      "frequency_weight": 1.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data analytics variant 1 holdout 4"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_databricks b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_databricks b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_03",
+      "business_tag": "hubspot company_data_databricks analytics",
+      "frequency_weight": 1.7,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.company_data_databricks"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_databricks analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_databricks b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_databricks b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_03",
+      "business_tag": "hubspot company_data_databricks analytics",
+      "frequency_weight": 1.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_databricks"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_databricks analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c03_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_databricks b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_databricks b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_03",
+      "business_tag": "hubspot company_data_databricks analytics",
+      "frequency_weight": 1.7,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.company_data_databricks"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_databricks analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c03_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_databricks b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_databricks b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_03",
+      "business_tag": "hubspot company_data_databricks analytics",
+      "frequency_weight": 1.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_databricks"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_databricks analytics variant 1 holdout 4"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c04_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_postgres b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_postgres b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_04",
+      "business_tag": "hubspot company_data_postgres analytics",
+      "frequency_weight": 2.0,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.company_data_postgres"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_postgres analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c04_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_postgres b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_postgres b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_04",
+      "business_tag": "hubspot company_data_postgres analytics",
+      "frequency_weight": 2.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_postgres"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_postgres analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c04_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_postgres b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_postgres b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_04",
+      "business_tag": "hubspot company_data_postgres analytics",
+      "frequency_weight": 2.0,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.company_data_postgres"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_postgres analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c04_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_postgres b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_postgres b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_04",
+      "business_tag": "hubspot company_data_postgres analytics",
+      "frequency_weight": 2.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_postgres"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_postgres analytics variant 1 holdout 4"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c05_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_snowflake b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_snowflake b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_05",
+      "business_tag": "hubspot company_data_snowflake analytics",
+      "frequency_weight": 2.3,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.company_data_snowflake"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_snowflake analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c05_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_snowflake b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_snowflake b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_05",
+      "business_tag": "hubspot company_data_snowflake analytics",
+      "frequency_weight": 2.4,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_snowflake"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_snowflake analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c05_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_snowflake b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_snowflake b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_05",
+      "business_tag": "hubspot company_data_snowflake analytics",
+      "frequency_weight": 2.3,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.company_data_snowflake"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "hubspot company_data_snowflake analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_hubspot_hq_c05_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"property_createdate\" AS TIMESTAMP)) AS metric_period, b.\"is_deleted\" AS is_deleted, COUNT(*) AS row_count, SUM(b.\"property_annualrevenue\") AS sum_property_annualrevenue FROM raw.company_data_snowflake b WHERE try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL AND b.\"is_deleted\" IS NOT NULL GROUP BY metric_period, is_deleted",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"property_createdate\" as timestamp)) as metric_period, b.\"is_deleted\" as is_deleted, count(*) as row_count, sum(b.\"property_annualrevenue\") as sum_property_annualrevenue from raw.company_data_snowflake b where try_cast(b.\"property_createdate\" as timestamp) is not null and b.\"is_deleted\" is not null group by metric_period, is_deleted",
+      "cluster_id": "schemaopt_hard_hubspot_cluster_05",
+      "business_tag": "hubspot company_data_snowflake analytics",
+      "frequency_weight": 2.4,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.company_data_snowflake"
+      ],
+      "columns": [
+        "metric_period",
+        "is_deleted",
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "group_by": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"property_createdate\"_as_timestamp)_is_not_null",
+        "b.\"is_deleted\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"property_createdate\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"is_deleted\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "hubspot company_data_snowflake analytics variant 1 holdout 4"
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": "schemaopt_hard_hubspot_cluster_05",
+      "label": "company_data_snowflake workload",
+      "business_label": "hubspot company_data_snowflake analytics",
+      "query_ids": [
+        "schemaopt_hard_hubspot_vq_c05_01",
+        "schemaopt_hard_hubspot_vq_c05_02",
+        "schemaopt_hard_hubspot_vq_c05_03",
+        "schemaopt_hard_hubspot_vq_c05_04",
+        "schemaopt_hard_hubspot_vq_c05_05",
+        "schemaopt_hard_hubspot_vq_c05_06",
+        "schemaopt_hard_hubspot_vq_c05_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 23.65,
+      "total_weighted_baseline_cost": 24.67,
+      "top_tables": [
+        "raw.company_data_snowflake"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "hotspot_rank": 1,
+      "preferred_object_kind": "agg_matview"
+    },
+    {
+      "cluster_id": "schemaopt_hard_hubspot_cluster_04",
+      "label": "company_data_postgres workload",
+      "business_label": "hubspot company_data_postgres analytics",
+      "query_ids": [
+        "schemaopt_hard_hubspot_vq_c04_01",
+        "schemaopt_hard_hubspot_vq_c04_02",
+        "schemaopt_hard_hubspot_vq_c04_03",
+        "schemaopt_hard_hubspot_vq_c04_04",
+        "schemaopt_hard_hubspot_vq_c04_05",
+        "schemaopt_hard_hubspot_vq_c04_06",
+        "schemaopt_hard_hubspot_vq_c04_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 20.5,
+      "total_weighted_baseline_cost": 21.385,
+      "top_tables": [
+        "raw.company_data_postgres"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "hotspot_rank": 2,
+      "preferred_object_kind": "join_matview"
+    },
+    {
+      "cluster_id": "schemaopt_hard_hubspot_cluster_03",
+      "label": "company_data_databricks workload",
+      "business_label": "hubspot company_data_databricks analytics",
+      "query_ids": [
+        "schemaopt_hard_hubspot_vq_c03_01",
+        "schemaopt_hard_hubspot_vq_c03_02",
+        "schemaopt_hard_hubspot_vq_c03_03",
+        "schemaopt_hard_hubspot_vq_c03_04",
+        "schemaopt_hard_hubspot_vq_c03_05",
+        "schemaopt_hard_hubspot_vq_c03_06",
+        "schemaopt_hard_hubspot_vq_c03_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 17.35,
+      "total_weighted_baseline_cost": 18.1,
+      "top_tables": [
+        "raw.company_data_databricks"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "hotspot_rank": 3,
+      "preferred_object_kind": "agg_matview"
+    },
+    {
+      "cluster_id": "schemaopt_hard_hubspot_cluster_02",
+      "label": "company_data workload",
+      "business_label": "hubspot company_data analytics",
+      "query_ids": [
+        "schemaopt_hard_hubspot_vq_c02_01",
+        "schemaopt_hard_hubspot_vq_c02_02",
+        "schemaopt_hard_hubspot_vq_c02_03",
+        "schemaopt_hard_hubspot_vq_c02_04",
+        "schemaopt_hard_hubspot_vq_c02_05",
+        "schemaopt_hard_hubspot_vq_c02_06",
+        "schemaopt_hard_hubspot_vq_c02_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 14.2,
+      "total_weighted_baseline_cost": 14.815,
+      "top_tables": [
+        "raw.company_data"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "is_deleted"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_property_annualrevenue"
+      ],
+      "hotspot_rank": 4,
+      "preferred_object_kind": "denorm_table"
+    },
+    {
+      "cluster_id": "schemaopt_hard_hubspot_cluster_01",
+      "label": "form_data workload",
+      "business_label": "hubspot form_data analytics",
+      "query_ids": [
+        "schemaopt_hard_hubspot_vq_c01_01",
+        "schemaopt_hard_hubspot_vq_c01_02",
+        "schemaopt_hard_hubspot_vq_c01_03",
+        "schemaopt_hard_hubspot_vq_c01_04",
+        "schemaopt_hard_hubspot_vq_c01_05",
+        "schemaopt_hard_hubspot_vq_c01_06",
+        "schemaopt_hard_hubspot_vq_c01_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 11.05,
+      "total_weighted_baseline_cost": 11.53,
+      "top_tables": [
+        "raw.form_data"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "guid"
+      ],
+      "representative_measures": [
+        "row_count"
+      ],
+      "hotspot_rank": 5,
+      "preferred_object_kind": "agg_matview"
+    }
+  ],
+  "budgets": {
+    "max_new_derived_objects": 5,
+    "max_storage_bytes": 40000000,
+    "max_refresh_runtime_ms": 25000.0,
+    "max_steps": 30
+  },
+  "allowed_object_kinds": [
+    "join_matview",
+    "agg_matview",
+    "filtered_projection",
+    "denorm_table"
+  ],
+  "engine_capabilities": {
+    "engine": "duckdb",
+    "uses_real_duckdb_database": true,
+    "uses_real_query_execution": true,
+    "uses_explain_plan_metrics": true,
+    "rewrite_model": "explicit_rewritten_sql"
+  }
+}

@@ -1,0 +1,3815 @@
+{
+  "task_id": "schemaopt_hard_marketo",
+  "difficulty": "hard",
+  "domain": "marketo",
+  "objective": "Optimize the marketo workload over the real DuckDB source database by materializing derived objects that reduce measured execution cost while preserving exact query results.",
+  "seed_source": "datasets/dacomp-de/dacomp-de-impl-012",
+  "dataset_dir": "datasets/dacomp-de/dacomp-de-impl-012",
+  "database_path": "datasets/dacomp-de/dacomp-de-impl-012/marketo_start.duckdb",
+  "tables": [
+    {
+      "name": "raw.marketo_activity_change_data_value",
+      "columns": [
+        {
+          "name": "activity_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "activity_type_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "api_method_name",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "lead_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "modifying_user",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "new_value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "old_value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "reason",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "request_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_activity_click_email",
+      "columns": [
+        {
+          "name": "activity_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "activity_type_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_run_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "choice_number",
+          "type": "BIGINT"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email_template_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_mobile_device",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "lead_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "link",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "platform",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "step_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_activity_delete_lead",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "activity_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "activity_type_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "lead_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_activity_email_bounced",
+      "columns": [
+        {
+          "name": "activity_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "activity_type_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_run_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "category",
+          "type": "BIGINT"
+        },
+        {
+          "name": "choice_number",
+          "type": "BIGINT"
+        },
+        {
+          "name": "details",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email_template_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "lead_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "step_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subcategory",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_activity_email_delivered",
+      "columns": [
+        {
+          "name": "activity_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "activity_type_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_run_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "choice_number",
+          "type": "BIGINT"
+        },
+        {
+          "name": "email_template_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "lead_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "step_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_activity_merge_leads",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "activity_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "activity_type_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "lead_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "master_updated",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "merge_ids",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "merge_source",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "merged_in_sales",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "primary_attribute_value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_activity_open_email",
+      "columns": [
+        {
+          "name": "activity_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "activity_type_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_run_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "choice_number",
+          "type": "BIGINT"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email_template_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_mobile_device",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "lead_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "platform",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "step_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_activity_send_email",
+      "columns": [
+        {
+          "name": "activity_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "activity_type_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_run_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "choice_number",
+          "type": "BIGINT"
+        },
+        {
+          "name": "email_template_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "lead_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "step_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "action_result",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_activity_unsubscribe_email",
+      "columns": [
+        {
+          "name": "activity_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "activity_type_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "campaign_run_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "client_ip_address",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email_template_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "form_fields",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "lead_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_attribute_value_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "query_parameters",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "referrer_url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "webform_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "webpage_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_campaign",
+      "columns": [
+        {
+          "name": "active",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "program_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "workspace_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "computed_url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "flow_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "folder_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "folder_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_communication_limit_enabled",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "is_requestable",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "is_system",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "max_members",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "qualification_rule_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "qualification_rule_interval",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "qualification_rule_unit",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "recurrence_start_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "recurrence_end_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "recurrence_interval_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "recurrence_interval",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "recurrence_weekday_only",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "recurrence_day_of_month",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "recurrence_day_of_week",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "recurrence_week_of_month",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "smart_list_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_email_template_history",
+      "columns": [
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "folder_folder_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "folder_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "folder_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "folder_value",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "from_email",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "from_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "operational",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "program_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "publish_to_msi",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "reply_email",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subject",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "template",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "text_only",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "version",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "web_view",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "workspace",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_lead",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "first_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_name",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_lead_describe",
+      "columns": [
+        {
+          "name": "data_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "display_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "length",
+          "type": "BIGINT"
+        },
+        {
+          "name": "restname",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "restread_only",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "soapname",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "soapread_only",
+          "type": "BOOLEAN"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.marketo_program",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "channel",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "end_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "sfdc_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "sfdc_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "start_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "workspace",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    }
+  ],
+  "visible_queries": [
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"active\" AS active, j.\"channel\" AS marketo_program_channel, COUNT(*) AS row_count, SUM(b.\"max_members\") AS sum_max_members FROM raw.marketo_campaign b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"active\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, active, marketo_program_channel",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"active\" as active, j.\"channel\" as marketo_program_channel, count(*) as row_count, sum(b.\"max_members\") as sum_max_members from raw.marketo_campaign b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"active\" is not null and j.\"channel\" is not null group by metric_period, active, marketo_program_channel",
+      "cluster_id": "schemaopt_hard_marketo_cluster_01",
+      "business_tag": "marketo marketo_campaign analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_campaign",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "active",
+        "marketo_program_channel",
+        "row_count",
+        "sum_max_members"
+      ],
+      "group_by": [
+        "metric_period",
+        "active",
+        "marketo_program_channel"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"active\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"active\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_max_members"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_campaign analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"active\" AS active, COUNT(*) AS row_count, SUM(b.\"max_members\") AS sum_max_members FROM raw.marketo_campaign b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"active\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"active\" as active, count(*) as row_count, sum(b.\"max_members\") as sum_max_members from raw.marketo_campaign b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"active\" is not null and j.\"channel\" is not null group by metric_period, active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_01",
+      "business_tag": "marketo marketo_campaign analytics",
+      "frequency_weight": 1.6,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_campaign",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "active",
+        "row_count",
+        "sum_max_members"
+      ],
+      "group_by": [
+        "metric_period",
+        "active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"active\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"active\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_max_members"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_campaign analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c01_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"max_members\") AS sum_max_members FROM raw.marketo_campaign b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"active\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"max_members\") as sum_max_members from raw.marketo_campaign b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"active\" is not null and j.\"channel\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_01",
+      "business_tag": "marketo marketo_campaign analytics",
+      "frequency_weight": 1.75,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_campaign",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_max_members"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"active\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"active\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_max_members"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_campaign analytics variant 3 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c01_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"active\" AS active, j.\"channel\" AS marketo_program_channel, COUNT(*) AS row_count, SUM(b.\"max_members\") AS sum_max_members FROM raw.marketo_campaign b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"active\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, active, marketo_program_channel",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"active\" as active, j.\"channel\" as marketo_program_channel, count(*) as row_count, sum(b.\"max_members\") as sum_max_members from raw.marketo_campaign b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"active\" is not null and j.\"channel\" is not null group by metric_period, active, marketo_program_channel",
+      "cluster_id": "schemaopt_hard_marketo_cluster_01",
+      "business_tag": "marketo marketo_campaign analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_campaign",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "active",
+        "marketo_program_channel",
+        "row_count",
+        "sum_max_members"
+      ],
+      "group_by": [
+        "metric_period",
+        "active",
+        "marketo_program_channel"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"active\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"active\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_max_members"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_campaign analytics variant 1 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c01_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"active\" AS active, COUNT(*) AS row_count, SUM(b.\"max_members\") AS sum_max_members FROM raw.marketo_campaign b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"active\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"active\" as active, count(*) as row_count, sum(b.\"max_members\") as sum_max_members from raw.marketo_campaign b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"active\" is not null and j.\"channel\" is not null group by metric_period, active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_01",
+      "business_tag": "marketo marketo_campaign analytics",
+      "frequency_weight": 1.6,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_campaign",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "active",
+        "row_count",
+        "sum_max_members"
+      ],
+      "group_by": [
+        "metric_period",
+        "active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"active\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"active\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_max_members"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_campaign analytics variant 2 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c01_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"max_members\") AS sum_max_members FROM raw.marketo_campaign b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"active\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"max_members\") as sum_max_members from raw.marketo_campaign b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"active\" is not null and j.\"channel\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_01",
+      "business_tag": "marketo marketo_campaign analytics",
+      "frequency_weight": 1.75,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_campaign",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_max_members"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"active\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"active\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_max_members"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_campaign analytics variant 3 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c01_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"active\" AS active, j.\"channel\" AS marketo_program_channel, COUNT(*) AS row_count, SUM(b.\"max_members\") AS sum_max_members FROM raw.marketo_campaign b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"active\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, active, marketo_program_channel",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"active\" as active, j.\"channel\" as marketo_program_channel, count(*) as row_count, sum(b.\"max_members\") as sum_max_members from raw.marketo_campaign b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"active\" is not null and j.\"channel\" is not null group by metric_period, active, marketo_program_channel",
+      "cluster_id": "schemaopt_hard_marketo_cluster_01",
+      "business_tag": "marketo marketo_campaign analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_campaign",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "active",
+        "marketo_program_channel",
+        "row_count",
+        "sum_max_members"
+      ],
+      "group_by": [
+        "metric_period",
+        "active",
+        "marketo_program_channel"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"active\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"active\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_max_members"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_campaign analytics variant 1 visible 7"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"description\" AS description, j.\"channel\" AS marketo_program_channel, COUNT(*) AS row_count, SUM(b.\"folder_value\") AS sum_folder_value FROM raw.marketo_email_template_history b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"description\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, description, marketo_program_channel",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"description\" as description, j.\"channel\" as marketo_program_channel, count(*) as row_count, sum(b.\"folder_value\") as sum_folder_value from raw.marketo_email_template_history b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"description\" is not null and j.\"channel\" is not null group by metric_period, description, marketo_program_channel",
+      "cluster_id": "schemaopt_hard_marketo_cluster_02",
+      "business_tag": "marketo marketo_email_template_history analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_email_template_history",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "description",
+        "marketo_program_channel",
+        "row_count",
+        "sum_folder_value"
+      ],
+      "group_by": [
+        "metric_period",
+        "description",
+        "marketo_program_channel"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"description\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"description\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_folder_value"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_email_template_history analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"description\" AS description, COUNT(*) AS row_count, SUM(b.\"folder_value\") AS sum_folder_value FROM raw.marketo_email_template_history b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"description\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, description",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"description\" as description, count(*) as row_count, sum(b.\"folder_value\") as sum_folder_value from raw.marketo_email_template_history b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"description\" is not null and j.\"channel\" is not null group by metric_period, description",
+      "cluster_id": "schemaopt_hard_marketo_cluster_02",
+      "business_tag": "marketo marketo_email_template_history analytics",
+      "frequency_weight": 2.05,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_email_template_history",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "description",
+        "row_count",
+        "sum_folder_value"
+      ],
+      "group_by": [
+        "metric_period",
+        "description"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"description\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"description\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_folder_value"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_email_template_history analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c02_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"folder_value\") AS sum_folder_value FROM raw.marketo_email_template_history b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"description\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"folder_value\") as sum_folder_value from raw.marketo_email_template_history b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"description\" is not null and j.\"channel\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_02",
+      "business_tag": "marketo marketo_email_template_history analytics",
+      "frequency_weight": 2.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_email_template_history",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_folder_value"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"description\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"description\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_folder_value"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_email_template_history analytics variant 3 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c02_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"description\" AS description, j.\"channel\" AS marketo_program_channel, COUNT(*) AS row_count, SUM(b.\"folder_value\") AS sum_folder_value FROM raw.marketo_email_template_history b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"description\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, description, marketo_program_channel",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"description\" as description, j.\"channel\" as marketo_program_channel, count(*) as row_count, sum(b.\"folder_value\") as sum_folder_value from raw.marketo_email_template_history b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"description\" is not null and j.\"channel\" is not null group by metric_period, description, marketo_program_channel",
+      "cluster_id": "schemaopt_hard_marketo_cluster_02",
+      "business_tag": "marketo marketo_email_template_history analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_email_template_history",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "description",
+        "marketo_program_channel",
+        "row_count",
+        "sum_folder_value"
+      ],
+      "group_by": [
+        "metric_period",
+        "description",
+        "marketo_program_channel"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"description\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"description\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_folder_value"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_email_template_history analytics variant 1 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c02_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"description\" AS description, COUNT(*) AS row_count, SUM(b.\"folder_value\") AS sum_folder_value FROM raw.marketo_email_template_history b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"description\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, description",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"description\" as description, count(*) as row_count, sum(b.\"folder_value\") as sum_folder_value from raw.marketo_email_template_history b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"description\" is not null and j.\"channel\" is not null group by metric_period, description",
+      "cluster_id": "schemaopt_hard_marketo_cluster_02",
+      "business_tag": "marketo marketo_email_template_history analytics",
+      "frequency_weight": 2.05,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_email_template_history",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "description",
+        "row_count",
+        "sum_folder_value"
+      ],
+      "group_by": [
+        "metric_period",
+        "description"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"description\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"description\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_folder_value"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_email_template_history analytics variant 2 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c02_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"folder_value\") AS sum_folder_value FROM raw.marketo_email_template_history b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"description\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"folder_value\") as sum_folder_value from raw.marketo_email_template_history b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"description\" is not null and j.\"channel\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_02",
+      "business_tag": "marketo marketo_email_template_history analytics",
+      "frequency_weight": 2.2,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_email_template_history",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_folder_value"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"description\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"description\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_folder_value"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_email_template_history analytics variant 3 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c02_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"description\" AS description, j.\"channel\" AS marketo_program_channel, COUNT(*) AS row_count, SUM(b.\"folder_value\") AS sum_folder_value FROM raw.marketo_email_template_history b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"description\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, description, marketo_program_channel",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"description\" as description, j.\"channel\" as marketo_program_channel, count(*) as row_count, sum(b.\"folder_value\") as sum_folder_value from raw.marketo_email_template_history b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"description\" is not null and j.\"channel\" is not null group by metric_period, description, marketo_program_channel",
+      "cluster_id": "schemaopt_hard_marketo_cluster_02",
+      "business_tag": "marketo marketo_email_template_history analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_email_template_history",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "description",
+        "marketo_program_channel",
+        "row_count",
+        "sum_folder_value"
+      ],
+      "group_by": [
+        "metric_period",
+        "description",
+        "marketo_program_channel"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"description\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"description\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_folder_value"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_email_template_history analytics variant 1 visible 7"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"device\" AS device, j.\"active\" AS marketo_campaign_active, COUNT(*) AS row_count, SUM(b.\"choice_number\") AS sum_choice_number FROM raw.marketo_activity_click_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"device\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, device, marketo_campaign_active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"device\" as device, j.\"active\" as marketo_campaign_active, count(*) as row_count, sum(b.\"choice_number\") as sum_choice_number from raw.marketo_activity_click_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"device\" is not null and j.\"active\" is not null group by metric_period, device, marketo_campaign_active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_03",
+      "business_tag": "marketo marketo_activity_click_email analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_click_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "device",
+        "marketo_campaign_active",
+        "row_count",
+        "sum_choice_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "device",
+        "marketo_campaign_active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"device\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"device\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_choice_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_click_email analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"device\" AS device, COUNT(*) AS row_count, SUM(b.\"choice_number\") AS sum_choice_number FROM raw.marketo_activity_click_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"device\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, device",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"device\" as device, count(*) as row_count, sum(b.\"choice_number\") as sum_choice_number from raw.marketo_activity_click_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"device\" is not null and j.\"active\" is not null group by metric_period, device",
+      "cluster_id": "schemaopt_hard_marketo_cluster_03",
+      "business_tag": "marketo marketo_activity_click_email analytics",
+      "frequency_weight": 2.5,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_activity_click_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "device",
+        "row_count",
+        "sum_choice_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "device"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"device\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"device\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_choice_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_click_email analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c03_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"choice_number\") AS sum_choice_number FROM raw.marketo_activity_click_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"device\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"choice_number\") as sum_choice_number from raw.marketo_activity_click_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"device\" is not null and j.\"active\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_03",
+      "business_tag": "marketo marketo_activity_click_email analytics",
+      "frequency_weight": 2.65,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_click_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_choice_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"device\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"device\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_choice_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_activity_click_email analytics variant 3 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c03_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"device\" AS device, j.\"active\" AS marketo_campaign_active, COUNT(*) AS row_count, SUM(b.\"choice_number\") AS sum_choice_number FROM raw.marketo_activity_click_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"device\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, device, marketo_campaign_active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"device\" as device, j.\"active\" as marketo_campaign_active, count(*) as row_count, sum(b.\"choice_number\") as sum_choice_number from raw.marketo_activity_click_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"device\" is not null and j.\"active\" is not null group by metric_period, device, marketo_campaign_active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_03",
+      "business_tag": "marketo marketo_activity_click_email analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_activity_click_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "device",
+        "marketo_campaign_active",
+        "row_count",
+        "sum_choice_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "device",
+        "marketo_campaign_active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"device\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"device\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_choice_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_click_email analytics variant 1 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c03_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"device\" AS device, COUNT(*) AS row_count, SUM(b.\"choice_number\") AS sum_choice_number FROM raw.marketo_activity_click_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"device\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, device",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"device\" as device, count(*) as row_count, sum(b.\"choice_number\") as sum_choice_number from raw.marketo_activity_click_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"device\" is not null and j.\"active\" is not null group by metric_period, device",
+      "cluster_id": "schemaopt_hard_marketo_cluster_03",
+      "business_tag": "marketo marketo_activity_click_email analytics",
+      "frequency_weight": 2.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_click_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "device",
+        "row_count",
+        "sum_choice_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "device"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"device\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"device\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_choice_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_click_email analytics variant 2 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c03_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"choice_number\") AS sum_choice_number FROM raw.marketo_activity_click_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"device\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"choice_number\") as sum_choice_number from raw.marketo_activity_click_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"device\" is not null and j.\"active\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_03",
+      "business_tag": "marketo marketo_activity_click_email analytics",
+      "frequency_weight": 2.65,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_activity_click_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_choice_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"device\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"device\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_choice_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_activity_click_email analytics variant 3 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c03_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"device\" AS device, j.\"active\" AS marketo_campaign_active, COUNT(*) AS row_count, SUM(b.\"choice_number\") AS sum_choice_number FROM raw.marketo_activity_click_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"device\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, device, marketo_campaign_active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"device\" as device, j.\"active\" as marketo_campaign_active, count(*) as row_count, sum(b.\"choice_number\") as sum_choice_number from raw.marketo_activity_click_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"device\" is not null and j.\"active\" is not null group by metric_period, device, marketo_campaign_active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_03",
+      "business_tag": "marketo marketo_activity_click_email analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_click_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "device",
+        "marketo_campaign_active",
+        "row_count",
+        "sum_choice_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "device",
+        "marketo_campaign_active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"device\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"device\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_choice_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_click_email analytics variant 1 visible 7"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c04_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"client_ip_address\" AS client_ip_address, j.\"active\" AS marketo_campaign_active, COUNT(*) AS row_count FROM raw.marketo_activity_unsubscribe_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"client_ip_address\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, client_ip_address, marketo_campaign_active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"client_ip_address\" as client_ip_address, j.\"active\" as marketo_campaign_active, count(*) as row_count from raw.marketo_activity_unsubscribe_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"client_ip_address\" is not null and j.\"active\" is not null group by metric_period, client_ip_address, marketo_campaign_active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_04",
+      "business_tag": "marketo marketo_activity_unsubscribe_email analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_unsubscribe_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "client_ip_address",
+        "marketo_campaign_active",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "client_ip_address",
+        "marketo_campaign_active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"client_ip_address\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"client_ip_address\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_unsubscribe_email analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c04_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"client_ip_address\" AS client_ip_address, COUNT(*) AS row_count FROM raw.marketo_activity_unsubscribe_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"client_ip_address\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, client_ip_address",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"client_ip_address\" as client_ip_address, count(*) as row_count from raw.marketo_activity_unsubscribe_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"client_ip_address\" is not null and j.\"active\" is not null group by metric_period, client_ip_address",
+      "cluster_id": "schemaopt_hard_marketo_cluster_04",
+      "business_tag": "marketo marketo_activity_unsubscribe_email analytics",
+      "frequency_weight": 2.95,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_activity_unsubscribe_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "client_ip_address",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "client_ip_address"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"client_ip_address\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"client_ip_address\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_unsubscribe_email analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c04_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.marketo_activity_unsubscribe_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"client_ip_address\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, count(*) as row_count from raw.marketo_activity_unsubscribe_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"client_ip_address\" is not null and j.\"active\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_04",
+      "business_tag": "marketo marketo_activity_unsubscribe_email analytics",
+      "frequency_weight": 3.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_unsubscribe_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"client_ip_address\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"client_ip_address\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_activity_unsubscribe_email analytics variant 3 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c04_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"client_ip_address\" AS client_ip_address, j.\"active\" AS marketo_campaign_active, COUNT(*) AS row_count FROM raw.marketo_activity_unsubscribe_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"client_ip_address\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, client_ip_address, marketo_campaign_active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"client_ip_address\" as client_ip_address, j.\"active\" as marketo_campaign_active, count(*) as row_count from raw.marketo_activity_unsubscribe_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"client_ip_address\" is not null and j.\"active\" is not null group by metric_period, client_ip_address, marketo_campaign_active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_04",
+      "business_tag": "marketo marketo_activity_unsubscribe_email analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_activity_unsubscribe_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "client_ip_address",
+        "marketo_campaign_active",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "client_ip_address",
+        "marketo_campaign_active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"client_ip_address\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"client_ip_address\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_unsubscribe_email analytics variant 1 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c04_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"client_ip_address\" AS client_ip_address, COUNT(*) AS row_count FROM raw.marketo_activity_unsubscribe_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"client_ip_address\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, client_ip_address",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"client_ip_address\" as client_ip_address, count(*) as row_count from raw.marketo_activity_unsubscribe_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"client_ip_address\" is not null and j.\"active\" is not null group by metric_period, client_ip_address",
+      "cluster_id": "schemaopt_hard_marketo_cluster_04",
+      "business_tag": "marketo marketo_activity_unsubscribe_email analytics",
+      "frequency_weight": 2.95,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_unsubscribe_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "client_ip_address",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "client_ip_address"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"client_ip_address\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"client_ip_address\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_unsubscribe_email analytics variant 2 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c04_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.marketo_activity_unsubscribe_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"client_ip_address\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, count(*) as row_count from raw.marketo_activity_unsubscribe_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"client_ip_address\" is not null and j.\"active\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_04",
+      "business_tag": "marketo marketo_activity_unsubscribe_email analytics",
+      "frequency_weight": 3.1,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_activity_unsubscribe_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"client_ip_address\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"client_ip_address\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_activity_unsubscribe_email analytics variant 3 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c04_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"client_ip_address\" AS client_ip_address, j.\"active\" AS marketo_campaign_active, COUNT(*) AS row_count FROM raw.marketo_activity_unsubscribe_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"client_ip_address\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, client_ip_address, marketo_campaign_active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"client_ip_address\" as client_ip_address, j.\"active\" as marketo_campaign_active, count(*) as row_count from raw.marketo_activity_unsubscribe_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"client_ip_address\" is not null and j.\"active\" is not null group by metric_period, client_ip_address, marketo_campaign_active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_04",
+      "business_tag": "marketo marketo_activity_unsubscribe_email analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_unsubscribe_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "client_ip_address",
+        "marketo_campaign_active",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "client_ip_address",
+        "marketo_campaign_active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"client_ip_address\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"client_ip_address\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_unsubscribe_email analytics variant 1 visible 7"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c05_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"details\" AS details, j.\"active\" AS marketo_campaign_active, COUNT(*) AS row_count, SUM(b.\"category\") AS sum_category FROM raw.marketo_activity_email_bounced b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"details\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, details, marketo_campaign_active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"details\" as details, j.\"active\" as marketo_campaign_active, count(*) as row_count, sum(b.\"category\") as sum_category from raw.marketo_activity_email_bounced b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"details\" is not null and j.\"active\" is not null group by metric_period, details, marketo_campaign_active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_05",
+      "business_tag": "marketo marketo_activity_email_bounced analytics",
+      "frequency_weight": 3.25,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_email_bounced",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "details",
+        "marketo_campaign_active",
+        "row_count",
+        "sum_category"
+      ],
+      "group_by": [
+        "metric_period",
+        "details",
+        "marketo_campaign_active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"details\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"details\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_category"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_email_bounced analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c05_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"details\" AS details, COUNT(*) AS row_count, SUM(b.\"category\") AS sum_category FROM raw.marketo_activity_email_bounced b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"details\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, details",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"details\" as details, count(*) as row_count, sum(b.\"category\") as sum_category from raw.marketo_activity_email_bounced b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"details\" is not null and j.\"active\" is not null group by metric_period, details",
+      "cluster_id": "schemaopt_hard_marketo_cluster_05",
+      "business_tag": "marketo marketo_activity_email_bounced analytics",
+      "frequency_weight": 3.4,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_activity_email_bounced",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "details",
+        "row_count",
+        "sum_category"
+      ],
+      "group_by": [
+        "metric_period",
+        "details"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"details\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"details\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_category"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_email_bounced analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c05_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"category\") AS sum_category FROM raw.marketo_activity_email_bounced b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"details\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"category\") as sum_category from raw.marketo_activity_email_bounced b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"details\" is not null and j.\"active\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_05",
+      "business_tag": "marketo marketo_activity_email_bounced analytics",
+      "frequency_weight": 3.55,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_email_bounced",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_category"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"details\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"details\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_category"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_activity_email_bounced analytics variant 3 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c05_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"details\" AS details, j.\"active\" AS marketo_campaign_active, COUNT(*) AS row_count, SUM(b.\"category\") AS sum_category FROM raw.marketo_activity_email_bounced b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"details\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, details, marketo_campaign_active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"details\" as details, j.\"active\" as marketo_campaign_active, count(*) as row_count, sum(b.\"category\") as sum_category from raw.marketo_activity_email_bounced b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"details\" is not null and j.\"active\" is not null group by metric_period, details, marketo_campaign_active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_05",
+      "business_tag": "marketo marketo_activity_email_bounced analytics",
+      "frequency_weight": 3.25,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_activity_email_bounced",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "details",
+        "marketo_campaign_active",
+        "row_count",
+        "sum_category"
+      ],
+      "group_by": [
+        "metric_period",
+        "details",
+        "marketo_campaign_active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"details\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"details\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_category"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_email_bounced analytics variant 1 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c05_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"details\" AS details, COUNT(*) AS row_count, SUM(b.\"category\") AS sum_category FROM raw.marketo_activity_email_bounced b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"details\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, details",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"details\" as details, count(*) as row_count, sum(b.\"category\") as sum_category from raw.marketo_activity_email_bounced b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"details\" is not null and j.\"active\" is not null group by metric_period, details",
+      "cluster_id": "schemaopt_hard_marketo_cluster_05",
+      "business_tag": "marketo marketo_activity_email_bounced analytics",
+      "frequency_weight": 3.4,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_email_bounced",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "details",
+        "row_count",
+        "sum_category"
+      ],
+      "group_by": [
+        "metric_period",
+        "details"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"details\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"details\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_category"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_email_bounced analytics variant 2 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c05_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"category\") AS sum_category FROM raw.marketo_activity_email_bounced b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"details\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"category\") as sum_category from raw.marketo_activity_email_bounced b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"details\" is not null and j.\"active\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_05",
+      "business_tag": "marketo marketo_activity_email_bounced analytics",
+      "frequency_weight": 3.55,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.marketo_activity_email_bounced",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_category"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"details\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"details\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_category"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_activity_email_bounced analytics variant 3 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_vq_c05_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"details\" AS details, j.\"active\" AS marketo_campaign_active, COUNT(*) AS row_count, SUM(b.\"category\") AS sum_category FROM raw.marketo_activity_email_bounced b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"details\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, details, marketo_campaign_active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"details\" as details, j.\"active\" as marketo_campaign_active, count(*) as row_count, sum(b.\"category\") as sum_category from raw.marketo_activity_email_bounced b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"details\" is not null and j.\"active\" is not null group by metric_period, details, marketo_campaign_active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_05",
+      "business_tag": "marketo marketo_activity_email_bounced analytics",
+      "frequency_weight": 3.25,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_email_bounced",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "details",
+        "marketo_campaign_active",
+        "row_count",
+        "sum_category"
+      ],
+      "group_by": [
+        "metric_period",
+        "details",
+        "marketo_campaign_active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"details\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"details\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_category"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_email_bounced analytics variant 1 visible 7"
+    }
+  ],
+  "holdout_queries": [
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"active\" AS active, COUNT(*) AS row_count, SUM(b.\"max_members\") AS sum_max_members FROM raw.marketo_campaign b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"active\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"active\" as active, count(*) as row_count, sum(b.\"max_members\") as sum_max_members from raw.marketo_campaign b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"active\" is not null and j.\"channel\" is not null group by metric_period, active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_01",
+      "business_tag": "marketo marketo_campaign analytics",
+      "frequency_weight": 1.1,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.marketo_campaign",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "active",
+        "row_count",
+        "sum_max_members"
+      ],
+      "group_by": [
+        "metric_period",
+        "active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"active\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"active\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_max_members"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_campaign analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"max_members\") AS sum_max_members FROM raw.marketo_campaign b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"active\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"max_members\") as sum_max_members from raw.marketo_campaign b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"active\" is not null and j.\"channel\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_01",
+      "business_tag": "marketo marketo_campaign analytics",
+      "frequency_weight": 1.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_campaign",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_max_members"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"active\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"active\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_max_members"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_campaign analytics variant 3 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c01_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"active\" AS active, j.\"channel\" AS marketo_program_channel, COUNT(*) AS row_count, SUM(b.\"max_members\") AS sum_max_members FROM raw.marketo_campaign b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"active\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, active, marketo_program_channel",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"active\" as active, j.\"channel\" as marketo_program_channel, count(*) as row_count, sum(b.\"max_members\") as sum_max_members from raw.marketo_campaign b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"active\" is not null and j.\"channel\" is not null group by metric_period, active, marketo_program_channel",
+      "cluster_id": "schemaopt_hard_marketo_cluster_01",
+      "business_tag": "marketo marketo_campaign analytics",
+      "frequency_weight": 1.1,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.marketo_campaign",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "active",
+        "marketo_program_channel",
+        "row_count",
+        "sum_max_members"
+      ],
+      "group_by": [
+        "metric_period",
+        "active",
+        "marketo_program_channel"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"active\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"active\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_max_members"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_campaign analytics variant 1 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c01_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"active\" AS active, COUNT(*) AS row_count, SUM(b.\"max_members\") AS sum_max_members FROM raw.marketo_campaign b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"active\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"active\" as active, count(*) as row_count, sum(b.\"max_members\") as sum_max_members from raw.marketo_campaign b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"active\" is not null and j.\"channel\" is not null group by metric_period, active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_01",
+      "business_tag": "marketo marketo_campaign analytics",
+      "frequency_weight": 1.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_campaign",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "active",
+        "row_count",
+        "sum_max_members"
+      ],
+      "group_by": [
+        "metric_period",
+        "active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"active\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"active\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_max_members"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_campaign analytics variant 2 holdout 4"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"description\" AS description, COUNT(*) AS row_count, SUM(b.\"folder_value\") AS sum_folder_value FROM raw.marketo_email_template_history b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"description\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, description",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"description\" as description, count(*) as row_count, sum(b.\"folder_value\") as sum_folder_value from raw.marketo_email_template_history b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"description\" is not null and j.\"channel\" is not null group by metric_period, description",
+      "cluster_id": "schemaopt_hard_marketo_cluster_02",
+      "business_tag": "marketo marketo_email_template_history analytics",
+      "frequency_weight": 1.4,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.marketo_email_template_history",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "description",
+        "row_count",
+        "sum_folder_value"
+      ],
+      "group_by": [
+        "metric_period",
+        "description"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"description\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"description\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_folder_value"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_email_template_history analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"folder_value\") AS sum_folder_value FROM raw.marketo_email_template_history b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"description\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"folder_value\") as sum_folder_value from raw.marketo_email_template_history b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"description\" is not null and j.\"channel\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_02",
+      "business_tag": "marketo marketo_email_template_history analytics",
+      "frequency_weight": 1.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_email_template_history",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_folder_value"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"description\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"description\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_folder_value"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_email_template_history analytics variant 3 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c02_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"description\" AS description, j.\"channel\" AS marketo_program_channel, COUNT(*) AS row_count, SUM(b.\"folder_value\") AS sum_folder_value FROM raw.marketo_email_template_history b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"description\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, description, marketo_program_channel",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"description\" as description, j.\"channel\" as marketo_program_channel, count(*) as row_count, sum(b.\"folder_value\") as sum_folder_value from raw.marketo_email_template_history b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"description\" is not null and j.\"channel\" is not null group by metric_period, description, marketo_program_channel",
+      "cluster_id": "schemaopt_hard_marketo_cluster_02",
+      "business_tag": "marketo marketo_email_template_history analytics",
+      "frequency_weight": 1.4,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.marketo_email_template_history",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "description",
+        "marketo_program_channel",
+        "row_count",
+        "sum_folder_value"
+      ],
+      "group_by": [
+        "metric_period",
+        "description",
+        "marketo_program_channel"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"description\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"description\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_folder_value"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_email_template_history analytics variant 1 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c02_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"description\" AS description, COUNT(*) AS row_count, SUM(b.\"folder_value\") AS sum_folder_value FROM raw.marketo_email_template_history b JOIN raw.marketo_program j ON b.\"program_id\" = j.id WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"description\" IS NOT NULL AND j.\"channel\" IS NOT NULL GROUP BY metric_period, description",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"description\" as description, count(*) as row_count, sum(b.\"folder_value\") as sum_folder_value from raw.marketo_email_template_history b join raw.marketo_program j on b.\"program_id\" = j.id where try_cast(b.\"created_at\" as timestamp) is not null and b.\"description\" is not null and j.\"channel\" is not null group by metric_period, description",
+      "cluster_id": "schemaopt_hard_marketo_cluster_02",
+      "business_tag": "marketo marketo_email_template_history analytics",
+      "frequency_weight": 1.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_email_template_history",
+        "raw.marketo_program"
+      ],
+      "columns": [
+        "metric_period",
+        "description",
+        "row_count",
+        "sum_folder_value"
+      ],
+      "group_by": [
+        "metric_period",
+        "description"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"description\"_is_not_null",
+        "j.\"channel\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"description\" IS NOT NULL",
+        "j.\"channel\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_folder_value"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_email_template_history analytics variant 2 holdout 4"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"device\" AS device, COUNT(*) AS row_count, SUM(b.\"choice_number\") AS sum_choice_number FROM raw.marketo_activity_click_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"device\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, device",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"device\" as device, count(*) as row_count, sum(b.\"choice_number\") as sum_choice_number from raw.marketo_activity_click_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"device\" is not null and j.\"active\" is not null group by metric_period, device",
+      "cluster_id": "schemaopt_hard_marketo_cluster_03",
+      "business_tag": "marketo marketo_activity_click_email analytics",
+      "frequency_weight": 1.7,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.marketo_activity_click_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "device",
+        "row_count",
+        "sum_choice_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "device"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"device\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"device\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_choice_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_click_email analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"choice_number\") AS sum_choice_number FROM raw.marketo_activity_click_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"device\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"choice_number\") as sum_choice_number from raw.marketo_activity_click_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"device\" is not null and j.\"active\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_03",
+      "business_tag": "marketo marketo_activity_click_email analytics",
+      "frequency_weight": 1.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_click_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_choice_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"device\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"device\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_choice_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_activity_click_email analytics variant 3 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c03_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"device\" AS device, j.\"active\" AS marketo_campaign_active, COUNT(*) AS row_count, SUM(b.\"choice_number\") AS sum_choice_number FROM raw.marketo_activity_click_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"device\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, device, marketo_campaign_active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"device\" as device, j.\"active\" as marketo_campaign_active, count(*) as row_count, sum(b.\"choice_number\") as sum_choice_number from raw.marketo_activity_click_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"device\" is not null and j.\"active\" is not null group by metric_period, device, marketo_campaign_active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_03",
+      "business_tag": "marketo marketo_activity_click_email analytics",
+      "frequency_weight": 1.7,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.marketo_activity_click_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "device",
+        "marketo_campaign_active",
+        "row_count",
+        "sum_choice_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "device",
+        "marketo_campaign_active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"device\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"device\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_choice_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_click_email analytics variant 1 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c03_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"device\" AS device, COUNT(*) AS row_count, SUM(b.\"choice_number\") AS sum_choice_number FROM raw.marketo_activity_click_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"device\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, device",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"device\" as device, count(*) as row_count, sum(b.\"choice_number\") as sum_choice_number from raw.marketo_activity_click_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"device\" is not null and j.\"active\" is not null group by metric_period, device",
+      "cluster_id": "schemaopt_hard_marketo_cluster_03",
+      "business_tag": "marketo marketo_activity_click_email analytics",
+      "frequency_weight": 1.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_click_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "device",
+        "row_count",
+        "sum_choice_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "device"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"device\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"device\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_choice_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_click_email analytics variant 2 holdout 4"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c04_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"client_ip_address\" AS client_ip_address, COUNT(*) AS row_count FROM raw.marketo_activity_unsubscribe_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"client_ip_address\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, client_ip_address",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"client_ip_address\" as client_ip_address, count(*) as row_count from raw.marketo_activity_unsubscribe_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"client_ip_address\" is not null and j.\"active\" is not null group by metric_period, client_ip_address",
+      "cluster_id": "schemaopt_hard_marketo_cluster_04",
+      "business_tag": "marketo marketo_activity_unsubscribe_email analytics",
+      "frequency_weight": 2.0,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.marketo_activity_unsubscribe_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "client_ip_address",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "client_ip_address"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"client_ip_address\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"client_ip_address\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_unsubscribe_email analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c04_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.marketo_activity_unsubscribe_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"client_ip_address\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, count(*) as row_count from raw.marketo_activity_unsubscribe_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"client_ip_address\" is not null and j.\"active\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_04",
+      "business_tag": "marketo marketo_activity_unsubscribe_email analytics",
+      "frequency_weight": 2.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_unsubscribe_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"client_ip_address\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"client_ip_address\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_activity_unsubscribe_email analytics variant 3 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c04_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"client_ip_address\" AS client_ip_address, j.\"active\" AS marketo_campaign_active, COUNT(*) AS row_count FROM raw.marketo_activity_unsubscribe_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"client_ip_address\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, client_ip_address, marketo_campaign_active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"client_ip_address\" as client_ip_address, j.\"active\" as marketo_campaign_active, count(*) as row_count from raw.marketo_activity_unsubscribe_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"client_ip_address\" is not null and j.\"active\" is not null group by metric_period, client_ip_address, marketo_campaign_active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_04",
+      "business_tag": "marketo marketo_activity_unsubscribe_email analytics",
+      "frequency_weight": 2.0,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.marketo_activity_unsubscribe_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "client_ip_address",
+        "marketo_campaign_active",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "client_ip_address",
+        "marketo_campaign_active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"client_ip_address\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"client_ip_address\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_unsubscribe_email analytics variant 1 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c04_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"client_ip_address\" AS client_ip_address, COUNT(*) AS row_count FROM raw.marketo_activity_unsubscribe_email b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"client_ip_address\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, client_ip_address",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"client_ip_address\" as client_ip_address, count(*) as row_count from raw.marketo_activity_unsubscribe_email b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"client_ip_address\" is not null and j.\"active\" is not null group by metric_period, client_ip_address",
+      "cluster_id": "schemaopt_hard_marketo_cluster_04",
+      "business_tag": "marketo marketo_activity_unsubscribe_email analytics",
+      "frequency_weight": 2.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_unsubscribe_email",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "client_ip_address",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "client_ip_address"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"client_ip_address\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"client_ip_address\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_unsubscribe_email analytics variant 2 holdout 4"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c05_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"details\" AS details, COUNT(*) AS row_count, SUM(b.\"category\") AS sum_category FROM raw.marketo_activity_email_bounced b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"details\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, details",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"details\" as details, count(*) as row_count, sum(b.\"category\") as sum_category from raw.marketo_activity_email_bounced b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"details\" is not null and j.\"active\" is not null group by metric_period, details",
+      "cluster_id": "schemaopt_hard_marketo_cluster_05",
+      "business_tag": "marketo marketo_activity_email_bounced analytics",
+      "frequency_weight": 2.3,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.marketo_activity_email_bounced",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "details",
+        "row_count",
+        "sum_category"
+      ],
+      "group_by": [
+        "metric_period",
+        "details"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"details\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"details\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_category"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_email_bounced analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c05_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"category\") AS sum_category FROM raw.marketo_activity_email_bounced b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"details\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"category\") as sum_category from raw.marketo_activity_email_bounced b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"details\" is not null and j.\"active\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_marketo_cluster_05",
+      "business_tag": "marketo marketo_activity_email_bounced analytics",
+      "frequency_weight": 2.4,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_email_bounced",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_category"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"details\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"details\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_category"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "marketo marketo_activity_email_bounced analytics variant 3 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c05_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"details\" AS details, j.\"active\" AS marketo_campaign_active, COUNT(*) AS row_count, SUM(b.\"category\") AS sum_category FROM raw.marketo_activity_email_bounced b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"details\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, details, marketo_campaign_active",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"details\" as details, j.\"active\" as marketo_campaign_active, count(*) as row_count, sum(b.\"category\") as sum_category from raw.marketo_activity_email_bounced b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"details\" is not null and j.\"active\" is not null group by metric_period, details, marketo_campaign_active",
+      "cluster_id": "schemaopt_hard_marketo_cluster_05",
+      "business_tag": "marketo marketo_activity_email_bounced analytics",
+      "frequency_weight": 2.3,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.marketo_activity_email_bounced",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "details",
+        "marketo_campaign_active",
+        "row_count",
+        "sum_category"
+      ],
+      "group_by": [
+        "metric_period",
+        "details",
+        "marketo_campaign_active"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"details\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"details\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_category"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_email_bounced analytics variant 1 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_marketo_hq_c05_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"activity_date\" AS TIMESTAMP)) AS metric_period, b.\"details\" AS details, COUNT(*) AS row_count, SUM(b.\"category\") AS sum_category FROM raw.marketo_activity_email_bounced b JOIN raw.marketo_campaign j ON b.\"campaign_id\" = j.id WHERE try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL AND b.\"details\" IS NOT NULL AND j.\"active\" IS NOT NULL GROUP BY metric_period, details",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"activity_date\" as timestamp)) as metric_period, b.\"details\" as details, count(*) as row_count, sum(b.\"category\") as sum_category from raw.marketo_activity_email_bounced b join raw.marketo_campaign j on b.\"campaign_id\" = j.id where try_cast(b.\"activity_date\" as timestamp) is not null and b.\"details\" is not null and j.\"active\" is not null group by metric_period, details",
+      "cluster_id": "schemaopt_hard_marketo_cluster_05",
+      "business_tag": "marketo marketo_activity_email_bounced analytics",
+      "frequency_weight": 2.4,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.marketo_activity_email_bounced",
+        "raw.marketo_campaign"
+      ],
+      "columns": [
+        "metric_period",
+        "details",
+        "row_count",
+        "sum_category"
+      ],
+      "group_by": [
+        "metric_period",
+        "details"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"activity_date\"_as_timestamp)_is_not_null",
+        "b.\"details\"_is_not_null",
+        "j.\"active\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"activity_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"details\" IS NOT NULL",
+        "j.\"active\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_category"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "marketo marketo_activity_email_bounced analytics variant 2 holdout 4"
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": "schemaopt_hard_marketo_cluster_05",
+      "label": "marketo_activity_email_bounced workload",
+      "business_label": "marketo marketo_activity_email_bounced analytics",
+      "query_ids": [
+        "schemaopt_hard_marketo_vq_c05_01",
+        "schemaopt_hard_marketo_vq_c05_02",
+        "schemaopt_hard_marketo_vq_c05_03",
+        "schemaopt_hard_marketo_vq_c05_04",
+        "schemaopt_hard_marketo_vq_c05_05",
+        "schemaopt_hard_marketo_vq_c05_06",
+        "schemaopt_hard_marketo_vq_c05_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 23.65,
+      "total_weighted_baseline_cost": 24.67,
+      "top_tables": [
+        "raw.marketo_activity_email_bounced",
+        "raw.marketo_campaign"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "details",
+        "marketo_campaign_active"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_category"
+      ],
+      "hotspot_rank": 1,
+      "preferred_object_kind": "agg_matview"
+    },
+    {
+      "cluster_id": "schemaopt_hard_marketo_cluster_04",
+      "label": "marketo_activity_unsubscribe_email workload",
+      "business_label": "marketo marketo_activity_unsubscribe_email analytics",
+      "query_ids": [
+        "schemaopt_hard_marketo_vq_c04_01",
+        "schemaopt_hard_marketo_vq_c04_02",
+        "schemaopt_hard_marketo_vq_c04_03",
+        "schemaopt_hard_marketo_vq_c04_04",
+        "schemaopt_hard_marketo_vq_c04_05",
+        "schemaopt_hard_marketo_vq_c04_06",
+        "schemaopt_hard_marketo_vq_c04_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 20.5,
+      "total_weighted_baseline_cost": 21.385,
+      "top_tables": [
+        "raw.marketo_activity_unsubscribe_email",
+        "raw.marketo_campaign"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "client_ip_address",
+        "marketo_campaign_active"
+      ],
+      "representative_measures": [
+        "row_count"
+      ],
+      "hotspot_rank": 2,
+      "preferred_object_kind": "join_matview"
+    },
+    {
+      "cluster_id": "schemaopt_hard_marketo_cluster_03",
+      "label": "marketo_activity_click_email workload",
+      "business_label": "marketo marketo_activity_click_email analytics",
+      "query_ids": [
+        "schemaopt_hard_marketo_vq_c03_01",
+        "schemaopt_hard_marketo_vq_c03_02",
+        "schemaopt_hard_marketo_vq_c03_03",
+        "schemaopt_hard_marketo_vq_c03_04",
+        "schemaopt_hard_marketo_vq_c03_05",
+        "schemaopt_hard_marketo_vq_c03_06",
+        "schemaopt_hard_marketo_vq_c03_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 17.35,
+      "total_weighted_baseline_cost": 18.1,
+      "top_tables": [
+        "raw.marketo_activity_click_email",
+        "raw.marketo_campaign"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "device",
+        "marketo_campaign_active"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_choice_number"
+      ],
+      "hotspot_rank": 3,
+      "preferred_object_kind": "agg_matview"
+    },
+    {
+      "cluster_id": "schemaopt_hard_marketo_cluster_02",
+      "label": "marketo_email_template_history workload",
+      "business_label": "marketo marketo_email_template_history analytics",
+      "query_ids": [
+        "schemaopt_hard_marketo_vq_c02_01",
+        "schemaopt_hard_marketo_vq_c02_02",
+        "schemaopt_hard_marketo_vq_c02_03",
+        "schemaopt_hard_marketo_vq_c02_04",
+        "schemaopt_hard_marketo_vq_c02_05",
+        "schemaopt_hard_marketo_vq_c02_06",
+        "schemaopt_hard_marketo_vq_c02_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 14.2,
+      "total_weighted_baseline_cost": 14.815,
+      "top_tables": [
+        "raw.marketo_email_template_history",
+        "raw.marketo_program"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "description",
+        "marketo_program_channel"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_folder_value"
+      ],
+      "hotspot_rank": 4,
+      "preferred_object_kind": "denorm_table"
+    },
+    {
+      "cluster_id": "schemaopt_hard_marketo_cluster_01",
+      "label": "marketo_campaign workload",
+      "business_label": "marketo marketo_campaign analytics",
+      "query_ids": [
+        "schemaopt_hard_marketo_vq_c01_01",
+        "schemaopt_hard_marketo_vq_c01_02",
+        "schemaopt_hard_marketo_vq_c01_03",
+        "schemaopt_hard_marketo_vq_c01_04",
+        "schemaopt_hard_marketo_vq_c01_05",
+        "schemaopt_hard_marketo_vq_c01_06",
+        "schemaopt_hard_marketo_vq_c01_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 11.05,
+      "total_weighted_baseline_cost": 11.53,
+      "top_tables": [
+        "raw.marketo_campaign",
+        "raw.marketo_program"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "join",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "active",
+        "marketo_program_channel"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_max_members"
+      ],
+      "hotspot_rank": 5,
+      "preferred_object_kind": "agg_matview"
+    }
+  ],
+  "budgets": {
+    "max_new_derived_objects": 5,
+    "max_storage_bytes": 40000000,
+    "max_refresh_runtime_ms": 25000.0,
+    "max_steps": 30
+  },
+  "allowed_object_kinds": [
+    "join_matview",
+    "agg_matview",
+    "filtered_projection",
+    "denorm_table"
+  ],
+  "engine_capabilities": {
+    "engine": "duckdb",
+    "uses_real_duckdb_database": true,
+    "uses_real_query_execution": true,
+    "uses_explain_plan_metrics": true,
+    "rewrite_model": "explicit_rewritten_sql"
+  }
+}

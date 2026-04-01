@@ -1,0 +1,3270 @@
+{
+  "task_id": "schemaopt_medium_app_reporting",
+  "difficulty": "medium",
+  "domain": "app_reporting",
+  "objective": "Optimize the app reporting workload over the real DuckDB source database by materializing derived objects that reduce measured execution cost while preserving exact query results.",
+  "seed_source": "datasets/dacomp-de/dacomp-de-impl-007",
+  "dataset_dir": "datasets/dacomp-de/dacomp-de-impl-007",
+  "database_path": "datasets/dacomp-de/dacomp-de-impl-007/app_reporting_start.duckdb",
+  "tables": [
+    {
+      "name": "raw.app_crash_daily",
+      "columns": [
+        {
+          "name": "app_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_version",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "platform_version",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "crashes",
+          "type": "BIGINT"
+        },
+        {
+          "name": "unique_devices",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.app_session_standard_daily",
+      "columns": [
+        {
+          "name": "app_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_version",
+          "type": "BIGINT"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "platform_version",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "page_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_download_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "territory",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "sessions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "session_duration",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_devices",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.app_store_app",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "primary_locale",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "content_rights_declaration",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "was_made_for_kids",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "subscription_status_url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscription_status_url_version",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscription_status_url_for_sandbox",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscription_status_url_version_for_sandbox",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.app_store_discovery_and_engagement_standard_daily",
+      "columns": [
+        {
+          "name": "app_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "event",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "page_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "engagement_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "platform_version",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "territory",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "counts",
+          "type": "BIGINT"
+        },
+        {
+          "name": "unique_counts",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.app_store_download_standard_daily",
+      "columns": [
+        {
+          "name": "app_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "download_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_version",
+          "type": "BIGINT"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "platform_version",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "page_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "pre_order",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "territory",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "counts",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.app_store_installation_and_deletion_standard_daily",
+      "columns": [
+        {
+          "name": "app_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "event",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "download_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_version",
+          "type": "BIGINT"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "platform_version",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "page_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_download_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "territory",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "counts",
+          "type": "BIGINT"
+        },
+        {
+          "name": "unique_devices",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.earnings",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "transaction_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "transaction_time",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "tax_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "transaction_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "refund_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "product_title",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "product_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "product_type",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "sku_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "hardware",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "buyer_country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "buyer_state",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "buyer_postal_code",
+          "type": "BIGINT"
+        },
+        {
+          "name": "buyer_currency",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "amount_buyer_currency_",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "currency_conversion_rate",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "merchant_currency",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "amount_merchant_currency_",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "base_plan_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "offer_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.financial_stats_subscriptions_country",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_apple_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscription_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "active_subscriptions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_free_trial_introductory_offer_subscriptions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "revenue",
+          "type": "DOUBLE"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.sales_subscription_event_summary",
+      "columns": [
+        {
+          "name": "vendor_number",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "event_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "event",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_apple_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscription_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscription_apple_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "subscription_group_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "subscription_duration",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscription_offer_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscription_offer_duration",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "marketing_opt_in",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "marketing_opt_in_duration",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "preserved_pricing",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "proceeds_reason",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "promotional_offer_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "promotional_offer_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "consecutive_paid_periods",
+          "type": "BIGINT"
+        },
+        {
+          "name": "original_start_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "client",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "state",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "previous_subscription_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "previous_subscription_apple_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "days_before_canceling",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "cancellation_reason",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "days_canceled",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "quantity",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "paid_service_days_recovered",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "subscriber_id_vendor",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.sales_subscription_summary",
+      "columns": [
+        {
+          "name": "vendor_number",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "app_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_apple_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscription_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscription_apple_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "subscription_group_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "subscription_duration",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "customer_price",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "customer_currency",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "developer_proceeds",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "proceeds_currency",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "preserved_pricing",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "proceeds_reason",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscription_offer_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "promotional_offer_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "state",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "client",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "active_standard_price_subscriptions",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "active_free_trial_introductory_offer_subscriptions",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "active_pay_up_front_introductory_offer_subscriptions",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "active_pay_as_you_go_introductory_offer_subscriptions",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "free_trial_promotional_offer_subscriptions",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "pay_up_front_promotional_offer_subscriptions",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "pay_as_you_go_promotional_offer_subscriptions",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "marketing_opt_ins",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "billing_retry",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "grace_period",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "free_trial_offer_code_subscriptions",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "pay_up_front_offer_code_subscriptions",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "pay_as_you_go_offer_code_subscriptions",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "subscribers",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_crashes_app_version",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_version_code",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_crashes",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_anrs",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_crashes_os_version",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "android_os_version",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "daily_crashes",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_anrs",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_crashes_overview",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "daily_crashes",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_anrs",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_installs_app_version",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_version_code",
+          "type": "BIGINT"
+        },
+        {
+          "name": "current_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_device_uninstalls",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_device_upgrades",
+          "type": "BIGINT"
+        },
+        {
+          "name": "current_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "total_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_user_uninstalls",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "install_events",
+          "type": "BIGINT"
+        },
+        {
+          "name": "update_events",
+          "type": "BIGINT"
+        },
+        {
+          "name": "uninstall_events",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_installs_country",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "current_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_device_installs",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "daily_device_uninstalls",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "daily_device_upgrades",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "current_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "total_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_user_installs",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "daily_user_uninstalls",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "active_device_installs",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "install_events",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "update_events",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "uninstall_events",
+          "type": "BOOLEAN"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_installs_device",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "current_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_device_uninstalls",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "daily_device_upgrades",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "current_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "total_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_user_uninstalls",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "active_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "install_events",
+          "type": "BIGINT"
+        },
+        {
+          "name": "update_events",
+          "type": "BIGINT"
+        },
+        {
+          "name": "uninstall_events",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_installs_os_version",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "android_os_version",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "current_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_device_uninstalls",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "daily_device_upgrades",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "current_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "total_user_installs",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "daily_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_user_uninstalls",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "install_events",
+          "type": "BIGINT"
+        },
+        {
+          "name": "update_events",
+          "type": "BIGINT"
+        },
+        {
+          "name": "uninstall_events",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_installs_overview",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "current_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_device_uninstalls",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_device_upgrades",
+          "type": "BIGINT"
+        },
+        {
+          "name": "current_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "total_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_user_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_user_uninstalls",
+          "type": "BIGINT"
+        },
+        {
+          "name": "active_device_installs",
+          "type": "BIGINT"
+        },
+        {
+          "name": "install_events",
+          "type": "BIGINT"
+        },
+        {
+          "name": "update_events",
+          "type": "BIGINT"
+        },
+        {
+          "name": "uninstall_events",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_ratings_app_version",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_version_code",
+          "type": "BIGINT"
+        },
+        {
+          "name": "daily_average_rating",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "total_average_rating",
+          "type": "DOUBLE"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_ratings_country",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "daily_average_rating",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "total_average_rating",
+          "type": "DOUBLE"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_ratings_device",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "device",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "daily_average_rating",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "total_average_rating",
+          "type": "DOUBLE"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_ratings_os_version",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "android_os_version",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "daily_average_rating",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "total_average_rating",
+          "type": "DOUBLE"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_ratings_overview",
+      "columns": [
+        {
+          "name": "Unnamed",
+          "type": "0: BIGINT"
+        },
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "daily_average_rating",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "total_average_rating",
+          "type": "DOUBLE"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_store_performance_country",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "country_region",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "store_listing_acquisitions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "store_listing_visitors",
+          "type": "BIGINT"
+        },
+        {
+          "name": "store_listing_conversion_rate",
+          "type": "DOUBLE"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stats_store_performance_traffic_source",
+      "columns": [
+        {
+          "name": "_file",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_line",
+          "type": "BIGINT"
+        },
+        {
+          "name": "_modified",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "package_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "traffic_source",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "search_term",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "utm_source",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "utm_campaign",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "store_listing_acquisitions",
+          "type": "BIGINT"
+        },
+        {
+          "name": "store_listing_visitors",
+          "type": "BIGINT"
+        },
+        {
+          "name": "store_listing_conversion_rate",
+          "type": "DOUBLE"
+        }
+      ],
+      "row_count": 0
+    }
+  ],
+  "visible_queries": [
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"app_name\" AS app_name, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_summary b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"app_name\" IS NOT NULL GROUP BY metric_period, app_name",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"app_name\" as app_name, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_summary b where try_cast(b.\"date\" as timestamp) is not null and b.\"app_name\" is not null group by metric_period, app_name",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_01",
+      "business_tag": "app_reporting sales_subscription_summary analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sales_subscription_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "app_name",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "app_name"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"app_name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"app_name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting sales_subscription_summary analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_summary b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"app_name\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_summary b where try_cast(b.\"date\" as timestamp) is not null and b.\"app_name\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_01",
+      "business_tag": "app_reporting sales_subscription_summary analytics",
+      "frequency_weight": 1.6,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.sales_subscription_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"app_name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"app_name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting sales_subscription_summary analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c01_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"app_name\" AS app_name, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_summary b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"app_name\" IS NOT NULL GROUP BY metric_period, app_name",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"app_name\" as app_name, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_summary b where try_cast(b.\"date\" as timestamp) is not null and b.\"app_name\" is not null group by metric_period, app_name",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_01",
+      "business_tag": "app_reporting sales_subscription_summary analytics",
+      "frequency_weight": 1.75,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sales_subscription_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "app_name",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "app_name"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"app_name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"app_name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting sales_subscription_summary analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c01_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_summary b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"app_name\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_summary b where try_cast(b.\"date\" as timestamp) is not null and b.\"app_name\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_01",
+      "business_tag": "app_reporting sales_subscription_summary analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.sales_subscription_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"app_name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"app_name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting sales_subscription_summary analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c01_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"app_name\" AS app_name, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_summary b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"app_name\" IS NOT NULL GROUP BY metric_period, app_name",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"app_name\" as app_name, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_summary b where try_cast(b.\"date\" as timestamp) is not null and b.\"app_name\" is not null group by metric_period, app_name",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_01",
+      "business_tag": "app_reporting sales_subscription_summary analytics",
+      "frequency_weight": 1.6,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sales_subscription_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "app_name",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "app_name"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"app_name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"app_name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting sales_subscription_summary analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c01_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_summary b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"app_name\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_summary b where try_cast(b.\"date\" as timestamp) is not null and b.\"app_name\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_01",
+      "business_tag": "app_reporting sales_subscription_summary analytics",
+      "frequency_weight": 1.75,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.sales_subscription_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"app_name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"app_name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting sales_subscription_summary analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"event_date\" AS TIMESTAMP)) AS metric_period, b.\"event\" AS event, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_event_summary b WHERE try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL AND b.\"event\" IS NOT NULL GROUP BY metric_period, event",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"event_date\" as timestamp)) as metric_period, b.\"event\" as event, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_event_summary b where try_cast(b.\"event_date\" as timestamp) is not null and b.\"event\" is not null group by metric_period, event",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_02",
+      "business_tag": "app_reporting sales_subscription_event_summary analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sales_subscription_event_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "event",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "event"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"event_date\"_as_timestamp)_is_not_null",
+        "b.\"event\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"event\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting sales_subscription_event_summary analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"event_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_event_summary b WHERE try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL AND b.\"event\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"event_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_event_summary b where try_cast(b.\"event_date\" as timestamp) is not null and b.\"event\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_02",
+      "business_tag": "app_reporting sales_subscription_event_summary analytics",
+      "frequency_weight": 2.05,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.sales_subscription_event_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"event_date\"_as_timestamp)_is_not_null",
+        "b.\"event\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"event\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting sales_subscription_event_summary analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c02_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"event_date\" AS TIMESTAMP)) AS metric_period, b.\"event\" AS event, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_event_summary b WHERE try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL AND b.\"event\" IS NOT NULL GROUP BY metric_period, event",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"event_date\" as timestamp)) as metric_period, b.\"event\" as event, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_event_summary b where try_cast(b.\"event_date\" as timestamp) is not null and b.\"event\" is not null group by metric_period, event",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_02",
+      "business_tag": "app_reporting sales_subscription_event_summary analytics",
+      "frequency_weight": 2.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sales_subscription_event_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "event",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "event"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"event_date\"_as_timestamp)_is_not_null",
+        "b.\"event\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"event\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting sales_subscription_event_summary analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c02_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"event_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_event_summary b WHERE try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL AND b.\"event\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"event_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_event_summary b where try_cast(b.\"event_date\" as timestamp) is not null and b.\"event\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_02",
+      "business_tag": "app_reporting sales_subscription_event_summary analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.sales_subscription_event_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"event_date\"_as_timestamp)_is_not_null",
+        "b.\"event\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"event\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting sales_subscription_event_summary analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c02_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"event_date\" AS TIMESTAMP)) AS metric_period, b.\"event\" AS event, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_event_summary b WHERE try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL AND b.\"event\" IS NOT NULL GROUP BY metric_period, event",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"event_date\" as timestamp)) as metric_period, b.\"event\" as event, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_event_summary b where try_cast(b.\"event_date\" as timestamp) is not null and b.\"event\" is not null group by metric_period, event",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_02",
+      "business_tag": "app_reporting sales_subscription_event_summary analytics",
+      "frequency_weight": 2.05,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sales_subscription_event_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "event",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "event"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"event_date\"_as_timestamp)_is_not_null",
+        "b.\"event\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"event\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting sales_subscription_event_summary analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c02_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"event_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_event_summary b WHERE try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL AND b.\"event\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"event_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_event_summary b where try_cast(b.\"event_date\" as timestamp) is not null and b.\"event\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_02",
+      "business_tag": "app_reporting sales_subscription_event_summary analytics",
+      "frequency_weight": 2.2,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.sales_subscription_event_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"event_date\"_as_timestamp)_is_not_null",
+        "b.\"event\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"event\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting sales_subscription_event_summary analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"transaction_date\" AS TIMESTAMP)) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"transaction_date\" as timestamp)) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where try_cast(b.\"transaction_date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period, _file",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_03",
+      "business_tag": "app_reporting earnings analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.earnings"
+      ],
+      "columns": [
+        "metric_period",
+        "_file",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period",
+        "_file"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"transaction_date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting earnings analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"transaction_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"transaction_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where try_cast(b.\"transaction_date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_03",
+      "business_tag": "app_reporting earnings analytics",
+      "frequency_weight": 2.5,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.earnings"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"transaction_date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting earnings analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c03_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"transaction_date\" AS TIMESTAMP)) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"transaction_date\" as timestamp)) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where try_cast(b.\"transaction_date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period, _file",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_03",
+      "business_tag": "app_reporting earnings analytics",
+      "frequency_weight": 2.65,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.earnings"
+      ],
+      "columns": [
+        "metric_period",
+        "_file",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period",
+        "_file"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"transaction_date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting earnings analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c03_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"transaction_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"transaction_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where try_cast(b.\"transaction_date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_03",
+      "business_tag": "app_reporting earnings analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.earnings"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"transaction_date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting earnings analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c03_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"transaction_date\" AS TIMESTAMP)) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"transaction_date\" as timestamp)) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where try_cast(b.\"transaction_date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period, _file",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_03",
+      "business_tag": "app_reporting earnings analytics",
+      "frequency_weight": 2.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.earnings"
+      ],
+      "columns": [
+        "metric_period",
+        "_file",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period",
+        "_file"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"transaction_date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting earnings analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c03_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"transaction_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"transaction_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where try_cast(b.\"transaction_date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_03",
+      "business_tag": "app_reporting earnings analytics",
+      "frequency_weight": 2.65,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.earnings"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"transaction_date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting earnings analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c04_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where try_cast(b.\"date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period, _file",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_04",
+      "business_tag": "app_reporting stats_installs_app_version analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.stats_installs_app_version"
+      ],
+      "columns": [
+        "metric_period",
+        "_file",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period",
+        "_file"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting stats_installs_app_version analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c04_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where try_cast(b.\"date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_04",
+      "business_tag": "app_reporting stats_installs_app_version analytics",
+      "frequency_weight": 2.95,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.stats_installs_app_version"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting stats_installs_app_version analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c04_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where try_cast(b.\"date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period, _file",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_04",
+      "business_tag": "app_reporting stats_installs_app_version analytics",
+      "frequency_weight": 3.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.stats_installs_app_version"
+      ],
+      "columns": [
+        "metric_period",
+        "_file",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period",
+        "_file"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting stats_installs_app_version analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c04_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where try_cast(b.\"date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_04",
+      "business_tag": "app_reporting stats_installs_app_version analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.stats_installs_app_version"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting stats_installs_app_version analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c04_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where try_cast(b.\"date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period, _file",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_04",
+      "business_tag": "app_reporting stats_installs_app_version analytics",
+      "frequency_weight": 2.95,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.stats_installs_app_version"
+      ],
+      "columns": [
+        "metric_period",
+        "_file",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period",
+        "_file"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting stats_installs_app_version analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_vq_c04_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where try_cast(b.\"date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_04",
+      "business_tag": "app_reporting stats_installs_app_version analytics",
+      "frequency_weight": 3.1,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.stats_installs_app_version"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting stats_installs_app_version analytics variant 2 visible 6"
+    }
+  ],
+  "holdout_queries": [
+    {
+      "query_id": "schemaopt_medium_app_reporting_hq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_summary b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"app_name\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_summary b where try_cast(b.\"date\" as timestamp) is not null and b.\"app_name\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_01",
+      "business_tag": "app_reporting sales_subscription_summary analytics",
+      "frequency_weight": 1.1,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.sales_subscription_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"app_name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"app_name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting sales_subscription_summary analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_hq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"app_name\" AS app_name, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_summary b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"app_name\" IS NOT NULL GROUP BY metric_period, app_name",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"app_name\" as app_name, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_summary b where try_cast(b.\"date\" as timestamp) is not null and b.\"app_name\" is not null group by metric_period, app_name",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_01",
+      "business_tag": "app_reporting sales_subscription_summary analytics",
+      "frequency_weight": 1.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sales_subscription_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "app_name",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "app_name"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"app_name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"app_name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting sales_subscription_summary analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_hq_c01_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_summary b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"app_name\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_summary b where try_cast(b.\"date\" as timestamp) is not null and b.\"app_name\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_01",
+      "business_tag": "app_reporting sales_subscription_summary analytics",
+      "frequency_weight": 1.1,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.sales_subscription_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"app_name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"app_name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting sales_subscription_summary analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_hq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"event_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_event_summary b WHERE try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL AND b.\"event\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"event_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_event_summary b where try_cast(b.\"event_date\" as timestamp) is not null and b.\"event\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_02",
+      "business_tag": "app_reporting sales_subscription_event_summary analytics",
+      "frequency_weight": 1.4,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.sales_subscription_event_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"event_date\"_as_timestamp)_is_not_null",
+        "b.\"event\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"event\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting sales_subscription_event_summary analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_hq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"event_date\" AS TIMESTAMP)) AS metric_period, b.\"event\" AS event, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_event_summary b WHERE try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL AND b.\"event\" IS NOT NULL GROUP BY metric_period, event",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"event_date\" as timestamp)) as metric_period, b.\"event\" as event, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_event_summary b where try_cast(b.\"event_date\" as timestamp) is not null and b.\"event\" is not null group by metric_period, event",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_02",
+      "business_tag": "app_reporting sales_subscription_event_summary analytics",
+      "frequency_weight": 1.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sales_subscription_event_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "event",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period",
+        "event"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"event_date\"_as_timestamp)_is_not_null",
+        "b.\"event\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"event\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting sales_subscription_event_summary analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_hq_c02_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"event_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"vendor_number\") AS sum_vendor_number FROM raw.sales_subscription_event_summary b WHERE try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL AND b.\"event\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"event_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"vendor_number\") as sum_vendor_number from raw.sales_subscription_event_summary b where try_cast(b.\"event_date\" as timestamp) is not null and b.\"event\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_02",
+      "business_tag": "app_reporting sales_subscription_event_summary analytics",
+      "frequency_weight": 1.4,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.sales_subscription_event_summary"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"event_date\"_as_timestamp)_is_not_null",
+        "b.\"event\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"event_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"event\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting sales_subscription_event_summary analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_hq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"transaction_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"transaction_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where try_cast(b.\"transaction_date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_03",
+      "business_tag": "app_reporting earnings analytics",
+      "frequency_weight": 1.7,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.earnings"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"transaction_date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting earnings analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_hq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"transaction_date\" AS TIMESTAMP)) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"transaction_date\" as timestamp)) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where try_cast(b.\"transaction_date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period, _file",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_03",
+      "business_tag": "app_reporting earnings analytics",
+      "frequency_weight": 1.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.earnings"
+      ],
+      "columns": [
+        "metric_period",
+        "_file",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period",
+        "_file"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"transaction_date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting earnings analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_hq_c03_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"transaction_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"transaction_date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where try_cast(b.\"transaction_date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_03",
+      "business_tag": "app_reporting earnings analytics",
+      "frequency_weight": 1.7,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.earnings"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"transaction_date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"transaction_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting earnings analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_hq_c04_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where try_cast(b.\"date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_04",
+      "business_tag": "app_reporting stats_installs_app_version analytics",
+      "frequency_weight": 2.0,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.stats_installs_app_version"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting stats_installs_app_version analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_hq_c04_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where try_cast(b.\"date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period, _file",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_04",
+      "business_tag": "app_reporting stats_installs_app_version analytics",
+      "frequency_weight": 2.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.stats_installs_app_version"
+      ],
+      "columns": [
+        "metric_period",
+        "_file",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period",
+        "_file"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "app_reporting stats_installs_app_version analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_medium_app_reporting_hq_c04_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"date\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where try_cast(b.\"date\" as timestamp) is not null and b.\"_file\" is not null group by metric_period",
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_04",
+      "business_tag": "app_reporting stats_installs_app_version analytics",
+      "frequency_weight": 2.0,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.stats_installs_app_version"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__line"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"date\"_as_timestamp)_is_not_null",
+        "b.\"_file\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"_file\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__line"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "app_reporting stats_installs_app_version analytics variant 2 holdout 3"
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_04",
+      "label": "stats_installs_app_version workload",
+      "business_label": "app_reporting stats_installs_app_version analytics",
+      "query_ids": [
+        "schemaopt_medium_app_reporting_vq_c04_01",
+        "schemaopt_medium_app_reporting_vq_c04_02",
+        "schemaopt_medium_app_reporting_vq_c04_03",
+        "schemaopt_medium_app_reporting_vq_c04_04",
+        "schemaopt_medium_app_reporting_vq_c04_05",
+        "schemaopt_medium_app_reporting_vq_c04_06"
+      ],
+      "query_count": 6,
+      "total_frequency_weight": 17.7,
+      "total_weighted_baseline_cost": 18.585,
+      "top_tables": [
+        "raw.stats_installs_app_version"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "_file"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum__line"
+      ],
+      "hotspot_rank": 1,
+      "preferred_object_kind": "join_matview"
+    },
+    {
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_03",
+      "label": "earnings workload",
+      "business_label": "app_reporting earnings analytics",
+      "query_ids": [
+        "schemaopt_medium_app_reporting_vq_c03_01",
+        "schemaopt_medium_app_reporting_vq_c03_02",
+        "schemaopt_medium_app_reporting_vq_c03_03",
+        "schemaopt_medium_app_reporting_vq_c03_04",
+        "schemaopt_medium_app_reporting_vq_c03_05",
+        "schemaopt_medium_app_reporting_vq_c03_06"
+      ],
+      "query_count": 6,
+      "total_frequency_weight": 15.0,
+      "total_weighted_baseline_cost": 15.75,
+      "top_tables": [
+        "raw.earnings"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "_file"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum__line"
+      ],
+      "hotspot_rank": 2,
+      "preferred_object_kind": "agg_matview"
+    },
+    {
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_02",
+      "label": "sales_subscription_event_summary workload",
+      "business_label": "app_reporting sales_subscription_event_summary analytics",
+      "query_ids": [
+        "schemaopt_medium_app_reporting_vq_c02_01",
+        "schemaopt_medium_app_reporting_vq_c02_02",
+        "schemaopt_medium_app_reporting_vq_c02_03",
+        "schemaopt_medium_app_reporting_vq_c02_04",
+        "schemaopt_medium_app_reporting_vq_c02_05",
+        "schemaopt_medium_app_reporting_vq_c02_06"
+      ],
+      "query_count": 6,
+      "total_frequency_weight": 12.3,
+      "total_weighted_baseline_cost": 12.915,
+      "top_tables": [
+        "raw.sales_subscription_event_summary"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "event"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "hotspot_rank": 3,
+      "preferred_object_kind": "denorm_table"
+    },
+    {
+      "cluster_id": "schemaopt_medium_app_reporting_cluster_01",
+      "label": "sales_subscription_summary workload",
+      "business_label": "app_reporting sales_subscription_summary analytics",
+      "query_ids": [
+        "schemaopt_medium_app_reporting_vq_c01_01",
+        "schemaopt_medium_app_reporting_vq_c01_02",
+        "schemaopt_medium_app_reporting_vq_c01_03",
+        "schemaopt_medium_app_reporting_vq_c01_04",
+        "schemaopt_medium_app_reporting_vq_c01_05",
+        "schemaopt_medium_app_reporting_vq_c01_06"
+      ],
+      "query_count": 6,
+      "total_frequency_weight": 9.6,
+      "total_weighted_baseline_cost": 10.08,
+      "top_tables": [
+        "raw.sales_subscription_summary"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "app_name"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_vendor_number"
+      ],
+      "hotspot_rank": 4,
+      "preferred_object_kind": "agg_matview"
+    }
+  ],
+  "budgets": {
+    "max_new_derived_objects": 4,
+    "max_storage_bytes": 24000000,
+    "max_refresh_runtime_ms": 15000.0,
+    "max_steps": 24
+  },
+  "allowed_object_kinds": [
+    "join_matview",
+    "agg_matview",
+    "filtered_projection",
+    "denorm_table"
+  ],
+  "engine_capabilities": {
+    "engine": "duckdb",
+    "uses_real_duckdb_database": true,
+    "uses_real_query_execution": true,
+    "uses_explain_plan_metrics": true,
+    "rewrite_model": "explicit_rewritten_sql"
+  }
+}

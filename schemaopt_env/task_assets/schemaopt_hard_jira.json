@@ -1,0 +1,3415 @@
+{
+  "task_id": "schemaopt_hard_jira",
+  "difficulty": "hard",
+  "domain": "jira",
+  "objective": "Optimize the jira workload over the real DuckDB source database by materializing derived objects that reduce measured execution cost while preserving exact query results.",
+  "seed_source": "datasets/dacomp-de/dacomp-de-impl-011",
+  "dataset_dir": "datasets/dacomp-de/dacomp-de-impl-011",
+  "database_path": "datasets/dacomp-de/dacomp-de-impl-011/jira_start.duckdb",
+  "tables": [
+    {
+      "name": "raw.board",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "project_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.comment",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "author_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "body",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_public",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "issue_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "update_author_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.component",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "lead_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "project_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.daily_issue_field_history",
+      "columns": [
+        {
+          "name": "date_day",
+          "type": "DATE"
+        },
+        {
+          "name": "issue_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "field_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "field_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "field_value",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.epic",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "summary",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "project_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.field",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_array",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "is_custom",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.field_option",
+      "columns": [
+        {
+          "name": "field_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "value",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.issue",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "_original_estimate",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "_remaining_estimate",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "_time_spent",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "assignee",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "creator",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "due_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "environment",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "issue_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "key",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_viewed",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "original_estimate",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "parent_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "priority",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "project",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "remaining_estimate",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "reporter",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "resolution",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "resolved",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status_category_changed",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "summary",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "time_spent",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "updated",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "work_ratio",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "work_type",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.issue_assignee_history",
+      "columns": [
+        {
+          "name": "issue_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "time",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.issue_field_history",
+      "columns": [
+        {
+          "name": "field_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "issue_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "time",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_active",
+          "type": "BOOLEAN"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.issue_fix_version_history",
+      "columns": [
+        {
+          "name": "issue_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "version_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "time",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.issue_link",
+      "columns": [
+        {
+          "name": "inward_issue_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "outward_issue_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "issue_link_type_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.issue_multiselect_history",
+      "columns": [
+        {
+          "name": "field_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "issue_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "time",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_active",
+          "type": "BOOLEAN"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.issue_sprint_history",
+      "columns": [
+        {
+          "name": "issue_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "sprint_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "time",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.issue_status_history",
+      "columns": [
+        {
+          "name": "issue_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "time",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.issue_type",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subtask",
+          "type": "BOOLEAN"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.issue_type_history",
+      "columns": [
+        {
+          "name": "issue_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "issue_type_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "time",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.priority",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.project",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "key",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "lead_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "permission_scheme_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "project_category_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "project_type_key",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.project_board",
+      "columns": [
+        {
+          "name": "board_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "project_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.project_category",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.resolution",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.sprint",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "board_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "complete_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "end_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "start_date",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.status",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status_category_id",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.status_category",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.user",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "locale",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "time_zone",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "username",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_active",
+          "type": "BOOLEAN"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.user_group",
+      "columns": [
+        {
+          "name": "group_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.version",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "archived",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "project_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "release_date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "released",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "start_date",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    }
+  ],
+  "visible_queries": [
+    {
+      "query_id": "schemaopt_hard_jira_vq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"_time_spent\" AS TIMESTAMP)) AS metric_period, b.\"assignee\" AS assignee, COUNT(*) AS row_count, SUM(b.\"_original_estimate\") AS sum__original_estimate FROM raw.issue b WHERE try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL AND b.\"assignee\" IS NOT NULL GROUP BY metric_period, assignee",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"_time_spent\" as timestamp)) as metric_period, b.\"assignee\" as assignee, count(*) as row_count, sum(b.\"_original_estimate\") as sum__original_estimate from raw.issue b where try_cast(b.\"_time_spent\" as timestamp) is not null and b.\"assignee\" is not null group by metric_period, assignee",
+      "cluster_id": "schemaopt_hard_jira_cluster_01",
+      "business_tag": "jira issue analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "assignee",
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "group_by": [
+        "metric_period",
+        "assignee"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"_time_spent\"_as_timestamp)_is_not_null",
+        "b.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira issue analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"_time_spent\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_original_estimate\") AS sum__original_estimate FROM raw.issue b WHERE try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL AND b.\"assignee\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"_time_spent\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_original_estimate\") as sum__original_estimate from raw.issue b where try_cast(b.\"_time_spent\" as timestamp) is not null and b.\"assignee\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_01",
+      "business_tag": "jira issue analytics",
+      "frequency_weight": 1.6,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"_time_spent\"_as_timestamp)_is_not_null",
+        "b.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "jira issue analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c01_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"_time_spent\" AS TIMESTAMP)) AS metric_period, b.\"assignee\" AS assignee, COUNT(*) AS row_count, SUM(b.\"_original_estimate\") AS sum__original_estimate FROM raw.issue b WHERE try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL AND b.\"assignee\" IS NOT NULL GROUP BY metric_period, assignee",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"_time_spent\" as timestamp)) as metric_period, b.\"assignee\" as assignee, count(*) as row_count, sum(b.\"_original_estimate\") as sum__original_estimate from raw.issue b where try_cast(b.\"_time_spent\" as timestamp) is not null and b.\"assignee\" is not null group by metric_period, assignee",
+      "cluster_id": "schemaopt_hard_jira_cluster_01",
+      "business_tag": "jira issue analytics",
+      "frequency_weight": 1.75,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "assignee",
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "group_by": [
+        "metric_period",
+        "assignee"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"_time_spent\"_as_timestamp)_is_not_null",
+        "b.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira issue analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c01_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"_time_spent\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_original_estimate\") AS sum__original_estimate FROM raw.issue b WHERE try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL AND b.\"assignee\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"_time_spent\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_original_estimate\") as sum__original_estimate from raw.issue b where try_cast(b.\"_time_spent\" as timestamp) is not null and b.\"assignee\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_01",
+      "business_tag": "jira issue analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"_time_spent\"_as_timestamp)_is_not_null",
+        "b.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "jira issue analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c01_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"_time_spent\" AS TIMESTAMP)) AS metric_period, b.\"assignee\" AS assignee, COUNT(*) AS row_count, SUM(b.\"_original_estimate\") AS sum__original_estimate FROM raw.issue b WHERE try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL AND b.\"assignee\" IS NOT NULL GROUP BY metric_period, assignee",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"_time_spent\" as timestamp)) as metric_period, b.\"assignee\" as assignee, count(*) as row_count, sum(b.\"_original_estimate\") as sum__original_estimate from raw.issue b where try_cast(b.\"_time_spent\" as timestamp) is not null and b.\"assignee\" is not null group by metric_period, assignee",
+      "cluster_id": "schemaopt_hard_jira_cluster_01",
+      "business_tag": "jira issue analytics",
+      "frequency_weight": 1.6,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "assignee",
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "group_by": [
+        "metric_period",
+        "assignee"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"_time_spent\"_as_timestamp)_is_not_null",
+        "b.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira issue analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c01_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"_time_spent\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_original_estimate\") AS sum__original_estimate FROM raw.issue b WHERE try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL AND b.\"assignee\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"_time_spent\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_original_estimate\") as sum__original_estimate from raw.issue b where try_cast(b.\"_time_spent\" as timestamp) is not null and b.\"assignee\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_01",
+      "business_tag": "jira issue analytics",
+      "frequency_weight": 1.75,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"_time_spent\"_as_timestamp)_is_not_null",
+        "b.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "jira issue analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c01_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"_time_spent\" AS TIMESTAMP)) AS metric_period, b.\"assignee\" AS assignee, COUNT(*) AS row_count, SUM(b.\"_original_estimate\") AS sum__original_estimate FROM raw.issue b WHERE try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL AND b.\"assignee\" IS NOT NULL GROUP BY metric_period, assignee",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"_time_spent\" as timestamp)) as metric_period, b.\"assignee\" as assignee, count(*) as row_count, sum(b.\"_original_estimate\") as sum__original_estimate from raw.issue b where try_cast(b.\"_time_spent\" as timestamp) is not null and b.\"assignee\" is not null group by metric_period, assignee",
+      "cluster_id": "schemaopt_hard_jira_cluster_01",
+      "business_tag": "jira issue analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "assignee",
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "group_by": [
+        "metric_period",
+        "assignee"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"_time_spent\"_as_timestamp)_is_not_null",
+        "b.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira issue analytics variant 1 visible 7"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"update_author_id\" AS TIMESTAMP)) AS metric_period, b.\"body\" AS body, j.\"assignee\" AS issue_assignee, COUNT(*) AS row_count FROM raw.comment b JOIN raw.issue j ON b.\"issue_id\" = j.id WHERE try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL AND b.\"body\" IS NOT NULL AND j.\"assignee\" IS NOT NULL GROUP BY metric_period, body, issue_assignee",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"update_author_id\" as timestamp)) as metric_period, b.\"body\" as body, j.\"assignee\" as issue_assignee, count(*) as row_count from raw.comment b join raw.issue j on b.\"issue_id\" = j.id where try_cast(b.\"update_author_id\" as timestamp) is not null and b.\"body\" is not null and j.\"assignee\" is not null group by metric_period, body, issue_assignee",
+      "cluster_id": "schemaopt_hard_jira_cluster_02",
+      "business_tag": "jira comment analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.comment",
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "body",
+        "issue_assignee",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "body",
+        "issue_assignee"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"update_author_id\"_as_timestamp)_is_not_null",
+        "b.\"body\"_is_not_null",
+        "j.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"body\" IS NOT NULL",
+        "j.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira comment analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"update_author_id\" AS TIMESTAMP)) AS metric_period, b.\"body\" AS body, COUNT(*) AS row_count FROM raw.comment b JOIN raw.issue j ON b.\"issue_id\" = j.id WHERE try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL AND b.\"body\" IS NOT NULL AND j.\"assignee\" IS NOT NULL GROUP BY metric_period, body",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"update_author_id\" as timestamp)) as metric_period, b.\"body\" as body, count(*) as row_count from raw.comment b join raw.issue j on b.\"issue_id\" = j.id where try_cast(b.\"update_author_id\" as timestamp) is not null and b.\"body\" is not null and j.\"assignee\" is not null group by metric_period, body",
+      "cluster_id": "schemaopt_hard_jira_cluster_02",
+      "business_tag": "jira comment analytics",
+      "frequency_weight": 2.05,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.comment",
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "body",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "body"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"update_author_id\"_as_timestamp)_is_not_null",
+        "b.\"body\"_is_not_null",
+        "j.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"body\" IS NOT NULL",
+        "j.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira comment analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c02_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"update_author_id\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.comment b JOIN raw.issue j ON b.\"issue_id\" = j.id WHERE try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL AND b.\"body\" IS NOT NULL AND j.\"assignee\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"update_author_id\" as timestamp)) as metric_period, count(*) as row_count from raw.comment b join raw.issue j on b.\"issue_id\" = j.id where try_cast(b.\"update_author_id\" as timestamp) is not null and b.\"body\" is not null and j.\"assignee\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_02",
+      "business_tag": "jira comment analytics",
+      "frequency_weight": 2.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.comment",
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"update_author_id\"_as_timestamp)_is_not_null",
+        "b.\"body\"_is_not_null",
+        "j.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"body\" IS NOT NULL",
+        "j.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "jira comment analytics variant 3 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c02_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"update_author_id\" AS TIMESTAMP)) AS metric_period, b.\"body\" AS body, j.\"assignee\" AS issue_assignee, COUNT(*) AS row_count FROM raw.comment b JOIN raw.issue j ON b.\"issue_id\" = j.id WHERE try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL AND b.\"body\" IS NOT NULL AND j.\"assignee\" IS NOT NULL GROUP BY metric_period, body, issue_assignee",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"update_author_id\" as timestamp)) as metric_period, b.\"body\" as body, j.\"assignee\" as issue_assignee, count(*) as row_count from raw.comment b join raw.issue j on b.\"issue_id\" = j.id where try_cast(b.\"update_author_id\" as timestamp) is not null and b.\"body\" is not null and j.\"assignee\" is not null group by metric_period, body, issue_assignee",
+      "cluster_id": "schemaopt_hard_jira_cluster_02",
+      "business_tag": "jira comment analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.comment",
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "body",
+        "issue_assignee",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "body",
+        "issue_assignee"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"update_author_id\"_as_timestamp)_is_not_null",
+        "b.\"body\"_is_not_null",
+        "j.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"body\" IS NOT NULL",
+        "j.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira comment analytics variant 1 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c02_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"update_author_id\" AS TIMESTAMP)) AS metric_period, b.\"body\" AS body, COUNT(*) AS row_count FROM raw.comment b JOIN raw.issue j ON b.\"issue_id\" = j.id WHERE try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL AND b.\"body\" IS NOT NULL AND j.\"assignee\" IS NOT NULL GROUP BY metric_period, body",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"update_author_id\" as timestamp)) as metric_period, b.\"body\" as body, count(*) as row_count from raw.comment b join raw.issue j on b.\"issue_id\" = j.id where try_cast(b.\"update_author_id\" as timestamp) is not null and b.\"body\" is not null and j.\"assignee\" is not null group by metric_period, body",
+      "cluster_id": "schemaopt_hard_jira_cluster_02",
+      "business_tag": "jira comment analytics",
+      "frequency_weight": 2.05,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.comment",
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "body",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "body"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"update_author_id\"_as_timestamp)_is_not_null",
+        "b.\"body\"_is_not_null",
+        "j.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"body\" IS NOT NULL",
+        "j.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira comment analytics variant 2 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c02_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"update_author_id\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.comment b JOIN raw.issue j ON b.\"issue_id\" = j.id WHERE try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL AND b.\"body\" IS NOT NULL AND j.\"assignee\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"update_author_id\" as timestamp)) as metric_period, count(*) as row_count from raw.comment b join raw.issue j on b.\"issue_id\" = j.id where try_cast(b.\"update_author_id\" as timestamp) is not null and b.\"body\" is not null and j.\"assignee\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_02",
+      "business_tag": "jira comment analytics",
+      "frequency_weight": 2.2,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.comment",
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"update_author_id\"_as_timestamp)_is_not_null",
+        "b.\"body\"_is_not_null",
+        "j.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"body\" IS NOT NULL",
+        "j.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "jira comment analytics variant 3 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c02_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"update_author_id\" AS TIMESTAMP)) AS metric_period, b.\"body\" AS body, j.\"assignee\" AS issue_assignee, COUNT(*) AS row_count FROM raw.comment b JOIN raw.issue j ON b.\"issue_id\" = j.id WHERE try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL AND b.\"body\" IS NOT NULL AND j.\"assignee\" IS NOT NULL GROUP BY metric_period, body, issue_assignee",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"update_author_id\" as timestamp)) as metric_period, b.\"body\" as body, j.\"assignee\" as issue_assignee, count(*) as row_count from raw.comment b join raw.issue j on b.\"issue_id\" = j.id where try_cast(b.\"update_author_id\" as timestamp) is not null and b.\"body\" is not null and j.\"assignee\" is not null group by metric_period, body, issue_assignee",
+      "cluster_id": "schemaopt_hard_jira_cluster_02",
+      "business_tag": "jira comment analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.comment",
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "body",
+        "issue_assignee",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "body",
+        "issue_assignee"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"update_author_id\"_as_timestamp)_is_not_null",
+        "b.\"body\"_is_not_null",
+        "j.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"body\" IS NOT NULL",
+        "j.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira comment analytics variant 1 visible 7"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"release_date\" AS TIMESTAMP)) AS metric_period, b.\"archived\" AS archived, j.\"description\" AS project_description, COUNT(*) AS row_count FROM raw.version b JOIN raw.project j ON b.\"project_id\" = j.id WHERE try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL AND b.\"archived\" IS NOT NULL AND j.\"description\" IS NOT NULL GROUP BY metric_period, archived, project_description",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"release_date\" as timestamp)) as metric_period, b.\"archived\" as archived, j.\"description\" as project_description, count(*) as row_count from raw.version b join raw.project j on b.\"project_id\" = j.id where try_cast(b.\"release_date\" as timestamp) is not null and b.\"archived\" is not null and j.\"description\" is not null group by metric_period, archived, project_description",
+      "cluster_id": "schemaopt_hard_jira_cluster_03",
+      "business_tag": "jira version analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.version",
+        "raw.project"
+      ],
+      "columns": [
+        "metric_period",
+        "archived",
+        "project_description",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "archived",
+        "project_description"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"release_date\"_as_timestamp)_is_not_null",
+        "b.\"archived\"_is_not_null",
+        "j.\"description\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"archived\" IS NOT NULL",
+        "j.\"description\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira version analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"release_date\" AS TIMESTAMP)) AS metric_period, b.\"archived\" AS archived, COUNT(*) AS row_count FROM raw.version b JOIN raw.project j ON b.\"project_id\" = j.id WHERE try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL AND b.\"archived\" IS NOT NULL AND j.\"description\" IS NOT NULL GROUP BY metric_period, archived",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"release_date\" as timestamp)) as metric_period, b.\"archived\" as archived, count(*) as row_count from raw.version b join raw.project j on b.\"project_id\" = j.id where try_cast(b.\"release_date\" as timestamp) is not null and b.\"archived\" is not null and j.\"description\" is not null group by metric_period, archived",
+      "cluster_id": "schemaopt_hard_jira_cluster_03",
+      "business_tag": "jira version analytics",
+      "frequency_weight": 2.5,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.version",
+        "raw.project"
+      ],
+      "columns": [
+        "metric_period",
+        "archived",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "archived"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"release_date\"_as_timestamp)_is_not_null",
+        "b.\"archived\"_is_not_null",
+        "j.\"description\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"archived\" IS NOT NULL",
+        "j.\"description\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira version analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c03_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"release_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.version b JOIN raw.project j ON b.\"project_id\" = j.id WHERE try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL AND b.\"archived\" IS NOT NULL AND j.\"description\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"release_date\" as timestamp)) as metric_period, count(*) as row_count from raw.version b join raw.project j on b.\"project_id\" = j.id where try_cast(b.\"release_date\" as timestamp) is not null and b.\"archived\" is not null and j.\"description\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_03",
+      "business_tag": "jira version analytics",
+      "frequency_weight": 2.65,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.version",
+        "raw.project"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"release_date\"_as_timestamp)_is_not_null",
+        "b.\"archived\"_is_not_null",
+        "j.\"description\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"archived\" IS NOT NULL",
+        "j.\"description\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "jira version analytics variant 3 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c03_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"release_date\" AS TIMESTAMP)) AS metric_period, b.\"archived\" AS archived, j.\"description\" AS project_description, COUNT(*) AS row_count FROM raw.version b JOIN raw.project j ON b.\"project_id\" = j.id WHERE try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL AND b.\"archived\" IS NOT NULL AND j.\"description\" IS NOT NULL GROUP BY metric_period, archived, project_description",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"release_date\" as timestamp)) as metric_period, b.\"archived\" as archived, j.\"description\" as project_description, count(*) as row_count from raw.version b join raw.project j on b.\"project_id\" = j.id where try_cast(b.\"release_date\" as timestamp) is not null and b.\"archived\" is not null and j.\"description\" is not null group by metric_period, archived, project_description",
+      "cluster_id": "schemaopt_hard_jira_cluster_03",
+      "business_tag": "jira version analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.version",
+        "raw.project"
+      ],
+      "columns": [
+        "metric_period",
+        "archived",
+        "project_description",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "archived",
+        "project_description"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"release_date\"_as_timestamp)_is_not_null",
+        "b.\"archived\"_is_not_null",
+        "j.\"description\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"archived\" IS NOT NULL",
+        "j.\"description\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira version analytics variant 1 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c03_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"release_date\" AS TIMESTAMP)) AS metric_period, b.\"archived\" AS archived, COUNT(*) AS row_count FROM raw.version b JOIN raw.project j ON b.\"project_id\" = j.id WHERE try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL AND b.\"archived\" IS NOT NULL AND j.\"description\" IS NOT NULL GROUP BY metric_period, archived",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"release_date\" as timestamp)) as metric_period, b.\"archived\" as archived, count(*) as row_count from raw.version b join raw.project j on b.\"project_id\" = j.id where try_cast(b.\"release_date\" as timestamp) is not null and b.\"archived\" is not null and j.\"description\" is not null group by metric_period, archived",
+      "cluster_id": "schemaopt_hard_jira_cluster_03",
+      "business_tag": "jira version analytics",
+      "frequency_weight": 2.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.version",
+        "raw.project"
+      ],
+      "columns": [
+        "metric_period",
+        "archived",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "archived"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"release_date\"_as_timestamp)_is_not_null",
+        "b.\"archived\"_is_not_null",
+        "j.\"description\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"archived\" IS NOT NULL",
+        "j.\"description\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira version analytics variant 2 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c03_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"release_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.version b JOIN raw.project j ON b.\"project_id\" = j.id WHERE try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL AND b.\"archived\" IS NOT NULL AND j.\"description\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"release_date\" as timestamp)) as metric_period, count(*) as row_count from raw.version b join raw.project j on b.\"project_id\" = j.id where try_cast(b.\"release_date\" as timestamp) is not null and b.\"archived\" is not null and j.\"description\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_03",
+      "business_tag": "jira version analytics",
+      "frequency_weight": 2.65,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.version",
+        "raw.project"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"release_date\"_as_timestamp)_is_not_null",
+        "b.\"archived\"_is_not_null",
+        "j.\"description\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"archived\" IS NOT NULL",
+        "j.\"description\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "jira version analytics variant 3 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c03_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"release_date\" AS TIMESTAMP)) AS metric_period, b.\"archived\" AS archived, j.\"description\" AS project_description, COUNT(*) AS row_count FROM raw.version b JOIN raw.project j ON b.\"project_id\" = j.id WHERE try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL AND b.\"archived\" IS NOT NULL AND j.\"description\" IS NOT NULL GROUP BY metric_period, archived, project_description",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"release_date\" as timestamp)) as metric_period, b.\"archived\" as archived, j.\"description\" as project_description, count(*) as row_count from raw.version b join raw.project j on b.\"project_id\" = j.id where try_cast(b.\"release_date\" as timestamp) is not null and b.\"archived\" is not null and j.\"description\" is not null group by metric_period, archived, project_description",
+      "cluster_id": "schemaopt_hard_jira_cluster_03",
+      "business_tag": "jira version analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.version",
+        "raw.project"
+      ],
+      "columns": [
+        "metric_period",
+        "archived",
+        "project_description",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "archived",
+        "project_description"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"release_date\"_as_timestamp)_is_not_null",
+        "b.\"archived\"_is_not_null",
+        "j.\"description\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"archived\" IS NOT NULL",
+        "j.\"description\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira version analytics variant 1 visible 7"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c04_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"time_zone\" AS TIMESTAMP)) AS metric_period, b.\"email\" AS email, COUNT(*) AS row_count FROM raw.user b WHERE try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL AND b.\"email\" IS NOT NULL GROUP BY metric_period, email",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"time_zone\" as timestamp)) as metric_period, b.\"email\" as email, count(*) as row_count from raw.user b where try_cast(b.\"time_zone\" as timestamp) is not null and b.\"email\" is not null group by metric_period, email",
+      "cluster_id": "schemaopt_hard_jira_cluster_04",
+      "business_tag": "jira user analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.user"
+      ],
+      "columns": [
+        "metric_period",
+        "email",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "email"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"time_zone\"_as_timestamp)_is_not_null",
+        "b.\"email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira user analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c04_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"time_zone\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.user b WHERE try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL AND b.\"email\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"time_zone\" as timestamp)) as metric_period, count(*) as row_count from raw.user b where try_cast(b.\"time_zone\" as timestamp) is not null and b.\"email\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_04",
+      "business_tag": "jira user analytics",
+      "frequency_weight": 2.95,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.user"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"time_zone\"_as_timestamp)_is_not_null",
+        "b.\"email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "jira user analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c04_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"time_zone\" AS TIMESTAMP)) AS metric_period, b.\"email\" AS email, COUNT(*) AS row_count FROM raw.user b WHERE try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL AND b.\"email\" IS NOT NULL GROUP BY metric_period, email",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"time_zone\" as timestamp)) as metric_period, b.\"email\" as email, count(*) as row_count from raw.user b where try_cast(b.\"time_zone\" as timestamp) is not null and b.\"email\" is not null group by metric_period, email",
+      "cluster_id": "schemaopt_hard_jira_cluster_04",
+      "business_tag": "jira user analytics",
+      "frequency_weight": 3.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.user"
+      ],
+      "columns": [
+        "metric_period",
+        "email",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "email"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"time_zone\"_as_timestamp)_is_not_null",
+        "b.\"email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira user analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c04_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"time_zone\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.user b WHERE try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL AND b.\"email\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"time_zone\" as timestamp)) as metric_period, count(*) as row_count from raw.user b where try_cast(b.\"time_zone\" as timestamp) is not null and b.\"email\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_04",
+      "business_tag": "jira user analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.user"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"time_zone\"_as_timestamp)_is_not_null",
+        "b.\"email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "jira user analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c04_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"time_zone\" AS TIMESTAMP)) AS metric_period, b.\"email\" AS email, COUNT(*) AS row_count FROM raw.user b WHERE try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL AND b.\"email\" IS NOT NULL GROUP BY metric_period, email",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"time_zone\" as timestamp)) as metric_period, b.\"email\" as email, count(*) as row_count from raw.user b where try_cast(b.\"time_zone\" as timestamp) is not null and b.\"email\" is not null group by metric_period, email",
+      "cluster_id": "schemaopt_hard_jira_cluster_04",
+      "business_tag": "jira user analytics",
+      "frequency_weight": 2.95,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.user"
+      ],
+      "columns": [
+        "metric_period",
+        "email",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "email"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"time_zone\"_as_timestamp)_is_not_null",
+        "b.\"email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira user analytics variant 1 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c04_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"time_zone\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.user b WHERE try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL AND b.\"email\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"time_zone\" as timestamp)) as metric_period, count(*) as row_count from raw.user b where try_cast(b.\"time_zone\" as timestamp) is not null and b.\"email\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_04",
+      "business_tag": "jira user analytics",
+      "frequency_weight": 3.1,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.user"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"time_zone\"_as_timestamp)_is_not_null",
+        "b.\"email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "jira user analytics variant 2 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c04_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"time_zone\" AS TIMESTAMP)) AS metric_period, b.\"email\" AS email, COUNT(*) AS row_count FROM raw.user b WHERE try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL AND b.\"email\" IS NOT NULL GROUP BY metric_period, email",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"time_zone\" as timestamp)) as metric_period, b.\"email\" as email, count(*) as row_count from raw.user b where try_cast(b.\"time_zone\" as timestamp) is not null and b.\"email\" is not null group by metric_period, email",
+      "cluster_id": "schemaopt_hard_jira_cluster_04",
+      "business_tag": "jira user analytics",
+      "frequency_weight": 2.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.user"
+      ],
+      "columns": [
+        "metric_period",
+        "email",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "email"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"time_zone\"_as_timestamp)_is_not_null",
+        "b.\"email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira user analytics variant 1 visible 7"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c05_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"complete_date\" AS TIMESTAMP)) AS metric_period, b.\"end_date\" AS end_date, j.\"name\" AS board_name, COUNT(*) AS row_count FROM raw.sprint b JOIN raw.board j ON b.\"board_id\" = j.id WHERE try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL AND b.\"end_date\" IS NOT NULL AND j.\"name\" IS NOT NULL GROUP BY metric_period, end_date, board_name",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"complete_date\" as timestamp)) as metric_period, b.\"end_date\" as end_date, j.\"name\" as board_name, count(*) as row_count from raw.sprint b join raw.board j on b.\"board_id\" = j.id where try_cast(b.\"complete_date\" as timestamp) is not null and b.\"end_date\" is not null and j.\"name\" is not null group by metric_period, end_date, board_name",
+      "cluster_id": "schemaopt_hard_jira_cluster_05",
+      "business_tag": "jira sprint analytics",
+      "frequency_weight": 3.25,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sprint",
+        "raw.board"
+      ],
+      "columns": [
+        "metric_period",
+        "end_date",
+        "board_name",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "end_date",
+        "board_name"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"complete_date\"_as_timestamp)_is_not_null",
+        "b.\"end_date\"_is_not_null",
+        "j.\"name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"end_date\" IS NOT NULL",
+        "j.\"name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira sprint analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c05_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"complete_date\" AS TIMESTAMP)) AS metric_period, b.\"end_date\" AS end_date, COUNT(*) AS row_count FROM raw.sprint b JOIN raw.board j ON b.\"board_id\" = j.id WHERE try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL AND b.\"end_date\" IS NOT NULL AND j.\"name\" IS NOT NULL GROUP BY metric_period, end_date",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"complete_date\" as timestamp)) as metric_period, b.\"end_date\" as end_date, count(*) as row_count from raw.sprint b join raw.board j on b.\"board_id\" = j.id where try_cast(b.\"complete_date\" as timestamp) is not null and b.\"end_date\" is not null and j.\"name\" is not null group by metric_period, end_date",
+      "cluster_id": "schemaopt_hard_jira_cluster_05",
+      "business_tag": "jira sprint analytics",
+      "frequency_weight": 3.4,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.sprint",
+        "raw.board"
+      ],
+      "columns": [
+        "metric_period",
+        "end_date",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "end_date"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"complete_date\"_as_timestamp)_is_not_null",
+        "b.\"end_date\"_is_not_null",
+        "j.\"name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"end_date\" IS NOT NULL",
+        "j.\"name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira sprint analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c05_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"complete_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.sprint b JOIN raw.board j ON b.\"board_id\" = j.id WHERE try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL AND b.\"end_date\" IS NOT NULL AND j.\"name\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"complete_date\" as timestamp)) as metric_period, count(*) as row_count from raw.sprint b join raw.board j on b.\"board_id\" = j.id where try_cast(b.\"complete_date\" as timestamp) is not null and b.\"end_date\" is not null and j.\"name\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_05",
+      "business_tag": "jira sprint analytics",
+      "frequency_weight": 3.55,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sprint",
+        "raw.board"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"complete_date\"_as_timestamp)_is_not_null",
+        "b.\"end_date\"_is_not_null",
+        "j.\"name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"end_date\" IS NOT NULL",
+        "j.\"name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "jira sprint analytics variant 3 visible 3"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c05_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"complete_date\" AS TIMESTAMP)) AS metric_period, b.\"end_date\" AS end_date, j.\"name\" AS board_name, COUNT(*) AS row_count FROM raw.sprint b JOIN raw.board j ON b.\"board_id\" = j.id WHERE try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL AND b.\"end_date\" IS NOT NULL AND j.\"name\" IS NOT NULL GROUP BY metric_period, end_date, board_name",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"complete_date\" as timestamp)) as metric_period, b.\"end_date\" as end_date, j.\"name\" as board_name, count(*) as row_count from raw.sprint b join raw.board j on b.\"board_id\" = j.id where try_cast(b.\"complete_date\" as timestamp) is not null and b.\"end_date\" is not null and j.\"name\" is not null group by metric_period, end_date, board_name",
+      "cluster_id": "schemaopt_hard_jira_cluster_05",
+      "business_tag": "jira sprint analytics",
+      "frequency_weight": 3.25,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.sprint",
+        "raw.board"
+      ],
+      "columns": [
+        "metric_period",
+        "end_date",
+        "board_name",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "end_date",
+        "board_name"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"complete_date\"_as_timestamp)_is_not_null",
+        "b.\"end_date\"_is_not_null",
+        "j.\"name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"end_date\" IS NOT NULL",
+        "j.\"name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira sprint analytics variant 1 visible 4"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c05_05",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"complete_date\" AS TIMESTAMP)) AS metric_period, b.\"end_date\" AS end_date, COUNT(*) AS row_count FROM raw.sprint b JOIN raw.board j ON b.\"board_id\" = j.id WHERE try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL AND b.\"end_date\" IS NOT NULL AND j.\"name\" IS NOT NULL GROUP BY metric_period, end_date",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"complete_date\" as timestamp)) as metric_period, b.\"end_date\" as end_date, count(*) as row_count from raw.sprint b join raw.board j on b.\"board_id\" = j.id where try_cast(b.\"complete_date\" as timestamp) is not null and b.\"end_date\" is not null and j.\"name\" is not null group by metric_period, end_date",
+      "cluster_id": "schemaopt_hard_jira_cluster_05",
+      "business_tag": "jira sprint analytics",
+      "frequency_weight": 3.4,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sprint",
+        "raw.board"
+      ],
+      "columns": [
+        "metric_period",
+        "end_date",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "end_date"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"complete_date\"_as_timestamp)_is_not_null",
+        "b.\"end_date\"_is_not_null",
+        "j.\"name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"end_date\" IS NOT NULL",
+        "j.\"name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira sprint analytics variant 2 visible 5"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c05_06",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"complete_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.sprint b JOIN raw.board j ON b.\"board_id\" = j.id WHERE try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL AND b.\"end_date\" IS NOT NULL AND j.\"name\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"complete_date\" as timestamp)) as metric_period, count(*) as row_count from raw.sprint b join raw.board j on b.\"board_id\" = j.id where try_cast(b.\"complete_date\" as timestamp) is not null and b.\"end_date\" is not null and j.\"name\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_05",
+      "business_tag": "jira sprint analytics",
+      "frequency_weight": 3.55,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.sprint",
+        "raw.board"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"complete_date\"_as_timestamp)_is_not_null",
+        "b.\"end_date\"_is_not_null",
+        "j.\"name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"end_date\" IS NOT NULL",
+        "j.\"name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "jira sprint analytics variant 3 visible 6"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_vq_c05_07",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"complete_date\" AS TIMESTAMP)) AS metric_period, b.\"end_date\" AS end_date, j.\"name\" AS board_name, COUNT(*) AS row_count FROM raw.sprint b JOIN raw.board j ON b.\"board_id\" = j.id WHERE try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL AND b.\"end_date\" IS NOT NULL AND j.\"name\" IS NOT NULL GROUP BY metric_period, end_date, board_name",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"complete_date\" as timestamp)) as metric_period, b.\"end_date\" as end_date, j.\"name\" as board_name, count(*) as row_count from raw.sprint b join raw.board j on b.\"board_id\" = j.id where try_cast(b.\"complete_date\" as timestamp) is not null and b.\"end_date\" is not null and j.\"name\" is not null group by metric_period, end_date, board_name",
+      "cluster_id": "schemaopt_hard_jira_cluster_05",
+      "business_tag": "jira sprint analytics",
+      "frequency_weight": 3.25,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sprint",
+        "raw.board"
+      ],
+      "columns": [
+        "metric_period",
+        "end_date",
+        "board_name",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "end_date",
+        "board_name"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"complete_date\"_as_timestamp)_is_not_null",
+        "b.\"end_date\"_is_not_null",
+        "j.\"name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"end_date\" IS NOT NULL",
+        "j.\"name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira sprint analytics variant 1 visible 7"
+    }
+  ],
+  "holdout_queries": [
+    {
+      "query_id": "schemaopt_hard_jira_hq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"_time_spent\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_original_estimate\") AS sum__original_estimate FROM raw.issue b WHERE try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL AND b.\"assignee\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"_time_spent\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_original_estimate\") as sum__original_estimate from raw.issue b where try_cast(b.\"_time_spent\" as timestamp) is not null and b.\"assignee\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_01",
+      "business_tag": "jira issue analytics",
+      "frequency_weight": 1.1,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"_time_spent\"_as_timestamp)_is_not_null",
+        "b.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "jira issue analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"_time_spent\" AS TIMESTAMP)) AS metric_period, b.\"assignee\" AS assignee, COUNT(*) AS row_count, SUM(b.\"_original_estimate\") AS sum__original_estimate FROM raw.issue b WHERE try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL AND b.\"assignee\" IS NOT NULL GROUP BY metric_period, assignee",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"_time_spent\" as timestamp)) as metric_period, b.\"assignee\" as assignee, count(*) as row_count, sum(b.\"_original_estimate\") as sum__original_estimate from raw.issue b where try_cast(b.\"_time_spent\" as timestamp) is not null and b.\"assignee\" is not null group by metric_period, assignee",
+      "cluster_id": "schemaopt_hard_jira_cluster_01",
+      "business_tag": "jira issue analytics",
+      "frequency_weight": 1.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "assignee",
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "group_by": [
+        "metric_period",
+        "assignee"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"_time_spent\"_as_timestamp)_is_not_null",
+        "b.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira issue analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c01_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"_time_spent\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_original_estimate\") AS sum__original_estimate FROM raw.issue b WHERE try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL AND b.\"assignee\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"_time_spent\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"_original_estimate\") as sum__original_estimate from raw.issue b where try_cast(b.\"_time_spent\" as timestamp) is not null and b.\"assignee\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_01",
+      "business_tag": "jira issue analytics",
+      "frequency_weight": 1.1,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"_time_spent\"_as_timestamp)_is_not_null",
+        "b.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "jira issue analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c01_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"_time_spent\" AS TIMESTAMP)) AS metric_period, b.\"assignee\" AS assignee, COUNT(*) AS row_count, SUM(b.\"_original_estimate\") AS sum__original_estimate FROM raw.issue b WHERE try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL AND b.\"assignee\" IS NOT NULL GROUP BY metric_period, assignee",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"_time_spent\" as timestamp)) as metric_period, b.\"assignee\" as assignee, count(*) as row_count, sum(b.\"_original_estimate\") as sum__original_estimate from raw.issue b where try_cast(b.\"_time_spent\" as timestamp) is not null and b.\"assignee\" is not null group by metric_period, assignee",
+      "cluster_id": "schemaopt_hard_jira_cluster_01",
+      "business_tag": "jira issue analytics",
+      "frequency_weight": 1.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "assignee",
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "group_by": [
+        "metric_period",
+        "assignee"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"_time_spent\"_as_timestamp)_is_not_null",
+        "b.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"_time_spent\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira issue analytics variant 1 holdout 4"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"update_author_id\" AS TIMESTAMP)) AS metric_period, b.\"body\" AS body, COUNT(*) AS row_count FROM raw.comment b JOIN raw.issue j ON b.\"issue_id\" = j.id WHERE try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL AND b.\"body\" IS NOT NULL AND j.\"assignee\" IS NOT NULL GROUP BY metric_period, body",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"update_author_id\" as timestamp)) as metric_period, b.\"body\" as body, count(*) as row_count from raw.comment b join raw.issue j on b.\"issue_id\" = j.id where try_cast(b.\"update_author_id\" as timestamp) is not null and b.\"body\" is not null and j.\"assignee\" is not null group by metric_period, body",
+      "cluster_id": "schemaopt_hard_jira_cluster_02",
+      "business_tag": "jira comment analytics",
+      "frequency_weight": 1.4,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.comment",
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "body",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "body"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"update_author_id\"_as_timestamp)_is_not_null",
+        "b.\"body\"_is_not_null",
+        "j.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"body\" IS NOT NULL",
+        "j.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira comment analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"update_author_id\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.comment b JOIN raw.issue j ON b.\"issue_id\" = j.id WHERE try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL AND b.\"body\" IS NOT NULL AND j.\"assignee\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"update_author_id\" as timestamp)) as metric_period, count(*) as row_count from raw.comment b join raw.issue j on b.\"issue_id\" = j.id where try_cast(b.\"update_author_id\" as timestamp) is not null and b.\"body\" is not null and j.\"assignee\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_02",
+      "business_tag": "jira comment analytics",
+      "frequency_weight": 1.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.comment",
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"update_author_id\"_as_timestamp)_is_not_null",
+        "b.\"body\"_is_not_null",
+        "j.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"body\" IS NOT NULL",
+        "j.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "jira comment analytics variant 3 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c02_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"update_author_id\" AS TIMESTAMP)) AS metric_period, b.\"body\" AS body, j.\"assignee\" AS issue_assignee, COUNT(*) AS row_count FROM raw.comment b JOIN raw.issue j ON b.\"issue_id\" = j.id WHERE try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL AND b.\"body\" IS NOT NULL AND j.\"assignee\" IS NOT NULL GROUP BY metric_period, body, issue_assignee",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"update_author_id\" as timestamp)) as metric_period, b.\"body\" as body, j.\"assignee\" as issue_assignee, count(*) as row_count from raw.comment b join raw.issue j on b.\"issue_id\" = j.id where try_cast(b.\"update_author_id\" as timestamp) is not null and b.\"body\" is not null and j.\"assignee\" is not null group by metric_period, body, issue_assignee",
+      "cluster_id": "schemaopt_hard_jira_cluster_02",
+      "business_tag": "jira comment analytics",
+      "frequency_weight": 1.4,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.comment",
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "body",
+        "issue_assignee",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "body",
+        "issue_assignee"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"update_author_id\"_as_timestamp)_is_not_null",
+        "b.\"body\"_is_not_null",
+        "j.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"body\" IS NOT NULL",
+        "j.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira comment analytics variant 1 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c02_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"update_author_id\" AS TIMESTAMP)) AS metric_period, b.\"body\" AS body, COUNT(*) AS row_count FROM raw.comment b JOIN raw.issue j ON b.\"issue_id\" = j.id WHERE try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL AND b.\"body\" IS NOT NULL AND j.\"assignee\" IS NOT NULL GROUP BY metric_period, body",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"update_author_id\" as timestamp)) as metric_period, b.\"body\" as body, count(*) as row_count from raw.comment b join raw.issue j on b.\"issue_id\" = j.id where try_cast(b.\"update_author_id\" as timestamp) is not null and b.\"body\" is not null and j.\"assignee\" is not null group by metric_period, body",
+      "cluster_id": "schemaopt_hard_jira_cluster_02",
+      "business_tag": "jira comment analytics",
+      "frequency_weight": 1.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.comment",
+        "raw.issue"
+      ],
+      "columns": [
+        "metric_period",
+        "body",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "body"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"update_author_id\"_as_timestamp)_is_not_null",
+        "b.\"body\"_is_not_null",
+        "j.\"assignee\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"update_author_id\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"body\" IS NOT NULL",
+        "j.\"assignee\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira comment analytics variant 2 holdout 4"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"release_date\" AS TIMESTAMP)) AS metric_period, b.\"archived\" AS archived, COUNT(*) AS row_count FROM raw.version b JOIN raw.project j ON b.\"project_id\" = j.id WHERE try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL AND b.\"archived\" IS NOT NULL AND j.\"description\" IS NOT NULL GROUP BY metric_period, archived",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"release_date\" as timestamp)) as metric_period, b.\"archived\" as archived, count(*) as row_count from raw.version b join raw.project j on b.\"project_id\" = j.id where try_cast(b.\"release_date\" as timestamp) is not null and b.\"archived\" is not null and j.\"description\" is not null group by metric_period, archived",
+      "cluster_id": "schemaopt_hard_jira_cluster_03",
+      "business_tag": "jira version analytics",
+      "frequency_weight": 1.7,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.version",
+        "raw.project"
+      ],
+      "columns": [
+        "metric_period",
+        "archived",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "archived"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"release_date\"_as_timestamp)_is_not_null",
+        "b.\"archived\"_is_not_null",
+        "j.\"description\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"archived\" IS NOT NULL",
+        "j.\"description\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira version analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"release_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.version b JOIN raw.project j ON b.\"project_id\" = j.id WHERE try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL AND b.\"archived\" IS NOT NULL AND j.\"description\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"release_date\" as timestamp)) as metric_period, count(*) as row_count from raw.version b join raw.project j on b.\"project_id\" = j.id where try_cast(b.\"release_date\" as timestamp) is not null and b.\"archived\" is not null and j.\"description\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_03",
+      "business_tag": "jira version analytics",
+      "frequency_weight": 1.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.version",
+        "raw.project"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"release_date\"_as_timestamp)_is_not_null",
+        "b.\"archived\"_is_not_null",
+        "j.\"description\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"archived\" IS NOT NULL",
+        "j.\"description\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "jira version analytics variant 3 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c03_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"release_date\" AS TIMESTAMP)) AS metric_period, b.\"archived\" AS archived, j.\"description\" AS project_description, COUNT(*) AS row_count FROM raw.version b JOIN raw.project j ON b.\"project_id\" = j.id WHERE try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL AND b.\"archived\" IS NOT NULL AND j.\"description\" IS NOT NULL GROUP BY metric_period, archived, project_description",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"release_date\" as timestamp)) as metric_period, b.\"archived\" as archived, j.\"description\" as project_description, count(*) as row_count from raw.version b join raw.project j on b.\"project_id\" = j.id where try_cast(b.\"release_date\" as timestamp) is not null and b.\"archived\" is not null and j.\"description\" is not null group by metric_period, archived, project_description",
+      "cluster_id": "schemaopt_hard_jira_cluster_03",
+      "business_tag": "jira version analytics",
+      "frequency_weight": 1.7,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.version",
+        "raw.project"
+      ],
+      "columns": [
+        "metric_period",
+        "archived",
+        "project_description",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "archived",
+        "project_description"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"release_date\"_as_timestamp)_is_not_null",
+        "b.\"archived\"_is_not_null",
+        "j.\"description\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"archived\" IS NOT NULL",
+        "j.\"description\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira version analytics variant 1 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c03_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"release_date\" AS TIMESTAMP)) AS metric_period, b.\"archived\" AS archived, COUNT(*) AS row_count FROM raw.version b JOIN raw.project j ON b.\"project_id\" = j.id WHERE try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL AND b.\"archived\" IS NOT NULL AND j.\"description\" IS NOT NULL GROUP BY metric_period, archived",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"release_date\" as timestamp)) as metric_period, b.\"archived\" as archived, count(*) as row_count from raw.version b join raw.project j on b.\"project_id\" = j.id where try_cast(b.\"release_date\" as timestamp) is not null and b.\"archived\" is not null and j.\"description\" is not null group by metric_period, archived",
+      "cluster_id": "schemaopt_hard_jira_cluster_03",
+      "business_tag": "jira version analytics",
+      "frequency_weight": 1.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.version",
+        "raw.project"
+      ],
+      "columns": [
+        "metric_period",
+        "archived",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "archived"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"release_date\"_as_timestamp)_is_not_null",
+        "b.\"archived\"_is_not_null",
+        "j.\"description\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"release_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"archived\" IS NOT NULL",
+        "j.\"description\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira version analytics variant 2 holdout 4"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c04_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"time_zone\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.user b WHERE try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL AND b.\"email\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"time_zone\" as timestamp)) as metric_period, count(*) as row_count from raw.user b where try_cast(b.\"time_zone\" as timestamp) is not null and b.\"email\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_04",
+      "business_tag": "jira user analytics",
+      "frequency_weight": 2.0,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.user"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"time_zone\"_as_timestamp)_is_not_null",
+        "b.\"email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "jira user analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c04_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"time_zone\" AS TIMESTAMP)) AS metric_period, b.\"email\" AS email, COUNT(*) AS row_count FROM raw.user b WHERE try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL AND b.\"email\" IS NOT NULL GROUP BY metric_period, email",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"time_zone\" as timestamp)) as metric_period, b.\"email\" as email, count(*) as row_count from raw.user b where try_cast(b.\"time_zone\" as timestamp) is not null and b.\"email\" is not null group by metric_period, email",
+      "cluster_id": "schemaopt_hard_jira_cluster_04",
+      "business_tag": "jira user analytics",
+      "frequency_weight": 2.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.user"
+      ],
+      "columns": [
+        "metric_period",
+        "email",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "email"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"time_zone\"_as_timestamp)_is_not_null",
+        "b.\"email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira user analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c04_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"time_zone\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.user b WHERE try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL AND b.\"email\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"time_zone\" as timestamp)) as metric_period, count(*) as row_count from raw.user b where try_cast(b.\"time_zone\" as timestamp) is not null and b.\"email\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_04",
+      "business_tag": "jira user analytics",
+      "frequency_weight": 2.0,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.user"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"time_zone\"_as_timestamp)_is_not_null",
+        "b.\"email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "jira user analytics variant 2 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c04_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"time_zone\" AS TIMESTAMP)) AS metric_period, b.\"email\" AS email, COUNT(*) AS row_count FROM raw.user b WHERE try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL AND b.\"email\" IS NOT NULL GROUP BY metric_period, email",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"time_zone\" as timestamp)) as metric_period, b.\"email\" as email, count(*) as row_count from raw.user b where try_cast(b.\"time_zone\" as timestamp) is not null and b.\"email\" is not null group by metric_period, email",
+      "cluster_id": "schemaopt_hard_jira_cluster_04",
+      "business_tag": "jira user analytics",
+      "frequency_weight": 2.1,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.user"
+      ],
+      "columns": [
+        "metric_period",
+        "email",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "email"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"time_zone\"_as_timestamp)_is_not_null",
+        "b.\"email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"time_zone\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira user analytics variant 1 holdout 4"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c05_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"complete_date\" AS TIMESTAMP)) AS metric_period, b.\"end_date\" AS end_date, COUNT(*) AS row_count FROM raw.sprint b JOIN raw.board j ON b.\"board_id\" = j.id WHERE try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL AND b.\"end_date\" IS NOT NULL AND j.\"name\" IS NOT NULL GROUP BY metric_period, end_date",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"complete_date\" as timestamp)) as metric_period, b.\"end_date\" as end_date, count(*) as row_count from raw.sprint b join raw.board j on b.\"board_id\" = j.id where try_cast(b.\"complete_date\" as timestamp) is not null and b.\"end_date\" is not null and j.\"name\" is not null group by metric_period, end_date",
+      "cluster_id": "schemaopt_hard_jira_cluster_05",
+      "business_tag": "jira sprint analytics",
+      "frequency_weight": 2.3,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.sprint",
+        "raw.board"
+      ],
+      "columns": [
+        "metric_period",
+        "end_date",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "end_date"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"complete_date\"_as_timestamp)_is_not_null",
+        "b.\"end_date\"_is_not_null",
+        "j.\"name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"end_date\" IS NOT NULL",
+        "j.\"name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira sprint analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c05_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"complete_date\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.sprint b JOIN raw.board j ON b.\"board_id\" = j.id WHERE try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL AND b.\"end_date\" IS NOT NULL AND j.\"name\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"complete_date\" as timestamp)) as metric_period, count(*) as row_count from raw.sprint b join raw.board j on b.\"board_id\" = j.id where try_cast(b.\"complete_date\" as timestamp) is not null and b.\"end_date\" is not null and j.\"name\" is not null group by metric_period",
+      "cluster_id": "schemaopt_hard_jira_cluster_05",
+      "business_tag": "jira sprint analytics",
+      "frequency_weight": 2.4,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sprint",
+        "raw.board"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"complete_date\"_as_timestamp)_is_not_null",
+        "b.\"end_date\"_is_not_null",
+        "j.\"name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"end_date\" IS NOT NULL",
+        "j.\"name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "jira sprint analytics variant 3 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c05_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"complete_date\" AS TIMESTAMP)) AS metric_period, b.\"end_date\" AS end_date, j.\"name\" AS board_name, COUNT(*) AS row_count FROM raw.sprint b JOIN raw.board j ON b.\"board_id\" = j.id WHERE try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL AND b.\"end_date\" IS NOT NULL AND j.\"name\" IS NOT NULL GROUP BY metric_period, end_date, board_name",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"complete_date\" as timestamp)) as metric_period, b.\"end_date\" as end_date, j.\"name\" as board_name, count(*) as row_count from raw.sprint b join raw.board j on b.\"board_id\" = j.id where try_cast(b.\"complete_date\" as timestamp) is not null and b.\"end_date\" is not null and j.\"name\" is not null group by metric_period, end_date, board_name",
+      "cluster_id": "schemaopt_hard_jira_cluster_05",
+      "business_tag": "jira sprint analytics",
+      "frequency_weight": 2.3,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.sprint",
+        "raw.board"
+      ],
+      "columns": [
+        "metric_period",
+        "end_date",
+        "board_name",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "end_date",
+        "board_name"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"complete_date\"_as_timestamp)_is_not_null",
+        "b.\"end_date\"_is_not_null",
+        "j.\"name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"end_date\" IS NOT NULL",
+        "j.\"name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira sprint analytics variant 1 holdout 3"
+    },
+    {
+      "query_id": "schemaopt_hard_jira_hq_c05_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"complete_date\" AS TIMESTAMP)) AS metric_period, b.\"end_date\" AS end_date, COUNT(*) AS row_count FROM raw.sprint b JOIN raw.board j ON b.\"board_id\" = j.id WHERE try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL AND b.\"end_date\" IS NOT NULL AND j.\"name\" IS NOT NULL GROUP BY metric_period, end_date",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"complete_date\" as timestamp)) as metric_period, b.\"end_date\" as end_date, count(*) as row_count from raw.sprint b join raw.board j on b.\"board_id\" = j.id where try_cast(b.\"complete_date\" as timestamp) is not null and b.\"end_date\" is not null and j.\"name\" is not null group by metric_period, end_date",
+      "cluster_id": "schemaopt_hard_jira_cluster_05",
+      "business_tag": "jira sprint analytics",
+      "frequency_weight": 2.4,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.sprint",
+        "raw.board"
+      ],
+      "columns": [
+        "metric_period",
+        "end_date",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "end_date"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"complete_date\"_as_timestamp)_is_not_null",
+        "b.\"end_date\"_is_not_null",
+        "j.\"name\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"complete_date\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"end_date\" IS NOT NULL",
+        "j.\"name\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "jira sprint analytics variant 2 holdout 4"
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": "schemaopt_hard_jira_cluster_05",
+      "label": "sprint workload",
+      "business_label": "jira sprint analytics",
+      "query_ids": [
+        "schemaopt_hard_jira_vq_c05_01",
+        "schemaopt_hard_jira_vq_c05_02",
+        "schemaopt_hard_jira_vq_c05_03",
+        "schemaopt_hard_jira_vq_c05_04",
+        "schemaopt_hard_jira_vq_c05_05",
+        "schemaopt_hard_jira_vq_c05_06",
+        "schemaopt_hard_jira_vq_c05_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 23.65,
+      "total_weighted_baseline_cost": 24.67,
+      "top_tables": [
+        "raw.sprint",
+        "raw.board"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "end_date",
+        "board_name"
+      ],
+      "representative_measures": [
+        "row_count"
+      ],
+      "hotspot_rank": 1,
+      "preferred_object_kind": "agg_matview"
+    },
+    {
+      "cluster_id": "schemaopt_hard_jira_cluster_04",
+      "label": "user workload",
+      "business_label": "jira user analytics",
+      "query_ids": [
+        "schemaopt_hard_jira_vq_c04_01",
+        "schemaopt_hard_jira_vq_c04_02",
+        "schemaopt_hard_jira_vq_c04_03",
+        "schemaopt_hard_jira_vq_c04_04",
+        "schemaopt_hard_jira_vq_c04_05",
+        "schemaopt_hard_jira_vq_c04_06",
+        "schemaopt_hard_jira_vq_c04_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 20.5,
+      "total_weighted_baseline_cost": 21.385,
+      "top_tables": [
+        "raw.user"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "email"
+      ],
+      "representative_measures": [
+        "row_count"
+      ],
+      "hotspot_rank": 2,
+      "preferred_object_kind": "join_matview"
+    },
+    {
+      "cluster_id": "schemaopt_hard_jira_cluster_03",
+      "label": "version workload",
+      "business_label": "jira version analytics",
+      "query_ids": [
+        "schemaopt_hard_jira_vq_c03_01",
+        "schemaopt_hard_jira_vq_c03_02",
+        "schemaopt_hard_jira_vq_c03_03",
+        "schemaopt_hard_jira_vq_c03_04",
+        "schemaopt_hard_jira_vq_c03_05",
+        "schemaopt_hard_jira_vq_c03_06",
+        "schemaopt_hard_jira_vq_c03_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 17.35,
+      "total_weighted_baseline_cost": 18.1,
+      "top_tables": [
+        "raw.version",
+        "raw.project"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "archived",
+        "project_description"
+      ],
+      "representative_measures": [
+        "row_count"
+      ],
+      "hotspot_rank": 3,
+      "preferred_object_kind": "agg_matview"
+    },
+    {
+      "cluster_id": "schemaopt_hard_jira_cluster_02",
+      "label": "comment workload",
+      "business_label": "jira comment analytics",
+      "query_ids": [
+        "schemaopt_hard_jira_vq_c02_01",
+        "schemaopt_hard_jira_vq_c02_02",
+        "schemaopt_hard_jira_vq_c02_03",
+        "schemaopt_hard_jira_vq_c02_04",
+        "schemaopt_hard_jira_vq_c02_05",
+        "schemaopt_hard_jira_vq_c02_06",
+        "schemaopt_hard_jira_vq_c02_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 14.2,
+      "total_weighted_baseline_cost": 14.815,
+      "top_tables": [
+        "raw.comment",
+        "raw.issue"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "body",
+        "issue_assignee"
+      ],
+      "representative_measures": [
+        "row_count"
+      ],
+      "hotspot_rank": 4,
+      "preferred_object_kind": "denorm_table"
+    },
+    {
+      "cluster_id": "schemaopt_hard_jira_cluster_01",
+      "label": "issue workload",
+      "business_label": "jira issue analytics",
+      "query_ids": [
+        "schemaopt_hard_jira_vq_c01_01",
+        "schemaopt_hard_jira_vq_c01_02",
+        "schemaopt_hard_jira_vq_c01_03",
+        "schemaopt_hard_jira_vq_c01_04",
+        "schemaopt_hard_jira_vq_c01_05",
+        "schemaopt_hard_jira_vq_c01_06",
+        "schemaopt_hard_jira_vq_c01_07"
+      ],
+      "query_count": 7,
+      "total_frequency_weight": 11.05,
+      "total_weighted_baseline_cost": 11.53,
+      "top_tables": [
+        "raw.issue"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "assignee"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum__original_estimate"
+      ],
+      "hotspot_rank": 5,
+      "preferred_object_kind": "agg_matview"
+    }
+  ],
+  "budgets": {
+    "max_new_derived_objects": 5,
+    "max_storage_bytes": 40000000,
+    "max_refresh_runtime_ms": 25000.0,
+    "max_steps": 30
+  },
+  "allowed_object_kinds": [
+    "join_matview",
+    "agg_matview",
+    "filtered_projection",
+    "denorm_table"
+  ],
+  "engine_capabilities": {
+    "engine": "duckdb",
+    "uses_real_duckdb_database": true,
+    "uses_real_query_execution": true,
+    "uses_explain_plan_metrics": true,
+    "rewrite_model": "explicit_rewritten_sql"
+  }
+}

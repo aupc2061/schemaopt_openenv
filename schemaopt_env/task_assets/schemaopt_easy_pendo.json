@@ -1,0 +1,2029 @@
+{
+  "task_id": "schemaopt_easy_pendo",
+  "difficulty": "easy",
+  "domain": "pendo",
+  "objective": "Optimize the pendo workload over the real DuckDB source database by materializing derived objects that reduce measured execution cost while preserving exact query results.",
+  "seed_source": "datasets/dacomp-de/dacomp-de-impl-002",
+  "dataset_dir": "datasets/dacomp-de/dacomp-de-impl-002",
+  "database_path": "datasets/dacomp-de/dacomp-de-impl-002/pendo_start.duckdb",
+  "tables": [
+    {
+      "name": "raw.account_history",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "agent_creationdate",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "agent_group_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "agent_is_paying",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "agent_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "agent_planlevel",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "first_visit",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id_hash",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "last_visit",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "salesforce_status_c",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "agent_salesforceaccountid",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "salesforce_customer_health_engagement_score_c",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "salesforce_employee_range_c",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "salesforce_platform_level_c",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "salesforce_segment_c",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "salesforce_name",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "salesforce_account_owner_email_c",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "salesforce_pbf_account_c",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "salesforce_region_c",
+          "type": "DOUBLE"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.application_history",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "agent_policy_prod",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "agent_policy_staging",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "agent_version_prod",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "agent_version_staging",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "application_flags_cname",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "application_flags_disabled",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "application_flags_guide_localization",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "application_flags_guide_widget",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "application_flags_onboarding",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "application_flags_prevent_code_injection",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "application_flags_show_guides_to_anon",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "application_flags_xhr_timings",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_by_user_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "description",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "disabled_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "display_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "event_count",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "event_rate",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "first_event_time",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "guide_css_url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "icon_url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "integrated",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "is_deleted",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "last_updated_by_user_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "marked_for_deletion_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "platform",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "push_application_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "record_until",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "sampling_rate",
+          "type": "BIGINT"
+        },
+        {
+          "name": "starting_event_time",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "store_url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subscription_id",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.event",
+      "columns": [
+        {
+          "name": "account_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "remote_ip",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "server_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "visitor_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "num_events",
+          "type": "BIGINT"
+        },
+        {
+          "name": "num_minutes",
+          "type": "BIGINT"
+        },
+        {
+          "name": "page_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.feature_event",
+      "columns": [
+        {
+          "name": "account_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "feature_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "remote_ip",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "server_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "visitor_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "num_events",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "num_minutes",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "param_parameter",
+          "type": "DOUBLE"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.feature_history",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "color",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_by_user_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "dirty",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "group_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "last_updated_by_user_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "page_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "root_version_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "stable_version_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "valid_through",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_core_event",
+          "type": "BOOLEAN"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.group_data",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "color",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_by_user_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "description",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "last_updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_updated_by_user_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "length",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.guide_event",
+      "columns": [
+        {
+          "name": "account_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "guide_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "remote_ip",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "server_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "visitor_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "element_path",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "event_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "guide_step_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "latitude",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "load_time",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "longitude",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "region",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "url",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.guide_history",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "attribute_badge_can_change_badge_color",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_badge_color",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_badge_height",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_badge_image_url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "attribute_badge_is_only_show_once",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_badge_name",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_badge_offset_left",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_badge_offset_right",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_badge_offset_top",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_badge_position",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_badge_show_on_event",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_badge_use_hover",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_badge_width",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_device_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "attribute_priority",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_by_user_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "email_state",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_multi_step",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "is_training",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "last_updated_by_user_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "launch_method",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "published_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "recurrence",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "recurrence_eligibility_window",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "reset_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "root_version_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "stable_version_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "state",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.guide_step_history",
+      "columns": [
+        {
+          "name": "guide_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "guide_last_updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "step_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.page_event",
+      "columns": [
+        {
+          "name": "account_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "page_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "remote_ip",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "server_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "visitor_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "num_events",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "num_minutes",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "param_parameter",
+          "type": "DOUBLE"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.page_history",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "color",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_by_user_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "dirty",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "group_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "last_updated_by_user_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "root_version_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "stable_version_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "valid_through",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.page_rule_history",
+      "columns": [
+        {
+          "name": "page_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "page_last_updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "rule",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "designer_hint",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "parsed_rule",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.poll",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "attribute_display",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_follow_up",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "attribute_max_length",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_placeholder",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "attribute_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "question",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "reset_at",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.poll_event",
+      "columns": [
+        {
+          "name": "account_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "guide_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "poll_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "remote_ip",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "server_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "timestamp",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_agent",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "visitor_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "app_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "element_path",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "event_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "guide_step_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "latitude",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "load_time",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "longitude",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "poll_response",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "region",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "url",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.user",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "deleted_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "first_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "username",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.visitor_account_history",
+      "columns": [
+        {
+          "name": "account_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "visitor_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "visitor_last_updated_at",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.visitor_history",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "account_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "agent_email",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "agent_full_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "agent_group_role",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "agent_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "agent_role",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "first_visit",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "id_hash",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "last_browser_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_browser_version",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "last_operating_system",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_server_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_user_agent",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_visit",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "n_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "salesforce_country_c",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "salesforce_job_function_c",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "salesforce_job_level_c",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "salesforce_name",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "agent_language",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "pendo_lastemail",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "pendo_lastemailstatus",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    }
+  ],
+  "visible_queries": [
+    {
+      "query_id": "schemaopt_easy_pendo_vq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, b.\"agent_policy_prod\" AS agent_policy_prod, COUNT(*) AS row_count, SUM(b.\"description\") AS sum_description FROM raw.application_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"agent_policy_prod\" IS NOT NULL GROUP BY metric_period, agent_policy_prod",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, b.\"agent_policy_prod\" as agent_policy_prod, count(*) as row_count, sum(b.\"description\") as sum_description from raw.application_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"agent_policy_prod\" is not null group by metric_period, agent_policy_prod",
+      "cluster_id": "schemaopt_easy_pendo_cluster_01",
+      "business_tag": "pendo application_history analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.application_history"
+      ],
+      "columns": [
+        "metric_period",
+        "agent_policy_prod",
+        "row_count",
+        "sum_description"
+      ],
+      "group_by": [
+        "metric_period",
+        "agent_policy_prod"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"agent_policy_prod\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"agent_policy_prod\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_description"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "pendo application_history analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_vq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"description\") AS sum_description FROM raw.application_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"agent_policy_prod\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"description\") as sum_description from raw.application_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"agent_policy_prod\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_pendo_cluster_01",
+      "business_tag": "pendo application_history analytics",
+      "frequency_weight": 1.6,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.application_history"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_description"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"agent_policy_prod\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"agent_policy_prod\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_description"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "pendo application_history analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_vq_c01_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, b.\"agent_policy_prod\" AS agent_policy_prod, COUNT(*) AS row_count, SUM(b.\"description\") AS sum_description FROM raw.application_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"agent_policy_prod\" IS NOT NULL GROUP BY metric_period, agent_policy_prod",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, b.\"agent_policy_prod\" as agent_policy_prod, count(*) as row_count, sum(b.\"description\") as sum_description from raw.application_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"agent_policy_prod\" is not null group by metric_period, agent_policy_prod",
+      "cluster_id": "schemaopt_easy_pendo_cluster_01",
+      "business_tag": "pendo application_history analytics",
+      "frequency_weight": 1.75,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.application_history"
+      ],
+      "columns": [
+        "metric_period",
+        "agent_policy_prod",
+        "row_count",
+        "sum_description"
+      ],
+      "group_by": [
+        "metric_period",
+        "agent_policy_prod"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"agent_policy_prod\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"agent_policy_prod\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_description"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "pendo application_history analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_vq_c01_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"description\") AS sum_description FROM raw.application_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"agent_policy_prod\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"description\") as sum_description from raw.application_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"agent_policy_prod\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_pendo_cluster_01",
+      "business_tag": "pendo application_history analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.application_history"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_description"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"agent_policy_prod\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"agent_policy_prod\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_description"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "pendo application_history analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_vq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, b.\"attribute_badge_image_url\" AS attribute_badge_image_url, COUNT(*) AS row_count, SUM(b.\"attribute_badge_can_change_badge_color\") AS sum_attribute_badge_can_change_badge_color FROM raw.guide_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"attribute_badge_image_url\" IS NOT NULL GROUP BY metric_period, attribute_badge_image_url",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, b.\"attribute_badge_image_url\" as attribute_badge_image_url, count(*) as row_count, sum(b.\"attribute_badge_can_change_badge_color\") as sum_attribute_badge_can_change_badge_color from raw.guide_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"attribute_badge_image_url\" is not null group by metric_period, attribute_badge_image_url",
+      "cluster_id": "schemaopt_easy_pendo_cluster_02",
+      "business_tag": "pendo guide_history analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.guide_history"
+      ],
+      "columns": [
+        "metric_period",
+        "attribute_badge_image_url",
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "group_by": [
+        "metric_period",
+        "attribute_badge_image_url"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"attribute_badge_image_url\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"attribute_badge_image_url\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "pendo guide_history analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_vq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"attribute_badge_can_change_badge_color\") AS sum_attribute_badge_can_change_badge_color FROM raw.guide_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"attribute_badge_image_url\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"attribute_badge_can_change_badge_color\") as sum_attribute_badge_can_change_badge_color from raw.guide_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"attribute_badge_image_url\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_pendo_cluster_02",
+      "business_tag": "pendo guide_history analytics",
+      "frequency_weight": 2.05,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.guide_history"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"attribute_badge_image_url\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"attribute_badge_image_url\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "pendo guide_history analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_vq_c02_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, b.\"attribute_badge_image_url\" AS attribute_badge_image_url, COUNT(*) AS row_count, SUM(b.\"attribute_badge_can_change_badge_color\") AS sum_attribute_badge_can_change_badge_color FROM raw.guide_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"attribute_badge_image_url\" IS NOT NULL GROUP BY metric_period, attribute_badge_image_url",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, b.\"attribute_badge_image_url\" as attribute_badge_image_url, count(*) as row_count, sum(b.\"attribute_badge_can_change_badge_color\") as sum_attribute_badge_can_change_badge_color from raw.guide_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"attribute_badge_image_url\" is not null group by metric_period, attribute_badge_image_url",
+      "cluster_id": "schemaopt_easy_pendo_cluster_02",
+      "business_tag": "pendo guide_history analytics",
+      "frequency_weight": 2.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.guide_history"
+      ],
+      "columns": [
+        "metric_period",
+        "attribute_badge_image_url",
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "group_by": [
+        "metric_period",
+        "attribute_badge_image_url"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"attribute_badge_image_url\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"attribute_badge_image_url\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "pendo guide_history analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_vq_c02_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"attribute_badge_can_change_badge_color\") AS sum_attribute_badge_can_change_badge_color FROM raw.guide_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"attribute_badge_image_url\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"attribute_badge_can_change_badge_color\") as sum_attribute_badge_can_change_badge_color from raw.guide_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"attribute_badge_image_url\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_pendo_cluster_02",
+      "business_tag": "pendo guide_history analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.guide_history"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"attribute_badge_image_url\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"attribute_badge_image_url\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "pendo guide_history analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_vq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, b.\"agent_email\" AS agent_email, COUNT(*) AS row_count, SUM(b.\"agent_group_role\") AS sum_agent_group_role FROM raw.visitor_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"agent_email\" IS NOT NULL GROUP BY metric_period, agent_email",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, b.\"agent_email\" as agent_email, count(*) as row_count, sum(b.\"agent_group_role\") as sum_agent_group_role from raw.visitor_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"agent_email\" is not null group by metric_period, agent_email",
+      "cluster_id": "schemaopt_easy_pendo_cluster_03",
+      "business_tag": "pendo visitor_history analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.visitor_history"
+      ],
+      "columns": [
+        "metric_period",
+        "agent_email",
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "group_by": [
+        "metric_period",
+        "agent_email"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"agent_email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"agent_email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "pendo visitor_history analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_vq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"agent_group_role\") AS sum_agent_group_role FROM raw.visitor_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"agent_email\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"agent_group_role\") as sum_agent_group_role from raw.visitor_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"agent_email\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_pendo_cluster_03",
+      "business_tag": "pendo visitor_history analytics",
+      "frequency_weight": 2.5,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.visitor_history"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"agent_email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"agent_email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "pendo visitor_history analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_vq_c03_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, b.\"agent_email\" AS agent_email, COUNT(*) AS row_count, SUM(b.\"agent_group_role\") AS sum_agent_group_role FROM raw.visitor_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"agent_email\" IS NOT NULL GROUP BY metric_period, agent_email",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, b.\"agent_email\" as agent_email, count(*) as row_count, sum(b.\"agent_group_role\") as sum_agent_group_role from raw.visitor_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"agent_email\" is not null group by metric_period, agent_email",
+      "cluster_id": "schemaopt_easy_pendo_cluster_03",
+      "business_tag": "pendo visitor_history analytics",
+      "frequency_weight": 2.65,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.visitor_history"
+      ],
+      "columns": [
+        "metric_period",
+        "agent_email",
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "group_by": [
+        "metric_period",
+        "agent_email"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"agent_email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"agent_email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "pendo visitor_history analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_vq_c03_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"agent_group_role\") AS sum_agent_group_role FROM raw.visitor_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"agent_email\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"agent_group_role\") as sum_agent_group_role from raw.visitor_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"agent_email\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_pendo_cluster_03",
+      "business_tag": "pendo visitor_history analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.visitor_history"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"agent_email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"agent_email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "pendo visitor_history analytics variant 2 visible 4"
+    }
+  ],
+  "holdout_queries": [
+    {
+      "query_id": "schemaopt_easy_pendo_hq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"description\") AS sum_description FROM raw.application_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"agent_policy_prod\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"description\") as sum_description from raw.application_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"agent_policy_prod\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_pendo_cluster_01",
+      "business_tag": "pendo application_history analytics",
+      "frequency_weight": 1.1,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.application_history"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_description"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"agent_policy_prod\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"agent_policy_prod\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_description"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "pendo application_history analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_hq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, b.\"agent_policy_prod\" AS agent_policy_prod, COUNT(*) AS row_count, SUM(b.\"description\") AS sum_description FROM raw.application_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"agent_policy_prod\" IS NOT NULL GROUP BY metric_period, agent_policy_prod",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, b.\"agent_policy_prod\" as agent_policy_prod, count(*) as row_count, sum(b.\"description\") as sum_description from raw.application_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"agent_policy_prod\" is not null group by metric_period, agent_policy_prod",
+      "cluster_id": "schemaopt_easy_pendo_cluster_01",
+      "business_tag": "pendo application_history analytics",
+      "frequency_weight": 1.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.application_history"
+      ],
+      "columns": [
+        "metric_period",
+        "agent_policy_prod",
+        "row_count",
+        "sum_description"
+      ],
+      "group_by": [
+        "metric_period",
+        "agent_policy_prod"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"agent_policy_prod\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"agent_policy_prod\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_description"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "pendo application_history analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_hq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"attribute_badge_can_change_badge_color\") AS sum_attribute_badge_can_change_badge_color FROM raw.guide_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"attribute_badge_image_url\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"attribute_badge_can_change_badge_color\") as sum_attribute_badge_can_change_badge_color from raw.guide_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"attribute_badge_image_url\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_pendo_cluster_02",
+      "business_tag": "pendo guide_history analytics",
+      "frequency_weight": 1.4,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.guide_history"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"attribute_badge_image_url\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"attribute_badge_image_url\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "pendo guide_history analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_hq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, b.\"attribute_badge_image_url\" AS attribute_badge_image_url, COUNT(*) AS row_count, SUM(b.\"attribute_badge_can_change_badge_color\") AS sum_attribute_badge_can_change_badge_color FROM raw.guide_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"attribute_badge_image_url\" IS NOT NULL GROUP BY metric_period, attribute_badge_image_url",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, b.\"attribute_badge_image_url\" as attribute_badge_image_url, count(*) as row_count, sum(b.\"attribute_badge_can_change_badge_color\") as sum_attribute_badge_can_change_badge_color from raw.guide_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"attribute_badge_image_url\" is not null group by metric_period, attribute_badge_image_url",
+      "cluster_id": "schemaopt_easy_pendo_cluster_02",
+      "business_tag": "pendo guide_history analytics",
+      "frequency_weight": 1.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.guide_history"
+      ],
+      "columns": [
+        "metric_period",
+        "attribute_badge_image_url",
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "group_by": [
+        "metric_period",
+        "attribute_badge_image_url"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"attribute_badge_image_url\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"attribute_badge_image_url\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "pendo guide_history analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_hq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"agent_group_role\") AS sum_agent_group_role FROM raw.visitor_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"agent_email\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"agent_group_role\") as sum_agent_group_role from raw.visitor_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"agent_email\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_pendo_cluster_03",
+      "business_tag": "pendo visitor_history analytics",
+      "frequency_weight": 1.7,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.visitor_history"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"agent_email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"agent_email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "pendo visitor_history analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_easy_pendo_hq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"last_updated_at\" AS TIMESTAMP)) AS metric_period, b.\"agent_email\" AS agent_email, COUNT(*) AS row_count, SUM(b.\"agent_group_role\") AS sum_agent_group_role FROM raw.visitor_history b WHERE try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL AND b.\"agent_email\" IS NOT NULL GROUP BY metric_period, agent_email",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"last_updated_at\" as timestamp)) as metric_period, b.\"agent_email\" as agent_email, count(*) as row_count, sum(b.\"agent_group_role\") as sum_agent_group_role from raw.visitor_history b where try_cast(b.\"last_updated_at\" as timestamp) is not null and b.\"agent_email\" is not null group by metric_period, agent_email",
+      "cluster_id": "schemaopt_easy_pendo_cluster_03",
+      "business_tag": "pendo visitor_history analytics",
+      "frequency_weight": 1.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.visitor_history"
+      ],
+      "columns": [
+        "metric_period",
+        "agent_email",
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "group_by": [
+        "metric_period",
+        "agent_email"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"last_updated_at\"_as_timestamp)_is_not_null",
+        "b.\"agent_email\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"last_updated_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"agent_email\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "pendo visitor_history analytics variant 1 holdout 2"
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": "schemaopt_easy_pendo_cluster_03",
+      "label": "visitor_history workload",
+      "business_label": "pendo visitor_history analytics",
+      "query_ids": [
+        "schemaopt_easy_pendo_vq_c03_01",
+        "schemaopt_easy_pendo_vq_c03_02",
+        "schemaopt_easy_pendo_vq_c03_03",
+        "schemaopt_easy_pendo_vq_c03_04"
+      ],
+      "query_count": 4,
+      "total_frequency_weight": 9.85,
+      "total_weighted_baseline_cost": 10.335,
+      "top_tables": [
+        "raw.visitor_history"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "agent_email"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_agent_group_role"
+      ],
+      "hotspot_rank": 1,
+      "preferred_object_kind": "agg_matview"
+    },
+    {
+      "cluster_id": "schemaopt_easy_pendo_cluster_02",
+      "label": "guide_history workload",
+      "business_label": "pendo guide_history analytics",
+      "query_ids": [
+        "schemaopt_easy_pendo_vq_c02_01",
+        "schemaopt_easy_pendo_vq_c02_02",
+        "schemaopt_easy_pendo_vq_c02_03",
+        "schemaopt_easy_pendo_vq_c02_04"
+      ],
+      "query_count": 4,
+      "total_frequency_weight": 8.05,
+      "total_weighted_baseline_cost": 8.445,
+      "top_tables": [
+        "raw.guide_history"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "attribute_badge_image_url"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_attribute_badge_can_change_badge_color"
+      ],
+      "hotspot_rank": 2,
+      "preferred_object_kind": "denorm_table"
+    },
+    {
+      "cluster_id": "schemaopt_easy_pendo_cluster_01",
+      "label": "application_history workload",
+      "business_label": "pendo application_history analytics",
+      "query_ids": [
+        "schemaopt_easy_pendo_vq_c01_01",
+        "schemaopt_easy_pendo_vq_c01_02",
+        "schemaopt_easy_pendo_vq_c01_03",
+        "schemaopt_easy_pendo_vq_c01_04"
+      ],
+      "query_count": 4,
+      "total_frequency_weight": 6.25,
+      "total_weighted_baseline_cost": 6.555,
+      "top_tables": [
+        "raw.application_history"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "agent_policy_prod"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_description"
+      ],
+      "hotspot_rank": 3,
+      "preferred_object_kind": "agg_matview"
+    }
+  ],
+  "budgets": {
+    "max_new_derived_objects": 3,
+    "max_storage_bytes": 12000000,
+    "max_refresh_runtime_ms": 8000.0,
+    "max_steps": 18
+  },
+  "allowed_object_kinds": [
+    "join_matview",
+    "agg_matview",
+    "filtered_projection",
+    "denorm_table"
+  ],
+  "engine_capabilities": {
+    "engine": "duckdb",
+    "uses_real_duckdb_database": true,
+    "uses_real_query_execution": true,
+    "uses_explain_plan_metrics": true,
+    "rewrite_model": "explicit_rewritten_sql"
+  }
+}

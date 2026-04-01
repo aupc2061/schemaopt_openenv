@@ -1,135 +1,26 @@
-"""Core schema optimization environment implementation."""
+
+"""Core schema optimization environment implementation backed by real DuckDB workloads."""
 
 from __future__ import annotations
 
 import copy
 from dataclasses import dataclass, field
-import math
+import hashlib
+import json
+from pathlib import Path
 import re
-from typing import Any, Dict, Generic, List, Optional, Sequence, TypeVar
+import shutil
+import tempfile
+import time
+from typing import Any, Dict, Generic, List, Optional, Sequence, Tuple, TypeVar
 from uuid import uuid4
 
 try:
     from ..models import SchemaOptAction, SchemaOptObservation, SchemaOptState
-    from ..tasks import (
-        TASK_CATALOG,
-        ClusterSpec,
-        QuerySpec,
-        TaskSpec,
-        cluster_lookup,
-        get_task,
-        match_queries,
-        query_lookup,
-        similar_query_ids,
-        visible_queries_for_cluster,
-    )
+    from ..tasks import TASK_CATALOG, QuerySpec, TaskSpec, cluster_lookup, get_task, match_queries, query_lookup, similar_query_ids, visible_queries_for_cluster
 except ImportError:
     from models import SchemaOptAction, SchemaOptObservation, SchemaOptState
-    from tasks import (
-        TASK_CATALOG,
-        ClusterSpec,
-        QuerySpec,
-        TaskSpec,
-        cluster_lookup,
-        get_task,
-        match_queries,
-        query_lookup,
-        similar_query_ids,
-        visible_queries_for_cluster,
-    )
-
-
-def _extract_select_aliases(sql: str) -> List[str]:
-    match = re.search(r"select\s+(.*?)\s+from\s", sql, re.IGNORECASE | re.DOTALL)
-    if not match:
-        return []
-    select_clause = match.group(1)
-    parts = re.split(r",(?![^()]*\))", select_clause)
-    aliases: List[str] = []
-    for part in parts:
-        cleaned = part.strip()
-        alias_match = re.search(r"\bas\s+([A-Za-z_][A-Za-z0-9_]*)\s*$", cleaned, re.IGNORECASE)
-        if alias_match:
-            aliases.append(alias_match.group(1).strip().lower())
-        else:
-            aliases.append(cleaned.split(".")[-1].split()[-1].strip('"').lower())
-    return aliases
-
-
-try:
-    import duckdb
-except ImportError:
-    class _FakeDuckDBConnection:
-        def __init__(self):
-            self.tables: Dict[str, Dict[str, Any]] = {}
-            self.description = None
-            self._last_fetchone = (0,)
-
-        def execute(self, sql: str):
-            normalized = " ".join(sql.strip().split())
-            lowered = normalized.lower()
-            if lowered.startswith("create schema"):
-                self.description = None
-                return self
-            if lowered.startswith("drop table if exists"):
-                name = normalized.split()[-1].lower()
-                self.tables.pop(name, None)
-                self.description = None
-                return self
-            if lowered.startswith("create table") and " as (" not in lowered:
-                name = normalized.split()[2].lower()
-                columns_section = normalized[normalized.find("(") + 1 : normalized.rfind(")")]
-                columns = [part.strip().split()[0].strip('"').lower() for part in columns_section.split(",")]
-                self.tables[name] = {"columns": columns, "rows": []}
-                self.description = None
-                return self
-            if lowered.startswith("create table") and " as (" in lowered:
-                name = normalized.split()[2].lower()
-                body = sql[sql.lower().find("as (") + 4 :].strip()
-                if body.startswith("("):
-                    body = body[1:]
-                if body.endswith(")"):
-                    body = body[:-1]
-                columns = _extract_select_aliases(body) or ["col1"]
-                rows = [tuple(None for _ in columns) for _ in range(3)]
-                self.tables[name] = {"columns": columns, "rows": rows}
-                self.description = [(column, None, None, None, None, None, None) for column in columns]
-                self._last_fetchone = (len(rows),)
-                return self
-            if lowered.startswith("select count(*) from"):
-                name = normalized.split()[-1].lower()
-                row_count = len(self.tables.get(name, {}).get("rows", []))
-                self._last_fetchone = (row_count,)
-                self.description = [("count", None, None, None, None, None, None)]
-                return self
-            if lowered.startswith("select * from") and "limit 0" in lowered:
-                name = normalized.split()[3].lower()
-                columns = self.tables.get(name, {}).get("columns", [])
-                self.description = [(column, None, None, None, None, None, None) for column in columns]
-                return self
-            raise ValueError(f"Unsupported SQL in local fallback connection: {sql}")
-
-        def executemany(self, sql: str, rows: Sequence[Sequence[Any]]):
-            normalized = " ".join(sql.strip().split())
-            table_name = normalized.split()[2].lower()
-            entry = self.tables.setdefault(table_name, {"columns": [], "rows": []})
-            entry["rows"].extend(list(rows))
-            return self
-
-        def fetchone(self):
-            return self._last_fetchone
-
-        def close(self):
-            return None
-
-    class _DuckDBModule:
-        DuckDBPyConnection = _FakeDuckDBConnection
-
-        @staticmethod
-        def connect(database: str = ":memory:") -> _FakeDuckDBConnection:
-            return _FakeDuckDBConnection()
-
-    duckdb = _DuckDBModule()
+    from tasks import TASK_CATALOG, QuerySpec, TaskSpec, cluster_lookup, get_task, match_queries, query_lookup, similar_query_ids, visible_queries_for_cluster
 
 try:
     from openenv.core.env_server.interfaces import Environment
@@ -139,222 +30,191 @@ except ImportError:
         from openenv_core.env_server.interfaces import Environment
         from openenv_core.env_server.types import State
     except ImportError:
-        _A = TypeVar('_A')
-        _O = TypeVar('_O')
-        _S = TypeVar('_S')
-
+        _A = TypeVar("_A")
+        _O = TypeVar("_O")
+        _S = TypeVar("_S")
         class Environment(Generic[_A, _O, _S]):
             pass
-
         State = SchemaOptState
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+_BLOCKING = {"HASH_GROUP_BY", "PERFECT_HASH_GROUP_BY", "SORT", "WINDOW", "DISTINCT", "TOP_N", "ORDER_BY", "AGGREGATE"}
 
+@dataclass
+class PlanArtifact:
+    raw_explain_text: str
+    raw_explain_json: Any
+    plan_depth: int
+    operator_count: int
+    join_count: int
+    blocking_operator_count: int
+    operators: List[str]
+    def summary(self) -> Dict[str, Any]:
+        return {"raw_explain_text": self.raw_explain_text, "plan_depth": self.plan_depth, "operator_count": self.operator_count, "join_count": self.join_count, "blocking_operator_count": self.blocking_operator_count, "operators": list(self.operators)}
+
+@dataclass
+class QueryExecution:
+    runtime_ms: float
+    plan: PlanArtifact
+    column_names: List[str]
+    rows: List[Tuple[Any, ...]]
+
+@dataclass
+class ParsedSQL:
+    tables: List[str]
+    projection_aliases: List[str]
+    group_by: List[str]
+    filter_predicates: List[str]
+    measure_columns: List[str]
+    aggregate_functions: List[str]
 
 @dataclass
 class DerivedObject:
-    """Derived logical structure created by the agent."""
-
     name: str
     object_kind: str
     sql_definition: str
     source_objects: List[str]
     grain_dims: List[str]
-    intended_clusters: List[str]
-    routing_tags: List[str]
     available_columns: List[str]
+    column_types: Dict[str, str]
+    parsed_sql: ParsedSQL
     row_count: int
-    storage_multiplier: float
-    refresh_cost: float
-    validation_error: Optional[str] = None
+    storage_bytes_estimate: int
+    build_runtime_ms: float
     used_by_visible_queries: set[str] = field(default_factory=set)
     used_by_clusters: set[str] = field(default_factory=set)
-
-    @property
-    def qualified_name(self) -> str:
-        return f"derived.{self.name}"
-
-    @property
-    def filter_tags(self) -> set[str]:
-        return {tag for tag in self.routing_tags if "=" in tag or tag.startswith("window=")}
-
-    @property
-    def feature_tags(self) -> set[str]:
-        return {tag for tag in self.routing_tags if tag not in self.filter_tags}
-
     def summary(self) -> Dict[str, Any]:
-        return {
-            "name": self.name,
-            "object_kind": self.object_kind,
-            "source_objects": list(self.source_objects),
-            "grain_dims": list(self.grain_dims),
-            "intended_clusters": list(self.intended_clusters),
-            "routing_tags": list(self.routing_tags),
-            "available_columns": list(self.available_columns),
-            "row_count": self.row_count,
-            "storage_multiplier": self.storage_multiplier,
-            "refresh_cost": self.refresh_cost,
-            "used_by_visible_queries": sorted(self.used_by_visible_queries),
-            "used_by_clusters": sorted(self.used_by_clusters),
-            "validation_error": self.validation_error,
-        }
-
-
-@dataclass
-class RouteDecision:
-    """Route evaluation for a single query."""
-
-    query_id: str
-    routed: bool
-    object_name: Optional[str]
-    runtime_ms: float
-    plan_depth: int
-    operator_count: int
-    join_complexity: int
-    blocking_complexity: int
-    correctness_pass: bool
-    semantic_score: float
-    route_reason: str
-
-    def summary(self) -> Dict[str, Any]:
-        return {
-            "query_id": self.query_id,
-            "routed": self.routed,
-            "object_name": self.object_name,
-            "runtime_ms": self.runtime_ms,
-            "plan_depth": self.plan_depth,
-            "operator_count": self.operator_count,
-            "join_complexity": self.join_complexity,
-            "blocking_complexity": self.blocking_complexity,
-            "correctness_pass": self.correctness_pass,
-            "semantic_score": self.semantic_score,
-            "route_reason": self.route_reason,
-        }
-
+        return {"name": self.name, "object_kind": self.object_kind, "source_objects": list(self.source_objects), "grain_dims": list(self.grain_dims), "available_columns": list(self.available_columns), "row_count": self.row_count, "storage_bytes_estimate": self.storage_bytes_estimate, "build_runtime_ms": round(self.build_runtime_ms, 4), "used_by_visible_queries": sorted(self.used_by_visible_queries), "used_by_clusters": sorted(self.used_by_clusters)}
 
 class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, SchemaOptState]):
-    """Standalone OpenEnv benchmark for workload-adaptive schema optimization."""
-
     SUPPORTS_CONCURRENT_SESSIONS: bool = True
-    LAST_GRADER_REPORT: Dict[str, Any] = {
-        "available": False,
-        "reason": "No episode executed yet.",
-    }
+    LAST_GRADER_REPORT: Dict[str, Any] = {"available": False, "reason": "No episode executed yet."}
 
     def __init__(self):
-        self._state = SchemaOptState(episode_id=str(uuid4()), step_count=0)
-        self._task_catalog = TASK_CATALOG
-        self._task: TaskSpec = get_task("schemaopt_easy_lever")
+        first_task = next(iter(TASK_CATALOG.keys()), None)
+        self._task: Optional[TaskSpec] = get_task(first_task) if first_task else None
         self._visible_query_lookup: Dict[str, QuerySpec] = {}
         self._all_query_lookup: Dict[str, QuerySpec] = {}
-        self._cluster_lookup: Dict[str, ClusterSpec] = {}
+        self._cluster_lookup: Dict[str, Any] = {}
         self._derived_objects: Dict[str, DerivedObject] = {}
         self._checkpoints: List[Dict[str, Any]] = []
         self._retrieval_context: Dict[str, Any] = {}
         self._benchmark_context: Dict[str, Any] = {}
-        self._last_error_signature: Optional[str] = None
         self._last_feedback: Dict[str, Any] = {}
-        self._latest_visible_benchmark: Dict[str, Any] = {"gated_improvement": 0.0, "correctness_coverage": 1.0}
-        self._last_failed_object_name: Optional[str] = None
-        self._con: Optional[duckdb.DuckDBPyConnection] = None
+        self._base_table_stats: Dict[str, Dict[str, Any]] = {}
+        self._baseline_cache: Dict[str, QueryExecution] = {}
+        self._evaluation_cache: Dict[Tuple[str, str], Dict[str, Any]] = {}
+        self._latest_visible_benchmark: Dict[str, float] = {"gated_improvement": 0.0, "correctness_coverage": 1.0}
+        self._state = SchemaOptState(episode_id=str(uuid4()), step_count=0)
+        self._episode_root: Optional[Path] = None
+        self._episode_db_path: Optional[Path] = None
+        self._con: Any = None
+        self._duckdb: Any = None
 
-    def reset(
-        self,
-        seed: Optional[int] = None,
-        episode_id: Optional[str] = None,
-        task_id: Optional[str] = None,
-        **kwargs: Any,
-    ) -> SchemaOptObservation:
-        selected_task_id = task_id or kwargs.get("task_id") or "schemaopt_easy_lever"
-        self._task = get_task(selected_task_id)
-        self._visible_query_lookup = {query.query_id: query for query in self._task.visible_queries}
+    def reset(self, seed: Optional[int] = None, episode_id: Optional[str] = None, task_id: Optional[str] = None, **kwargs: Any) -> SchemaOptObservation:
+        selected_task = task_id or kwargs.get("task_id") or next(iter(TASK_CATALOG.keys()))
+        self._task = get_task(selected_task)
+        self._visible_query_lookup = {q.query_id: q for q in self._task.visible_queries}
         self._all_query_lookup = query_lookup(self._task)
         self._cluster_lookup = cluster_lookup(self._task)
         self._derived_objects = {}
         self._checkpoints = []
         self._retrieval_context = {"last_request": None, "matched_queries": [], "matched_clusters": [], "retrieval_count": 0}
-        self._benchmark_context = {
-            "baseline_weighted_cost": self._task.total_visible_weighted_cost,
-            "current_weighted_cost": self._task.total_visible_weighted_cost,
-            "raw_improvement": 0.0,
-            "gated_improvement": 0.0,
-            "correctness_coverage": 1.0,
-            "routed_query_count": 0,
-            "incorrect_query_count": 0,
-            "last_benchmarked_query_ids": [],
-            "last_benchmarked_cluster_id": None,
-            "latest_plan_deltas": {},
-        }
+        self._benchmark_context = {"baseline_weighted_cost": None, "current_weighted_cost": None, "raw_improvement": 0.0, "gated_improvement": 0.0, "correctness_coverage": 1.0, "routed_query_count": 0, "incorrect_query_count": 0, "last_benchmarked_query_ids": [], "last_benchmarked_cluster_id": None, "latest_plan_deltas": {}}
+        self._last_feedback = {"event": "reset", "task_id": selected_task}
+        self._baseline_cache = {}
+        self._evaluation_cache = {}
         self._latest_visible_benchmark = {"gated_improvement": 0.0, "correctness_coverage": 1.0}
-        self._last_feedback = {"event": "reset", "task_id": selected_task_id}
-        self._last_error_signature = None
-        self._last_failed_object_name = None
-        self._seed_connection()
-
-        self._state = SchemaOptState(
-            episode_id=str(uuid4()) if episode_id is None else episode_id,
-            step_count=0,
-            done=False,
-            task_id=self._task.task_id,
-            difficulty=self._task.difficulty,
-            derived_object_count=0,
-            checkpoint_count=0,
-            retrieval_count=0,
-            benchmark_runs=0,
-            storage_used_multiplier=0.0,
-            final_score=None,
-            last_error=None,
-        )
-
+        self._bootstrap_episode_database()
+        self._base_table_stats = {table.name: self._collect_table_stats(table.name) for table in self._task.tables}
+        self._state = SchemaOptState(episode_id=str(uuid4()) if episode_id is None else episode_id, step_count=0, done=False, task_id=self._task.task_id, difficulty=self._task.difficulty, derived_object_count=0, checkpoint_count=0, retrieval_count=0, benchmark_runs=0, storage_used_multiplier=0.0, final_score=None, last_error=None)
         payload = self._task.reset_payload()
-        return SchemaOptObservation(
-            status="ok",
-            message=f"Initialized task {self._task.task_id}",
-            catalog_summary=payload["catalog_summary"],
-            workload_summary=payload["workload_summary"],
-            retrieval_context=self._retrieval_context,
-            benchmark_context=self._benchmark_context,
-            action_feedback=self._last_feedback,
-            reward=0.0,
-            done=False,
-            metadata={"task": payload["task"]},
-        )
+        return SchemaOptObservation(status="ok", message=f"Initialized task {self._task.task_id}", catalog_summary=self._catalog_summary(payload), workload_summary=payload["workload_summary"], retrieval_context=self._retrieval_context, benchmark_context=self._benchmark_context, action_feedback=self._last_feedback, reward=0.0, done=False, metadata={"task": payload["task"]})
 
-    def step(
-        self,
-        action: SchemaOptAction,
-        timeout_s: Optional[float] = None,
-        **kwargs: Any,
-    ) -> SchemaOptObservation:
+    @property
+    def state(self) -> State:
+        return self._state
+
+    @classmethod
+    def latest_report(cls) -> Dict[str, Any]:
+        return cls.LAST_GRADER_REPORT
+
+    @classmethod
+    def run_baseline(cls) -> Dict[str, Any]:
+        env = cls()
+        env.reset(task_id=next(iter(TASK_CATALOG.keys())))
+        cluster = env._task.clusters[0]
+        query = visible_queries_for_cluster(env._task, cluster.cluster_id)[0]
+        env.step(SchemaOptAction(operation="create_derived_object", object_kind=cluster.preferred_object_kind, name="baseline_object", sql_definition=query.sql, source_objects=list(query.tables), grain_hint=",".join(query.group_by)))
+        env.step(SchemaOptAction(operation="benchmark_cluster", cluster_id=cluster.cluster_id))
+        final_obs = env.step(SchemaOptAction(operation="submit"))
+        return {"score": env.state.final_score, "reward": final_obs.reward, "done": final_obs.done, "message": final_obs.message, "benchmark": final_obs.benchmark_context, "rubric": final_obs.action_feedback}
+
+    def _import_duckdb(self):
+        if self._duckdb is not None:
+            return self._duckdb
+        try:
+            import duckdb  # type: ignore
+        except ImportError as exc:
+            raise RuntimeError("duckdb is required for schemaopt_env benchmark execution") from exc
+        self._duckdb = duckdb
+        return duckdb
+
+    def _bootstrap_episode_database(self) -> None:
+        duckdb = self._import_duckdb()
+        if self._con is not None:
+            self._con.close()
+        if self._episode_root and self._episode_root.exists():
+            shutil.rmtree(self._episode_root, ignore_errors=True)
+        self._episode_root = Path(tempfile.mkdtemp(prefix="schemaopt_episodes_")) / str(uuid4())
+        self._episode_root.mkdir(parents=True, exist_ok=True)
+        source_db_path = Path(self._task.database_path)
+        if not source_db_path.exists():
+            raise FileNotFoundError(f"Task database not found: {source_db_path}")
+        self._episode_db_path = self._episode_root / source_db_path.name
+        shutil.copy2(source_db_path, self._episode_db_path)
+        self._con = duckdb.connect(str(self._episode_db_path))
+        self._con.execute("CREATE SCHEMA IF NOT EXISTS derived")
+
+    def _catalog_summary(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        catalog = payload["catalog_summary"]
+        catalog["tables"] = [self._base_table_stats.get(table.name, table.to_dict()) for table in self._task.tables]
+        catalog["derived_objects"] = [obj.summary() for obj in self._derived_objects.values()]
+        catalog["storage_usage_estimate"] = sum(obj.storage_bytes_estimate for obj in self._derived_objects.values())
+        catalog["refresh_cost_estimate"] = round(sum(obj.build_runtime_ms for obj in self._derived_objects.values()), 4)
+        return catalog
+
+    def _build_observation(self, status: str, message: str, reward: float, done: bool, feedback: Dict[str, Any]) -> SchemaOptObservation:
+        payload = self._task.reset_payload()
+        return SchemaOptObservation(status=status, message=message, catalog_summary=self._catalog_summary(payload), workload_summary=payload["workload_summary"], retrieval_context=self._retrieval_context, benchmark_context=self._benchmark_context, action_feedback=feedback, reward=round(reward, 6), done=done, metadata={"task": payload["task"]})
+    def step(self, action: SchemaOptAction, timeout_s: Optional[float] = None, **kwargs: Any) -> SchemaOptObservation:
         self._state.step_count += 1
         reward = 0.0
         done = False
         status = "ok"
         message = ""
         feedback: Dict[str, Any] = {}
-
         try:
             if action.operation == "inspect_catalog":
+                feedback = {"event": "inspect_catalog", "base_tables": list(self._base_table_stats.values()), "derived_objects": [obj.summary() for obj in self._derived_objects.values()]}
                 message = "Catalog summary returned."
-                feedback = {
-                    "event": "inspect_catalog",
-                    "base_tables": [table.name for table in self._task.tables],
-                    "derived_object_count": len(self._derived_objects),
-                }
             elif action.operation == "inspect_table_stats":
-                feedback = self._inspect_table_stats(action.target_id or "")
+                feedback = {"event": "inspect_table_stats", "table": self._collect_table_stats(action.target_id or "")}
                 message = f"Table stats returned for {action.target_id}."
             elif action.operation == "inspect_cluster":
-                feedback = self._inspect_cluster(action.target_id or "")
+                cluster = self._cluster_lookup[action.target_id or ""]
+                feedback = {"event": "inspect_cluster", "cluster": cluster.to_summary(), "example_query_ids": list(cluster.query_ids[:3])}
                 message = f"Cluster summary returned for {action.target_id}."
             elif action.operation == "inspect_query":
-                feedback = self._inspect_query(action.target_id or "")
+                query = self._get_visible_query(action.target_id or "")
+                feedback = {"event": "inspect_query", "query": query.summary()}
                 message = f"Query summary returned for {action.target_id}."
             elif action.operation == "inspect_query_plan":
                 feedback = self._inspect_query_plan(action.target_id or "")
                 message = f"Plan summary returned for {action.target_id}."
             elif action.operation == "inspect_router_status":
-                feedback = self._inspect_router_status(action.query_ids)
+                query_ids = list(action.query_ids) if action.query_ids else list(self._visible_query_lookup.keys())
+                feedback = {"event": "inspect_router_status", "routes": [self._route_summary(query_id, self._evaluate_query(self._get_visible_query(query_id), False)) for query_id in query_ids]}
                 message = "Router status returned."
             elif action.operation == "retrieve_queries":
                 feedback = self._retrieve_queries(action)
@@ -365,43 +225,47 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
                 self._state.retrieval_count += 1
                 message = f"Returned full context for {len(action.query_ids)} queries."
             elif action.operation == "create_derived_object":
-                feedback = self._upsert_derived_object(action, modify=False)
-                reward += 0.03
-                if self._last_failed_object_name == action.name:
-                    reward += 0.04
-                    feedback["self_correction_bonus"] = 0.04
+                feedback = self._upsert_derived_object(action, False)
+                reward += 0.01
                 message = f"Created derived object {action.name}."
-                self._last_failed_object_name = None
             elif action.operation == "modify_derived_object":
-                feedback = self._upsert_derived_object(action, modify=True)
-                reward += 0.02
-                if self._last_failed_object_name == action.name:
-                    reward += 0.04
-                    feedback["self_correction_bonus"] = 0.04
+                feedback = self._upsert_derived_object(action, True)
+                reward += 0.005
                 message = f"Modified derived object {action.name}."
-                self._last_failed_object_name = None
             elif action.operation == "drop_derived_object":
-                feedback = self._drop_derived_object(action.target_id or "")
-                reward -= 0.01
+                removed = self._derived_objects.pop(action.target_id or "")
+                self._con.execute(f"DROP TABLE IF EXISTS derived.{removed.name}")
+                self._evaluation_cache = {}
+                feedback = {"event": "drop_derived_object", "removed": removed.summary()}
+                reward -= 0.002
                 message = f"Dropped derived object {action.target_id}."
             elif action.operation == "list_derived_objects":
                 feedback = {"event": "list_derived_objects", "derived_objects": [obj.summary() for obj in self._derived_objects.values()]}
                 message = "Derived object list returned."
             elif action.operation == "checkpoint":
-                feedback = self._checkpoint(action.name)
-                reward += 0.01
+                label = action.name or f"checkpoint_{len(self._checkpoints)+1}"
+                self._checkpoints.append({"label": label, "derived_objects": copy.deepcopy(self._derived_objects)})
+                feedback = {"event": "checkpoint", "label": label, "checkpoint_count": len(self._checkpoints)}
                 message = "Checkpoint created."
             elif action.operation == "revert_checkpoint":
-                feedback = self._revert_checkpoint(action.target_id)
-                reward += 0.01
+                snapshot = next((item for item in reversed(self._checkpoints) if action.target_id is None or item["label"] == action.target_id), None)
+                if snapshot is None:
+                    raise ValueError("Unknown checkpoint label")
+                for name in list(self._derived_objects.keys()):
+                    self._con.execute(f"DROP TABLE IF EXISTS derived.{name}")
+                self._derived_objects = {}
+                for obj in copy.deepcopy(snapshot["derived_objects"]).values():
+                    self._con.execute(f"CREATE TABLE derived.{obj.name} AS ({obj.sql_definition})")
+                    self._derived_objects[obj.name] = obj
+                self._evaluation_cache = {}
+                feedback = {"event": "revert_checkpoint", "label": snapshot["label"], "restored_objects": [obj.summary() for obj in self._derived_objects.values()]}
                 message = "Checkpoint restored."
             elif action.operation == "benchmark_subset":
                 feedback = self._benchmark_action([self._get_visible_query(query_id) for query_id in action.query_ids], None)
                 reward += feedback["reward_delta"]
                 message = f"Benchmarked {len(action.query_ids)} visible queries."
             elif action.operation == "benchmark_cluster":
-                queries = visible_queries_for_cluster(self._task, action.cluster_id or "")
-                feedback = self._benchmark_action(queries, action.cluster_id)
+                feedback = self._benchmark_action(visible_queries_for_cluster(self._task, action.cluster_id or ""), action.cluster_id)
                 reward += feedback["reward_delta"]
                 message = f"Benchmarked cluster {action.cluster_id}."
             elif action.operation == "submit":
@@ -416,570 +280,242 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
             status = "error"
             message = f"ERROR: {exc}"
             feedback = {"event": action.operation, "error": str(exc)}
-            reward -= 0.12
-            self._last_error_signature = str(exc)
+            reward -= 0.05
             self._state.last_error = str(exc)
-            if action.operation in {"create_derived_object", "modify_derived_object"}:
-                self._last_failed_object_name = action.name
-
         self._last_feedback = feedback
         self._state.done = done
         self._state.derived_object_count = len(self._derived_objects)
         self._state.checkpoint_count = len(self._checkpoints)
-        self._state.storage_used_multiplier = round(sum(obj.storage_multiplier for obj in self._derived_objects.values()), 4)
+        self._state.storage_used_multiplier = round(sum(obj.storage_bytes_estimate for obj in self._derived_objects.values()) / max(1.0, float(self._task.budgets.get("max_storage_bytes", 1.0))), 6)
         if done:
             self._state.final_score = feedback.get("final_score")
-
         return self._build_observation(status, message, reward, done, feedback)
-
-    @property
-    def state(self) -> State:
-        return self._state
-
-    @classmethod
-    def latest_report(cls) -> Dict[str, Any]:
-        return cls.LAST_GRADER_REPORT
-
-    @classmethod
-    def run_baseline(cls) -> Dict[str, Any]:
-        env = cls()
-        env.reset(task_id="schemaopt_easy_lever")
-        hotspot = env._task.clusters[0]
-        first_query = visible_queries_for_cluster(env._task, hotspot.cluster_id)[0]
-        env.step(
-            SchemaOptAction(
-                operation="create_derived_object",
-                object_kind=hotspot.preferred_object_kind,
-                name="baseline_hotspot_object",
-                sql_definition=first_query.sql,
-                source_objects=list(first_query.tables),
-                grain_hint=",".join(first_query.group_by),
-                intended_clusters=[hotspot.cluster_id],
-                routing_tags=list(first_query.plan_features) + list(first_query.filter_tokens) + list(first_query.columns),
-            )
-        )
-        env.step(SchemaOptAction(operation="benchmark_cluster", cluster_id=hotspot.cluster_id))
-        final_obs = env.step(SchemaOptAction(operation="submit"))
-        return {
-            "score": env.state.final_score,
-            "reward": final_obs.reward,
-            "done": final_obs.done,
-            "message": final_obs.message,
-            "benchmark": final_obs.benchmark_context,
-            "rubric": final_obs.action_feedback,
-        }
-
-    def _build_observation(
-        self,
-        status: str,
-        message: str,
-        reward: float,
-        done: bool,
-        feedback: Dict[str, Any],
-    ) -> SchemaOptObservation:
-        payload = self._task.reset_payload()
-        catalog_summary = payload["catalog_summary"]
-        catalog_summary["derived_objects"] = [obj.summary() for obj in self._derived_objects.values()]
-        catalog_summary["storage_usage_estimate"] = round(sum(obj.storage_multiplier for obj in self._derived_objects.values()), 4)
-        catalog_summary["refresh_cost_estimate"] = round(sum(obj.refresh_cost for obj in self._derived_objects.values()), 4)
-
-        return SchemaOptObservation(
-            status=status,
-            message=message,
-            catalog_summary=catalog_summary,
-            workload_summary=payload["workload_summary"],
-            retrieval_context=self._retrieval_context,
-            benchmark_context=self._benchmark_context,
-            action_feedback=feedback,
-            reward=round(reward, 6),
-            done=done,
-            metadata={
-                "task": payload["task"],
-                "step": self._state.step_count,
-                "final_score": self._state.final_score,
-            },
-        )
-    def _inspect_table_stats(self, table_name: str) -> Dict[str, Any]:
-        for table in self._task.tables:
-            if table.name == table_name:
-                return {"event": "inspect_table_stats", "table": table.to_dict()}
-        raise ValueError(f"Unknown table: {table_name}")
-
-    def _inspect_cluster(self, cluster_id: str) -> Dict[str, Any]:
-        if cluster_id not in self._cluster_lookup:
-            raise ValueError(f"Unknown cluster_id: {cluster_id}")
-        cluster = self._cluster_lookup[cluster_id]
-        return {
-            "event": "inspect_cluster",
-            "cluster": cluster.to_summary(),
-            "example_query_ids": list(cluster.query_ids[:3]),
-        }
-
-    def _inspect_query(self, query_id: str) -> Dict[str, Any]:
-        query = self._get_visible_query(query_id)
-        return {"event": "inspect_query", "query": query.summary()}
 
     def _inspect_query_plan(self, query_id: str) -> Dict[str, Any]:
         query = self._get_visible_query(query_id)
-        decision = self._evaluate_query(query, mark_usage=False)
-        return {
-            "event": "inspect_query_plan",
-            "query_id": query_id,
-            "original_plan": self._original_plan_summary(query),
-            "current_plan": decision.summary(),
-        }
-
-    def _inspect_router_status(self, query_ids: Sequence[str]) -> Dict[str, Any]:
-        selected_ids = list(query_ids) if query_ids else list(self._visible_query_lookup.keys())
-        routes = []
-        for query_id in selected_ids:
-            query = self._get_visible_query(query_id)
-            routes.append(self._evaluate_query(query, mark_usage=False).summary())
-        return {"event": "inspect_router_status", "routes": routes}
+        baseline = self._baseline_for_query(query)
+        decision = self._evaluate_query(query, False)
+        return {"event": "inspect_query_plan", "query_id": query_id, "baseline_plan": baseline.plan.summary(), "current_plan": self._route_summary(query_id, decision)}
 
     def _retrieve_queries(self, action: SchemaOptAction) -> Dict[str, Any]:
         mode = self._resolve_retrieval_mode(action)
-        matches = match_queries(
-            self._task,
-            mode=mode,
-            pattern=action.pattern,
-            cluster_id=action.cluster_id,
-            tables=action.tables,
-            columns=action.columns,
-            plan_features=action.plan_features,
-            top_k=action.top_k,
-        )
-        matched_queries = [query.summary() for query in matches]
-        matched_clusters = sorted({query.cluster_id for query in matches})
-        self._retrieval_context = {
-            "last_request": {
-                "mode": mode,
-                "pattern": action.pattern,
-                "cluster_id": action.cluster_id,
-                "tables": list(action.tables),
-                "columns": list(action.columns),
-                "plan_features": list(action.plan_features),
-                "top_k": action.top_k,
-            },
-            "matched_queries": matched_queries,
-            "matched_clusters": matched_clusters,
-            "retrieval_count": self._state.retrieval_count + 1,
-        }
+        matches = match_queries(self._task, mode=mode, pattern=action.pattern, cluster_id=action.cluster_id, tables=action.tables, columns=action.columns, plan_features=action.plan_features, top_k=action.top_k)
+        self._retrieval_context = {"last_request": {"mode": mode, "pattern": action.pattern, "cluster_id": action.cluster_id, "tables": list(action.tables), "columns": list(action.columns), "plan_features": list(action.plan_features), "top_k": action.top_k}, "matched_queries": [query.summary() for query in matches], "matched_clusters": sorted({query.cluster_id for query in matches}), "retrieval_count": self._state.retrieval_count + 1}
         return {"event": "retrieve_queries", **self._retrieval_context}
 
     def _get_query_context(self, query_ids: Sequence[str]) -> Dict[str, Any]:
-        contexts = []
-        for query_id in query_ids:
-            query = self._get_visible_query(query_id)
-            contexts.append(query.context(similar_query_ids(self._task, query_id)))
-        self._retrieval_context = {
-            "last_request": {"mode": "get_query_context", "query_ids": list(query_ids)},
-            "matched_queries": [context["query_id"] for context in contexts],
-            "matched_clusters": sorted({context["cluster_id"] for context in contexts}),
-            "retrieval_count": self._state.retrieval_count + 1,
-        }
+        contexts = [self._get_visible_query(query_id).context(similar_query_ids(self._task, query_id)) for query_id in query_ids]
+        self._retrieval_context = {"last_request": {"mode": "get_query_context", "query_ids": list(query_ids)}, "matched_queries": [ctx["query_id"] for ctx in contexts], "matched_clusters": sorted({ctx["cluster_id"] for ctx in contexts}), "retrieval_count": self._state.retrieval_count + 1}
         return {"event": "get_query_context", "query_context": contexts}
 
     def _upsert_derived_object(self, action: SchemaOptAction, modify: bool) -> Dict[str, Any]:
         name = (action.name or "").strip()
         if not _IDENTIFIER_RE.match(name):
             raise ValueError(f"Invalid derived object name: {name}")
-        if not modify and name in self._derived_objects:
-            raise ValueError(f"Derived object '{name}' already exists")
         if modify and name not in self._derived_objects:
             raise ValueError(f"Derived object '{name}' does not exist")
-
-        for source in action.source_objects:
-            if not self._object_exists(source):
-                raise ValueError(f"Unknown source object '{source}'")
-
-        derived_name = f"derived.{name}"
-        try:
-            self._con.execute(f"DROP TABLE IF EXISTS {derived_name}")
-            self._con.execute(f"CREATE TABLE {derived_name} AS ({action.sql_definition})")
-        except Exception as exc:
-            raise ValueError(f"Failed to materialize {name}: {exc}") from exc
-
-        row_count = int(self._con.execute(f"SELECT COUNT(*) FROM {derived_name}").fetchone()[0])
-        cursor = self._con.execute(f"SELECT * FROM {derived_name} LIMIT 0")
-        available_columns = [column[0].lower() for column in cursor.description or []]
-        grain_dims = [part.strip().lower() for part in (action.grain_hint or "").split(",") if part.strip()]
-        routing_tags = [tag.strip().lower() for tag in action.routing_tags if tag.strip()]
-        storage_multiplier = self._estimate_storage_multiplier(action.object_kind or "join_matview", action.source_objects, available_columns)
-        refresh_cost = self._estimate_refresh_cost(action.object_kind or "join_matview", action.source_objects)
-
-        derived_object = DerivedObject(
-            name=name,
-            object_kind=action.object_kind or "join_matview",
-            sql_definition=action.sql_definition or "",
-            source_objects=list(action.source_objects),
-            grain_dims=grain_dims,
-            intended_clusters=[cluster_id.lower() for cluster_id in action.intended_clusters],
-            routing_tags=routing_tags,
-            available_columns=available_columns,
-            row_count=row_count,
-            storage_multiplier=storage_multiplier,
-            refresh_cost=refresh_cost,
-        )
-        self._derived_objects[name] = derived_object
-        return {"event": "modify_derived_object" if modify else "create_derived_object", "derived_object": derived_object.summary()}
-
-    def _drop_derived_object(self, name: str) -> Dict[str, Any]:
-        if name not in self._derived_objects:
-            raise ValueError(f"Unknown derived object: {name}")
-        self._con.execute(f"DROP TABLE IF EXISTS derived.{name}")
-        removed = self._derived_objects.pop(name)
-        return {"event": "drop_derived_object", "removed": removed.summary()}
-
-    def _checkpoint(self, label: Optional[str]) -> Dict[str, Any]:
-        checkpoint_label = label or f"checkpoint_{len(self._checkpoints) + 1}"
-        snapshot = {
-            "label": checkpoint_label,
-            "derived_objects": copy.deepcopy(self._derived_objects),
-        }
-        self._checkpoints.append(snapshot)
-        return {"event": "checkpoint", "label": checkpoint_label, "checkpoint_count": len(self._checkpoints)}
-
-    def _revert_checkpoint(self, label: Optional[str]) -> Dict[str, Any]:
-        if not self._checkpoints:
-            raise ValueError("No checkpoints available")
-
-        if label is None:
-            snapshot = self._checkpoints[-1]
-        else:
-            matching = [entry for entry in self._checkpoints if entry["label"] == label]
-            if not matching:
-                raise ValueError(f"Unknown checkpoint label: {label}")
-            snapshot = matching[-1]
-
-        self._seed_connection()
-        restored: Dict[str, DerivedObject] = copy.deepcopy(snapshot["derived_objects"])
-        self._derived_objects = {}
-        for derived_object in restored.values():
-            self._con.execute(f"CREATE TABLE derived.{derived_object.name} AS ({derived_object.sql_definition})")
-            self._derived_objects[derived_object.name] = derived_object
-
-        return {
-            "event": "revert_checkpoint",
-            "label": snapshot["label"],
-            "restored_objects": [obj.summary() for obj in self._derived_objects.values()],
-        }
-
+        if not modify and name in self._derived_objects:
+            raise ValueError(f"Derived object '{name}' already exists")
+        parsed = self._parse_sql_metadata(action.sql_definition or "")
+        if sorted(parsed.tables) != sorted(source.lower() for source in action.source_objects):
+            raise ValueError("source_objects must match sql_definition tables")
+        if modify:
+            self._con.execute(f"DROP TABLE IF EXISTS derived.{name}")
+        start = time.perf_counter()
+        self._con.execute(f"CREATE TABLE derived.{name} AS ({action.sql_definition})")
+        build_runtime_ms = (time.perf_counter() - start) * 1000.0
+        describe_rows = self._con.execute(f"DESCRIBE derived.{name}").fetchall()
+        column_types = {str(row[0]).lower(): str(row[1]) for row in describe_rows}
+        available_columns = list(column_types.keys())
+        row_count = int(self._con.execute(f"SELECT COUNT(*) FROM derived.{name}").fetchone()[0])
+        grain_dims = [item.strip().lower() for item in (action.grain_hint or "").split(",") if item.strip()] or list(parsed.group_by)
+        obj = DerivedObject(name=name, object_kind=action.object_kind or "agg_matview", sql_definition=action.sql_definition or "", source_objects=[source.lower() for source in action.source_objects], grain_dims=grain_dims, available_columns=available_columns, column_types=column_types, parsed_sql=parsed, row_count=row_count, storage_bytes_estimate=self._estimate_storage_bytes(row_count, column_types), build_runtime_ms=build_runtime_ms)
+        self._derived_objects[name] = obj
+        self._evaluation_cache = {}
+        return {"event": "modify_derived_object" if modify else "create_derived_object", "derived_object": obj.summary()}
     def _benchmark_action(self, queries: Sequence[QuerySpec], cluster_id: Optional[str]) -> Dict[str, Any]:
-        summary = self._benchmark_queries(queries, mark_usage=True)
-        previous_improvement = self._latest_visible_benchmark.get("gated_improvement", 0.0)
-        previous_correctness = self._latest_visible_benchmark.get("correctness_coverage", 1.0)
-        reward_delta = max(
-            -0.25,
-            min(
-                0.25,
-                (summary["gated_improvement"] - previous_improvement) * 0.60
-                + (summary["correctness_coverage"] - previous_correctness) * 0.15
-                + summary["usage_bonus"]
-                - summary["budget_penalty"],
-            ),
-        )
-        self._latest_visible_benchmark = {
-            "gated_improvement": summary["gated_improvement"],
-            "correctness_coverage": summary["correctness_coverage"],
-        }
-        self._benchmark_context = {
-            "baseline_weighted_cost": summary["baseline_weighted_cost"],
-            "current_weighted_cost": summary["actual_current_weighted_cost"],
-            "raw_improvement": summary["raw_improvement"],
-            "gated_improvement": summary["gated_improvement"],
-            "correctness_coverage": summary["correctness_coverage"],
-            "routed_query_count": summary["routed_query_count"],
-            "incorrect_query_count": summary["incorrect_query_count"],
-            "last_benchmarked_query_ids": [query.query_id for query in queries],
-            "last_benchmarked_cluster_id": cluster_id,
-            "latest_plan_deltas": summary["plan_deltas"],
-        }
+        summary = self._benchmark_queries(queries, True)
+        prev_imp = self._latest_visible_benchmark.get("gated_improvement", 0.0)
+        prev_corr = self._latest_visible_benchmark.get("correctness_coverage", 1.0)
+        reward_delta = max(-0.25, min(0.25, (summary["gated_improvement"] - prev_imp) + 0.10 * (summary["correctness_coverage"] - prev_corr) - summary["budget_penalty"] - 0.001 * len(queries)))
+        self._latest_visible_benchmark = {"gated_improvement": summary["gated_improvement"], "correctness_coverage": summary["correctness_coverage"]}
+        self._benchmark_context = {"baseline_weighted_cost": summary["baseline_weighted_cost"], "current_weighted_cost": summary["actual_current_weighted_cost"], "raw_improvement": summary["raw_improvement"], "gated_improvement": summary["gated_improvement"], "correctness_coverage": summary["correctness_coverage"], "routed_query_count": summary["routed_query_count"], "incorrect_query_count": summary["incorrect_query_count"], "last_benchmarked_query_ids": [query.query_id for query in queries], "last_benchmarked_cluster_id": cluster_id, "latest_plan_deltas": summary["plan_deltas"]}
         self._state.benchmark_runs += 1
         summary["event"] = "benchmark_cluster" if cluster_id else "benchmark_subset"
         summary["reward_delta"] = round(reward_delta, 6)
         return summary
+
     def _submit_episode(self) -> Dict[str, Any]:
         self._reset_visible_usage()
-        visible_summary = self._benchmark_queries(self._task.visible_queries, mark_usage=True)
-        holdout_summary = self._benchmark_queries(self._task.holdout_queries, mark_usage=False)
-        migration_score = self._migration_score()
-        storage_score = self._storage_efficiency_score()
-        correctness_score = round((visible_summary["correctness_coverage"] * 0.6) + (holdout_summary["correctness_coverage"] * 0.4), 6)
-        final_score = round(
-            0.45 * visible_summary["gated_improvement"]
-            + 0.20 * holdout_summary["gated_improvement"]
-            + 0.20 * correctness_score
-            + 0.10 * migration_score
-            + 0.05 * storage_score,
-            6,
-        )
-        terminal_reward = round(final_score, 6)
-        self._benchmark_context = {
-            "baseline_weighted_cost": visible_summary["baseline_weighted_cost"],
-            "current_weighted_cost": visible_summary["actual_current_weighted_cost"],
-            "raw_improvement": visible_summary["raw_improvement"],
-            "gated_improvement": visible_summary["gated_improvement"],
-            "correctness_coverage": visible_summary["correctness_coverage"],
-            "routed_query_count": visible_summary["routed_query_count"],
-            "incorrect_query_count": visible_summary["incorrect_query_count"],
-            "last_benchmarked_query_ids": [query.query_id for query in self._task.visible_queries],
-            "last_benchmarked_cluster_id": None,
-            "latest_plan_deltas": visible_summary["plan_deltas"],
-        }
+        visible = self._benchmark_queries(self._task.visible_queries, True)
+        holdout = self._benchmark_queries(self._task.holdout_queries, False)
+        migration = self._migration_score()
+        storage = self._storage_efficiency_score()
+        correctness = round((visible["correctness_coverage"] * 0.6) + (holdout["correctness_coverage"] * 0.4), 6)
+        final_score = round(0.45 * visible["gated_improvement"] + 0.20 * holdout["gated_improvement"] + 0.20 * correctness + 0.10 * migration + 0.05 * storage, 6)
+        self._benchmark_context = {"baseline_weighted_cost": visible["baseline_weighted_cost"], "current_weighted_cost": visible["actual_current_weighted_cost"], "raw_improvement": visible["raw_improvement"], "gated_improvement": visible["gated_improvement"], "correctness_coverage": visible["correctness_coverage"], "routed_query_count": visible["routed_query_count"], "incorrect_query_count": visible["incorrect_query_count"], "last_benchmarked_query_ids": [query.query_id for query in self._task.visible_queries], "last_benchmarked_cluster_id": None, "latest_plan_deltas": visible["plan_deltas"]}
         self._state.benchmark_runs += 1
         self._state.final_score = final_score
-        report = {
-            "available": True,
-            "task_id": self._task.task_id,
-            "episode_id": self._state.episode_id,
-            "score": final_score,
-            "visible_summary": visible_summary,
-            "holdout_summary": holdout_summary,
-            "migration_score": migration_score,
-            "storage_score": storage_score,
-        }
-        SchemaOptEnvironment.LAST_GRADER_REPORT = report
-        return {
-            "event": "submit",
-            "final_score": final_score,
-            "visible_summary": visible_summary,
-            "holdout_summary": holdout_summary,
-            "migration_score": migration_score,
-            "storage_score": storage_score,
-            "terminal_reward": terminal_reward,
-        }
+        SchemaOptEnvironment.LAST_GRADER_REPORT = {"available": True, "task_id": self._task.task_id, "episode_id": self._state.episode_id, "score": final_score, "visible_summary": visible, "holdout_summary": holdout, "migration_score": migration, "storage_score": storage}
+        return {"event": "submit", "final_score": final_score, "visible_summary": visible, "holdout_summary": holdout, "migration_score": migration, "storage_score": storage, "terminal_reward": final_score}
 
     def _benchmark_queries(self, queries: Sequence[QuerySpec], mark_usage: bool) -> Dict[str, Any]:
-        baseline_weighted_cost = 0.0
-        actual_current_weighted_cost = 0.0
-        gated_current_weighted_cost = 0.0
-        weight_total = 0.0
-        correctness_weight_total = 0.0
-        routed_query_count = 0
-        incorrect_query_count = 0
-        usage_bonus = 0.0
-        plan_delta_accumulator = {"depth_delta": 0.0, "operator_delta": 0.0, "runtime_delta_ms": 0.0}
+        baseline_weighted_cost = actual_current_weighted_cost = gated_current_weighted_cost = weight_total = correctness_weight_total = 0.0
+        routed_query_count = incorrect_query_count = 0
+        deltas = {"depth_delta": 0.0, "operator_delta": 0.0, "runtime_delta_ms": 0.0}
         per_query: List[Dict[str, Any]] = []
-
         for query in queries:
-            decision = self._evaluate_query(query, mark_usage=mark_usage)
-            baseline_cost = self._compose_query_cost(
-                query,
-                query.baseline_runtime_ms,
-                query.baseline_plan_depth,
-                query.operator_count,
-                query.join_complexity,
-                query.blocking_complexity,
-            )
-            current_cost = self._compose_query_cost(
-                query,
-                decision.runtime_ms,
-                decision.plan_depth,
-                decision.operator_count,
-                decision.join_complexity,
-                decision.blocking_complexity,
-            )
+            baseline = self._baseline_for_query(query)
+            current = self._evaluate_query(query, mark_usage)
+            baseline_cost = self._compose_query_cost(baseline.runtime_ms, baseline.plan)
+            current_cost = self._compose_query_cost(current["runtime_ms"], current["plan"])
             weight = query.frequency_weight * query.priority_weight
             baseline_weighted_cost += baseline_cost * weight
             actual_current_weighted_cost += current_cost * weight
-            gated_current_weighted_cost += current_cost * weight if decision.correctness_pass else baseline_cost * weight
+            gated_current_weighted_cost += (current_cost if current["correctness_pass"] else baseline_cost) * weight
             weight_total += weight
-            correctness_weight_total += weight if decision.correctness_pass else 0.0
-            routed_query_count += 1 if decision.routed else 0
-            incorrect_query_count += 0 if decision.correctness_pass else 1
-            if decision.routed and decision.object_name:
-                obj = self._derived_objects[decision.object_name]
-                if mark_usage and query.cluster_id not in obj.used_by_clusters and self._cluster_lookup[query.cluster_id].hotspot_rank <= 2:
-                    usage_bonus += 0.02
-            plan_delta_accumulator["depth_delta"] += query.baseline_plan_depth - decision.plan_depth
-            plan_delta_accumulator["operator_delta"] += query.operator_count - decision.operator_count
-            plan_delta_accumulator["runtime_delta_ms"] += query.baseline_runtime_ms - decision.runtime_ms
-            per_query.append(decision.summary())
-
+            correctness_weight_total += weight if current["correctness_pass"] else 0.0
+            routed_query_count += 1 if current["routed"] else 0
+            incorrect_query_count += 0 if current["correctness_pass"] else 1
+            deltas["depth_delta"] += baseline.plan.plan_depth - current["plan"].plan_depth
+            deltas["operator_delta"] += baseline.plan.operator_count - current["plan"].operator_count
+            deltas["runtime_delta_ms"] += baseline.runtime_ms - current["runtime_ms"]
+            per_query.append(self._route_summary(query.query_id, current))
         raw_improvement = 0.0 if baseline_weighted_cost == 0 else max(0.0, 1.0 - (actual_current_weighted_cost / baseline_weighted_cost))
         gated_improvement = 0.0 if baseline_weighted_cost == 0 else max(0.0, 1.0 - (gated_current_weighted_cost / baseline_weighted_cost))
         correctness_coverage = 1.0 if weight_total == 0 else correctness_weight_total / weight_total
-        budget_penalty = self._budget_penalty()
+        return {"baseline_weighted_cost": round(baseline_weighted_cost, 6), "actual_current_weighted_cost": round(actual_current_weighted_cost, 6), "gated_current_weighted_cost": round(gated_current_weighted_cost, 6), "raw_improvement": round(raw_improvement, 6), "gated_improvement": round(gated_improvement, 6), "correctness_coverage": round(correctness_coverage, 6), "routed_query_count": routed_query_count, "incorrect_query_count": incorrect_query_count, "budget_penalty": round(self._budget_penalty(), 6), "plan_deltas": {key: round(value, 4) for key, value in deltas.items()}, "per_query": per_query, "unused_derived_objects": sorted(name for name, obj in self._derived_objects.items() if not obj.used_by_visible_queries)}
 
-        return {
-            "baseline_weighted_cost": round(baseline_weighted_cost, 6),
-            "actual_current_weighted_cost": round(actual_current_weighted_cost, 6),
-            "gated_current_weighted_cost": round(gated_current_weighted_cost, 6),
-            "raw_improvement": round(raw_improvement, 6),
-            "gated_improvement": round(gated_improvement, 6),
-            "correctness_coverage": round(correctness_coverage, 6),
-            "routed_query_count": routed_query_count,
-            "incorrect_query_count": incorrect_query_count,
-            "usage_bonus": round(usage_bonus, 6),
-            "budget_penalty": round(budget_penalty, 6),
-            "plan_deltas": {key: round(value, 4) for key, value in plan_delta_accumulator.items()},
-            "per_query": per_query,
-            "unused_derived_objects": sorted(name for name, obj in self._derived_objects.items() if not obj.used_by_visible_queries),
-        }
+    def _baseline_for_query(self, query: QuerySpec) -> QueryExecution:
+        if query.query_id not in self._baseline_cache:
+            self._baseline_cache[query.query_id] = self._execute_query(query.sql)
+        return self._baseline_cache[query.query_id]
 
-    def _evaluate_query(self, query: QuerySpec, mark_usage: bool) -> RouteDecision:
-        best_decision = RouteDecision(
-            query_id=query.query_id,
-            routed=False,
-            object_name=None,
-            runtime_ms=query.baseline_runtime_ms,
-            plan_depth=query.baseline_plan_depth,
-            operator_count=query.operator_count,
-            join_complexity=query.join_complexity,
-            blocking_complexity=query.blocking_complexity,
-            correctness_pass=True,
-            semantic_score=1.0,
-            route_reason="base plan",
-        )
-
+    def _evaluate_query(self, query: QuerySpec, mark_usage: bool) -> Dict[str, Any]:
+        state_key = (query.query_id, self._derived_state_hash())
+        if state_key in self._evaluation_cache:
+            cached = copy.deepcopy(self._evaluation_cache[state_key])
+            if mark_usage and cached["routed"] and cached["object_name"]:
+                self._mark_usage(cached["object_name"], query)
+            return cached
+        baseline = self._baseline_for_query(query)
+        best = {"routed": False, "object_name": None, "rewritten_sql": None, "runtime_ms": baseline.runtime_ms, "correctness_pass": True, "plan": baseline.plan, "route_reason": "base plan"}
+        best_correct_runtime = baseline.runtime_ms
         for obj in self._derived_objects.values():
-            score = self._semantic_score(query, obj)
-            if not score["eligible"]:
+            rewrite = self._build_rewrite(query, obj)
+            if rewrite is None:
                 continue
-            improvement = self._runtime_improvement(query, obj, score)
-            runtime_ms = round(query.baseline_runtime_ms * (1.0 - improvement), 6)
-            candidate = RouteDecision(
-                query_id=query.query_id,
-                routed=True,
-                object_name=obj.name,
-                runtime_ms=runtime_ms,
-                plan_depth=max(1, int(math.ceil(query.baseline_plan_depth * (1.0 - improvement * 0.55)))),
-                operator_count=max(3, int(math.ceil(query.operator_count * (1.0 - improvement * 0.60)))),
-                join_complexity=max(1, int(math.ceil(query.join_complexity * (1.0 - improvement * 0.70)))),
-                blocking_complexity=max(1, int(math.ceil(query.blocking_complexity * (1.0 - improvement * 0.50)))),
-                correctness_pass=bool(score["correctness_pass"]),
-                semantic_score=round(score["semantic_score"], 6),
-                route_reason=score["reason"],
-            )
-            if candidate.runtime_ms < best_decision.runtime_ms:
-                best_decision = candidate
+            current = self._execute_query(rewrite["sql"])
+            correctness = self._compare_results(baseline, current)
+            candidate = {"routed": True, "object_name": obj.name, "rewritten_sql": rewrite["sql"], "runtime_ms": current.runtime_ms, "correctness_pass": correctness, "plan": current.plan, "route_reason": rewrite["reason"]}
+            if correctness and current.runtime_ms < best_correct_runtime:
+                best = candidate
+                best_correct_runtime = current.runtime_ms
+            elif best["object_name"] is None and current.runtime_ms < best["runtime_ms"]:
+                best = candidate
+        self._evaluation_cache[state_key] = copy.deepcopy(best)
+        if mark_usage and best["routed"] and best["object_name"]:
+            self._mark_usage(best["object_name"], query)
+        return best
 
-        if mark_usage and best_decision.routed and best_decision.object_name:
-            obj = self._derived_objects[best_decision.object_name]
-            obj.used_by_visible_queries.add(query.query_id)
-            obj.used_by_clusters.add(query.cluster_id)
+    def _execute_query(self, sql: str, repeats: int = 3, warmup: int = 1) -> QueryExecution:
+        timings: List[float] = []
+        rows: List[Tuple[Any, ...]] = []
+        columns: List[str] = []
+        for idx in range(warmup + repeats):
+            start = time.perf_counter()
+            cursor = self._con.execute(sql)
+            fetched = cursor.fetchall()
+            elapsed = (time.perf_counter() - start) * 1000.0
+            if idx >= warmup:
+                timings.append(elapsed)
+                rows = [tuple(row) for row in fetched]
+                columns = [str(item[0]).lower() for item in cursor.description or []]
+        return QueryExecution(runtime_ms=sum(timings) / max(1, len(timings)), plan=self._collect_plan(sql), column_names=columns, rows=rows)
 
-        return best_decision
+    def _collect_plan(self, sql: str) -> PlanArtifact:
+        raw_json = None
+        raw_text = ""
+        try:
+            rows = self._con.execute(f"EXPLAIN (FORMAT json) {sql}").fetchall()
+            raw_text = self._flatten_explain(rows)
+            raw_json = json.loads(raw_text)
+        except Exception:
+            rows = self._con.execute(f"EXPLAIN {sql}").fetchall()
+            raw_text = self._flatten_explain(rows)
+        depth, operators, joins, blocking, names = self._summarize_plan(raw_json, raw_text)
+        return PlanArtifact(raw_explain_text=raw_text, raw_explain_json=raw_json, plan_depth=depth, operator_count=operators, join_count=joins, blocking_operator_count=blocking, operators=names)
 
-    def _semantic_score(self, query: QuerySpec, obj: DerivedObject) -> Dict[str, Any]:
-        query_tables = set(table.lower() for table in query.tables)
-        source_tables = set(source.lower() for source in obj.source_objects)
-        if not query_tables.issubset(source_tables):
-            return {"eligible": False, "semantic_score": 0.0, "correctness_pass": False, "reason": "source object mismatch"}
+    def _build_rewrite(self, query: QuerySpec, obj: DerivedObject) -> Optional[Dict[str, str]]:
+        if sorted(table.lower() for table in query.tables) != sorted(obj.parsed_sql.tables):
+            return None
+        if [self._normalize_predicate(item) for item in query.filter_predicates] != obj.parsed_sql.filter_predicates:
+            return None
+        query_dims = [item.lower() for item in query.group_by]
+        if not set(query_dims).issubset(set(obj.parsed_sql.group_by)):
+            return None
+        if not set(query.measure_columns).issubset(set(obj.available_columns)):
+            return None
+        if query_dims == obj.parsed_sql.group_by and set(query.columns).issubset(set(obj.available_columns)):
+            return {"sql": f"SELECT {', '.join(query.columns)} FROM derived.{obj.name}", "reason": "exact derived object match"}
+        if obj.object_kind not in {"agg_matview", "denorm_table", "join_matview"}:
+            return None
+        if not all(func in {"count", "sum"} for func in query.aggregate_functions):
+            return None
+        select_cols = list(query_dims) + [f"SUM({measure}) AS {measure}" for measure in query.measure_columns]
+        sql = f"SELECT {', '.join(select_cols)} FROM derived.{obj.name}"
+        if query_dims:
+            sql += " GROUP BY " + ", ".join(query_dims)
+        return {"sql": sql, "reason": "rollup over derived object"}
 
-        query_columns = set(query.columns)
-        available_columns = set(obj.available_columns)
-        column_score = 0.35 if not available_columns else len(query_columns & available_columns) / max(1, len(query_columns))
+    def _route_summary(self, query_id: str, route: Dict[str, Any]) -> Dict[str, Any]:
+        return {"query_id": query_id, "routed": route["routed"], "object_name": route["object_name"], "rewritten_sql": route["rewritten_sql"], "runtime_ms": round(route["runtime_ms"], 6), "correctness_pass": route["correctness_pass"], "route_reason": route["route_reason"], "plan_depth": route["plan"].plan_depth, "operator_count": route["plan"].operator_count, "join_count": route["plan"].join_count, "blocking_operator_count": route["plan"].blocking_operator_count, "operators": list(route["plan"].operators)}
+    def _compare_results(self, baseline: QueryExecution, current: QueryExecution) -> bool:
+        if baseline.column_names != current.column_names or len(baseline.rows) != len(current.rows):
+            return False
+        left = sorted(self._normalize_row(row) for row in baseline.rows)
+        right = sorted(self._normalize_row(row) for row in current.rows)
+        return left == right
 
-        query_filters = set(query.filter_tokens)
-        if obj.filter_tags:
-            filter_score = len(query_filters & obj.filter_tags) / max(1, len(query_filters))
-        else:
-            filter_score = 1.0
-
-        query_grain = set(query.group_by)
-        derived_grain = set(obj.grain_dims)
-        if query_grain:
-            if obj.object_kind == "agg_matview":
-                if query_grain.issubset(derived_grain):
-                    grain_score = 1.0
-                elif derived_grain and derived_grain.issubset(query_grain):
-                    grain_score = 0.35
-                else:
-                    grain_score = 0.60 if query_grain & derived_grain else 0.25
+    def _normalize_row(self, row: Tuple[Any, ...]) -> Tuple[Any, ...]:
+        result: List[Any] = []
+        for value in row:
+            if isinstance(value, float):
+                result.append(round(value, 9))
             else:
-                grain_score = 1.0 if query_grain.issubset(available_columns | derived_grain) else 0.55
-        else:
-            grain_score = 1.0
+                result.append(value)
+        return tuple(result)
 
-        cluster_score = 1.0 if not obj.intended_clusters else (1.0 if query.cluster_id.lower() in obj.intended_clusters else 0.55)
-        if obj.feature_tags:
-            plan_score = len(set(query.plan_features) & obj.feature_tags) / max(1, len(set(query.plan_features)))
-        else:
-            plan_score = 0.7
-
-        semantic_score = round((0.30 * column_score) + (0.25 * grain_score) + (0.20 * filter_score) + (0.15 * cluster_score) + (0.10 * plan_score), 6)
-        eligible = semantic_score >= 0.45
-        correctness_pass = bool(column_score >= 0.90 and grain_score >= 0.90 and filter_score >= 0.90)
-        return {
-            "eligible": eligible,
-            "semantic_score": semantic_score,
-            "correctness_pass": correctness_pass,
-            "reason": f"semantic={semantic_score:.3f}; columns={column_score:.2f}; grain={grain_score:.2f}; filters={filter_score:.2f}",
-        }
-
-    def _runtime_improvement(self, query: QuerySpec, obj: DerivedObject, score: Dict[str, Any]) -> float:
-        kind_base = {
-            "join_matview": 0.28,
-            "agg_matview": 0.44,
-            "filtered_projection": 0.22,
-            "denorm_table": 0.32,
-        }[obj.object_kind]
-        semantic_score = score["semantic_score"]
-        plan_bonus = 0.08 if set(query.plan_features) & obj.feature_tags else 0.0
-        cluster_bonus = 0.05 if query.cluster_id.lower() in obj.intended_clusters else (-0.02 if obj.intended_clusters else 0.0)
-        improvement = kind_base * (0.55 + semantic_score) + plan_bonus + cluster_bonus
-        return max(0.05, min(0.70, improvement))
-
-    def _compose_query_cost(
-        self,
-        query: QuerySpec,
-        runtime_ms: float,
-        plan_depth: int,
-        operator_count: int,
-        join_complexity: int,
-        blocking_complexity: int,
-    ) -> float:
-        runtime_norm = runtime_ms / max(query.baseline_runtime_ms, 1.0)
-        depth_norm = plan_depth / max(query.baseline_plan_depth, 1)
-        operator_norm = operator_count / max(query.operator_count, 1)
-        join_norm = join_complexity / max(query.join_complexity, 1)
-        blocking_norm = blocking_complexity / max(query.blocking_complexity, 1)
-        return 100.0 * ((0.70 * runtime_norm) + (0.10 * depth_norm) + (0.10 * operator_norm) + (0.05 * join_norm) + (0.05 * blocking_norm))
+    def _compose_query_cost(self, runtime_ms: float, plan: PlanArtifact) -> float:
+        return 0.70 * runtime_ms + 5.0 * plan.plan_depth + 2.0 * plan.operator_count + 3.0 * plan.join_count + 2.5 * plan.blocking_operator_count
 
     def _migration_score(self) -> float:
-        max_objects = max(1, self._task.budgets["max_new_derived_objects"])
+        max_objects = max(1, int(self._task.budgets["max_new_derived_objects"]))
         object_ratio = len(self._derived_objects) / max_objects
         unused_ratio = 0.0 if not self._derived_objects else len([obj for obj in self._derived_objects.values() if not obj.used_by_visible_queries]) / len(self._derived_objects)
         return round(max(0.0, 1.0 - (0.35 * object_ratio) - (0.65 * unused_ratio)), 6)
 
     def _storage_efficiency_score(self) -> float:
-        storage_limit = max(self._task.budgets["max_storage_multiplier"] - 1.0, 0.01)
-        storage_ratio = sum(obj.storage_multiplier for obj in self._derived_objects.values()) / storage_limit
-        refresh_ratio = sum(obj.refresh_cost for obj in self._derived_objects.values()) / max(self._task.budgets["max_refresh_cost"], 0.01)
+        storage_limit = max(float(self._task.budgets.get("max_storage_bytes", 1.0)), 1.0)
+        refresh_limit = max(float(self._task.budgets.get("max_refresh_runtime_ms", 1.0)), 1.0)
+        storage_ratio = sum(obj.storage_bytes_estimate for obj in self._derived_objects.values()) / storage_limit
+        refresh_ratio = sum(obj.build_runtime_ms for obj in self._derived_objects.values()) / refresh_limit
         return round(max(0.0, 1.0 - (0.50 * storage_ratio) - (0.50 * refresh_ratio)), 6)
 
     def _budget_penalty(self) -> float:
-        storage_limit = max(self._task.budgets["max_storage_multiplier"] - 1.0, 0.01)
-        used_storage = sum(obj.storage_multiplier for obj in self._derived_objects.values())
-        refresh_used = sum(obj.refresh_cost for obj in self._derived_objects.values())
+        storage_limit = max(float(self._task.budgets.get("max_storage_bytes", 1.0)), 1.0)
+        refresh_limit = max(float(self._task.budgets.get("max_refresh_runtime_ms", 1.0)), 1.0)
+        used_storage = sum(obj.storage_bytes_estimate for obj in self._derived_objects.values())
+        used_refresh = sum(obj.build_runtime_ms for obj in self._derived_objects.values())
         penalty = 0.0
         if used_storage > storage_limit:
-            penalty += min(0.12, (used_storage - storage_limit) * 0.35)
-        if refresh_used > self._task.budgets["max_refresh_cost"]:
-            penalty += min(0.12, (refresh_used - self._task.budgets["max_refresh_cost"]) * 0.20)
-        if len(self._derived_objects) > self._task.budgets["max_new_derived_objects"]:
+            penalty += min(0.15, (used_storage - storage_limit) / storage_limit)
+        if used_refresh > refresh_limit:
+            penalty += min(0.15, (used_refresh - refresh_limit) / refresh_limit)
+        if len(self._derived_objects) > int(self._task.budgets["max_new_derived_objects"]):
             penalty += 0.10
         return penalty
 
-    def _estimate_storage_multiplier(self, object_kind: str, source_objects: Sequence[str], available_columns: Sequence[str]) -> float:
-        base = {
-            "join_matview": 0.11,
-            "agg_matview": 0.08,
-            "filtered_projection": 0.06,
-            "denorm_table": 0.15,
-        }[object_kind]
-        return round(base + (len(source_objects) - 1) * 0.015 + len(available_columns) * 0.004, 6)
-
-    def _estimate_refresh_cost(self, object_kind: str, source_objects: Sequence[str]) -> float:
-        base = {
-            "join_matview": 0.28,
-            "agg_matview": 0.24,
-            "filtered_projection": 0.18,
-            "denorm_table": 0.34,
-        }[object_kind]
-        return round(base + len(source_objects) * 0.05, 6)
     def _resolve_retrieval_mode(self, action: SchemaOptAction) -> str:
         if action.pattern and action.top_k is None and not any([action.cluster_id, action.tables, action.columns, action.plan_features]):
             return "regex"
@@ -1000,89 +536,141 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
             raise ValueError(f"Unknown visible query_id: {query_id}")
         return self._visible_query_lookup[query_id]
 
-    def _original_plan_summary(self, query: QuerySpec) -> Dict[str, Any]:
-        return {
-            "runtime_ms": query.baseline_runtime_ms,
-            "plan_depth": query.baseline_plan_depth,
-            "operator_count": query.operator_count,
-            "join_complexity": query.join_complexity,
-            "blocking_complexity": query.blocking_complexity,
-            "plan_features": list(query.plan_features),
-        }
-
-    def _object_exists(self, name: str) -> bool:
-        base_names = {table.name for table in self._task.tables}
-        return name in base_names or name in self._derived_objects or name.startswith("derived.")
-
     def _reset_visible_usage(self) -> None:
         for obj in self._derived_objects.values():
             obj.used_by_visible_queries.clear()
             obj.used_by_clusters.clear()
 
-    def _seed_connection(self) -> None:
-        if self._con is not None:
-            self._con.close()
-        self._con = duckdb.connect(database=":memory:")
-        self._con.execute("CREATE SCHEMA IF NOT EXISTS derived")
-        for table in self._task.tables:
-            self._con.execute(self._create_table_sql(table))
-            rows = self._sample_rows_for_table(table)
-            placeholders = ", ".join(["?"] * len(table.columns))
-            self._con.executemany(f"INSERT INTO {table.name} VALUES ({placeholders})", rows)
+    def _mark_usage(self, object_name: str, query: QuerySpec) -> None:
+        obj = self._derived_objects[object_name]
+        obj.used_by_visible_queries.add(query.query_id)
+        obj.used_by_clusters.add(query.cluster_id)
 
-    def _create_table_sql(self, table: Any) -> str:
-        column_clause = ", ".join(f"{name} {dtype}" for name, dtype in table.columns)
-        return f"CREATE TABLE {table.name} ({column_clause})"
+    def _derived_state_hash(self) -> str:
+        material = "|".join(f"{name}:{hashlib.md5(obj.sql_definition.encode('utf-8')).hexdigest()}" for name, obj in sorted(self._derived_objects.items()))
+        return hashlib.md5(material.encode("utf-8")).hexdigest()
 
-    def _sample_rows_for_table(self, table: Any) -> List[tuple[Any, ...]]:
-        if table.name.endswith("fact_activity"):
-            return [
-                (1, 1, 1, 1, 1, 1, "2024-10-10", 120.0, 42.0, 210, 24, "active", "NA"),
-                (2, 1, 2, 2, 1, 2, "2024-10-16", 95.0, 38.0, 180, 16, "won", "EU"),
-                (3, 2, 1, 1, 2, 1, "2024-11-03", 180.0, 74.0, 260, 31, "active", "NA"),
-                (4, 2, 2, 2, 2, 2, "2024-11-10", 160.0, 68.0, 245, 29, "open", "EU"),
-                (5, 3, 3, 3, 3, 3, "2024-12-02", 205.0, 88.0, 310, 36, "active", "APAC"),
-                (6, 3, 1, 1, 3, 3, "2024-12-19", 220.0, 90.0, 330, 39, "won", "APAC"),
-                (7, 1, 2, 3, 2, 1, "2025-01-06", 135.0, 52.0, 215, 20, "active", "NA"),
-                (8, 2, 3, 1, 1, 2, "2025-01-18", 142.0, 61.0, 225, 23, "open", "EU"),
-                (9, 3, 1, 2, 3, 3, "2025-02-04", 240.0, 97.0, 360, 42, "active", "APAC"),
-                (10, 1, 3, 2, 2, 1, "2025-02-20", 128.0, 48.0, 205, 19, "won", "NA"),
-                (11, 2, 2, 3, 1, 2, "2025-03-05", 176.0, 72.0, 250, 28, "active", "EU"),
-                (12, 3, 1, 1, 3, 3, "2025-03-21", 255.0, 101.0, 375, 45, "open", "APAC"),
-            ]
-        if table.name.endswith("dim_account"):
-            return [
-                (1, "Enterprise", "Pipeline", "US", "Growth"),
-                (2, "SMB", "Expansion", "DE", "Premium"),
-                (3, "Mid-Market", "Retention", "SG", "Premium"),
-            ]
-        if table.name.endswith("dim_owner"):
-            return [
-                (1, "Enterprise", "Senior"),
-                (2, "Mid Market", "Mid"),
-                (3, "Retention", "Lead"),
-            ]
-        if table.name.endswith("dim_channel"):
-            return [
-                (1, "Paid", "Search"),
-                (2, "Owned", "Email"),
-                (3, "Partner", "Referral"),
-            ]
-        if table.name.endswith("dim_product"):
-            return [
-                (1, "Core", "Growth"),
-                (2, "Add-on", "Premium"),
-                (3, "Platform", "Premium"),
-            ]
-        if table.name.endswith("dim_geo"):
-            return [
-                (1, "North America", "Tier1"),
-                (2, "Europe", "Tier1"),
-                (3, "APAC", "Tier2"),
-            ]
-        raise ValueError(f"Unknown table kind for {table.name}")
+    def _collect_table_stats(self, table_name: str) -> Dict[str, Any]:
+        row_count = int(self._con.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0])
+        describe_rows = self._con.execute(f"DESCRIBE {table_name}").fetchall()
+        columns = [{"name": str(row[0]), "type": str(row[1])} for row in describe_rows]
+        null_counts = {}
+        for row in describe_rows[: min(5, len(describe_rows))]:
+            name = str(row[0])
+            null_counts[name] = int(self._con.execute(f'SELECT COUNT(*) FROM {table_name} WHERE "{name}" IS NULL').fetchone()[0])
+        return {"name": table_name, "columns": columns, "row_count": row_count, "null_counts": null_counts}
 
+    def _flatten_explain(self, rows: Sequence[Sequence[Any]]) -> str:
+        parts: List[str] = []
+        for row in rows:
+            parts.append(str(row[-1]))
+        return "\n".join(parts)
 
+    def _summarize_plan(self, raw_json: Any, raw_text: str) -> Tuple[int, int, int, int, List[str]]:
+        if raw_json is not None:
+            depth, ops, joins, blocking, names = self._walk_plan(raw_json)
+            if ops > 0:
+                return depth, ops, joins, blocking, names
+        names = []
+        for line in raw_text.splitlines():
+            token = line.strip(" │┌┐└┘─").upper().replace(" ", "_")
+            if token and any(ch.isalpha() for ch in token) and token not in {"PHYSICAL_PLAN", "EXPLAIN_ANALYZE"}:
+                names.append(token)
+        joins = sum(1 for item in names if "JOIN" in item)
+        blocking = sum(1 for item in names if item in _BLOCKING or "AGGREGATE" in item)
+        return max(1, len(names)), len(names), joins, blocking, names
 
+    def _walk_plan(self, node: Any) -> Tuple[int, int, int, int, List[str]]:
+        if isinstance(node, list):
+            summaries = [self._walk_plan(item) for item in node]
+            if not summaries:
+                return 1, 0, 0, 0, []
+            return max(item[0] for item in summaries), sum(item[1] for item in summaries), sum(item[2] for item in summaries), sum(item[3] for item in summaries), [name for item in summaries for name in item[4]]
+        if isinstance(node, dict):
+            name = str(node.get("name") or node.get("operator_name") or node.get("operator_type") or node.get("type") or "").upper()
+            children = node.get("children") or node.get("child") or node.get("plans") or []
+            child = self._walk_plan(children) if children else (0, 0, 0, 0, [])
+            return max(1, child[0] + 1 if children else 1), child[1] + (1 if name else 0), child[2] + (1 if "JOIN" in name else 0), child[3] + (1 if name in _BLOCKING or "AGGREGATE" in name else 0), ([name] if name else []) + child[4]
+        return 1, 0, 0, 0, []
+
+    def _estimate_storage_bytes(self, row_count: int, column_types: Dict[str, str]) -> int:
+        sizes = {"BOOLEAN": 1, "TINYINT": 1, "SMALLINT": 2, "INTEGER": 4, "BIGINT": 8, "FLOAT": 4, "REAL": 4, "DOUBLE": 8, "DECIMAL": 16, "TIMESTAMP": 8, "DATE": 4, "VARCHAR": 24, "TEXT": 24}
+        per_row = 0
+        for dtype in column_types.values():
+            upper = dtype.upper()
+            per_row += next((value for key, value in sizes.items() if key in upper), 16)
+        return int(max(1, row_count) * max(1, per_row))
+
+    def _parse_sql_metadata(self, sql: str) -> ParsedSQL:
+        normalized = sql.strip().rstrip(";")
+        lowered = normalized.lower()
+        select_start = lowered.find("select ")
+        from_start = lowered.find(" from ")
+        if select_start == -1 or from_start == -1:
+            raise ValueError("Only SELECT-derived objects are supported")
+        select_clause = normalized[select_start + 7:from_start]
+        after_from = normalized[from_start + 6:]
+        where_match = re.search(r"\bwhere\b", after_from, re.IGNORECASE)
+        group_match = re.search(r"\bgroup\s+by\b", after_from, re.IGNORECASE)
+        from_end = len(after_from)
+        if where_match:
+            from_end = min(from_end, where_match.start())
+        if group_match:
+            from_end = min(from_end, group_match.start())
+        where_clause = after_from[where_match.end():group_match.start() if group_match else len(after_from)] if where_match else ""
+        group_clause = after_from[group_match.end():] if group_match else ""
+        parts = self._split_sql_list(select_clause)
+        aliases = [self._extract_alias(part).lower() for part in parts]
+        measures = [alias for alias, part in zip(aliases, parts) if self._aggregate_function(part)]
+        funcs = [self._aggregate_function(part) for part in parts if self._aggregate_function(part)]
+        return ParsedSQL(tables=[item.strip('"').lower() for item in re.findall(r'(?:from|join)\s+([A-Za-z0-9_\.\"]+)', normalized, flags=re.IGNORECASE)], projection_aliases=aliases, group_by=[item.lower() for item in self._parse_group_by(group_clause, aliases)], filter_predicates=[self._normalize_predicate(item) for item in self._split_predicates(where_clause)], measure_columns=measures, aggregate_functions=[item.lower() for item in funcs if item])
+
+    def _split_sql_list(self, clause: str) -> List[str]:
+        parts: List[str] = []
+        current: List[str] = []
+        depth = 0
+        for char in clause:
+            if char == '(':
+                depth += 1
+            elif char == ')':
+                depth = max(0, depth - 1)
+            if char == ',' and depth == 0:
+                parts.append("".join(current).strip())
+                current = []
+            else:
+                current.append(char)
+        if current:
+            parts.append("".join(current).strip())
+        return parts
+
+    def _extract_alias(self, expression: str) -> str:
+        match = re.search(r'\bas\s+([A-Za-z_][A-Za-z0-9_]*)\s*$', expression, re.IGNORECASE)
+        return match.group(1) if match else expression.split('.')[-1].strip().strip('"')
+
+    def _aggregate_function(self, expression: str) -> Optional[str]:
+        match = re.search(r'\b(count|sum)\s*\(', expression, re.IGNORECASE)
+        return match.group(1).lower() if match else None
+
+    def _split_predicates(self, clause: str) -> List[str]:
+        clause = clause.strip()
+        return [part.strip() for part in re.split(r'\s+AND\s+', clause, flags=re.IGNORECASE) if part.strip()] if clause else []
+
+    def _normalize_predicate(self, predicate: str) -> str:
+        return " ".join(predicate.strip().lower().split())
+
+    def _parse_group_by(self, clause: str, aliases: Sequence[str]) -> List[str]:
+        clause = clause.strip()
+        if not clause:
+            return []
+        items = [item.strip() for item in clause.split(',') if item.strip()]
+        result: List[str] = []
+        for item in items:
+            if item.isdigit():
+                idx = int(item) - 1
+                if 0 <= idx < len(aliases):
+                    result.append(aliases[idx])
+            else:
+                result.append(item.strip('"'))
+        return result
 
 

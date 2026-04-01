@@ -1,0 +1,1761 @@
+{
+  "task_id": "schemaopt_easy_lever",
+  "difficulty": "easy",
+  "domain": "lever",
+  "objective": "Optimize the lever workload over the real DuckDB source database by materializing derived objects that reduce measured execution cost while preserving exact query results.",
+  "seed_source": "datasets/dacomp-de/dacomp-de-impl-001",
+  "dataset_dir": "datasets/dacomp-de/dacomp-de-impl-001",
+  "database_path": "datasets/dacomp-de/dacomp-de-impl-001/lever_start.duckdb",
+  "tables": [
+    {
+      "name": "raw.application",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "archived_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "archived_reason_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "candidate_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "comments",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "company",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "posting_hiring_manager_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "posting_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "posting_owner_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "referrer_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "requisition_for_hire_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "opportunity_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.archive_reason",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "text",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.contact_email",
+      "columns": [
+        {
+          "name": "contact_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.contact_link",
+      "columns": [
+        {
+          "name": "contact_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "link",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.contact_phone",
+      "columns": [
+        {
+          "name": "contact_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "value",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.feedback_form",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "creator_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "instructions",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "text",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "type",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.feedback_form_field",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "feedback_form_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "field_index",
+          "type": "BIGINT"
+        },
+        {
+          "name": "value_text",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "value_index",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.interview",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "canceled_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "candidate_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "creator_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "date",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "duration",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "feedback_reminder",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "gcal_event_url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "location",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "note",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "panel_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "stage_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "subject",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "timezone",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "opportunity_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.interview_feedback",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "completed_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "interview_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "interviewer_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "overall_recommendation",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "text",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "feedback_form_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.interview_user",
+      "columns": [
+        {
+          "name": "interview_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.interviewer_user",
+      "columns": [
+        {
+          "name": "interview_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "user_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.offer",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "creator_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "opportunity_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "candidate_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.opportunity",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "archived_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "archived_reason_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "contact",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "data_protection_contact_allowed",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "data_protection_contact_expires_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "data_protection_store_allowed",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "data_protection_store_expires_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "headline",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "is_anonymized",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "last_advanced_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "last_interaction_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "location",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "origin",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "owner_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "snoozed_until",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "stage_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.opportunity_source",
+      "columns": [
+        {
+          "name": "opportunity_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "source",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.opportunity_stage_history",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "opportunity_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "stage_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updater_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "to_stage_index",
+          "type": "BIGINT"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.opportunity_tag",
+      "columns": [
+        {
+          "name": "opportunity_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "tag",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.posting",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "categories_commitment",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "categories_department",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "categories_level",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "categories_location",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "categories_team",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "content_closing",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "content_closing_html",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "content_description",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "content_description_html",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "creator_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "owner_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "requisition_code",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "state",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "text",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "updated_at",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.posting_interview",
+      "columns": [
+        {
+          "name": "posting_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "interview_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.posting_tag",
+      "columns": [
+        {
+          "name": "posting_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "tag",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.requisition",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "backfill",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "compensation_band_currency",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "compensation_band_interval",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "compensation_band_max",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "compensation_band_min",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "creator_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "employment_status",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "headcount_hired",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "headcount_infinite",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "headcount_total",
+          "type": "BOOLEAN"
+        },
+        {
+          "name": "hiring_manager_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "internal_notes",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "location",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "owner_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "requisition_code",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "team",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.requisition_offer",
+      "columns": [
+        {
+          "name": "requisition_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "offer_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.requisition_posting",
+      "columns": [
+        {
+          "name": "requisition_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "posting_id",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.resume",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "opportunity_id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "file_download_url",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "file_ext",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "file_name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "file_uploaded_at",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.stage",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "text",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.user",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "access_role",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "deactivated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "external_directory_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "photo",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "username",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    },
+    {
+      "name": "raw.users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "access_role",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "created_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "deactivated_at",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "external_directory_id",
+          "type": "BIGINT"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "photo",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "username",
+          "type": "VARCHAR"
+        }
+      ],
+      "row_count": 0
+    }
+  ],
+  "visible_queries": [
+    {
+      "query_id": "schemaopt_easy_lever_vq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"archived_at\" AS TIMESTAMP)) AS metric_period, b.\"contact\" AS contact, j.\"text\" AS stage_text, COUNT(*) AS row_count FROM raw.opportunity b JOIN raw.stage j ON b.\"stage_id\" = j.id WHERE try_cast(b.\"archived_at\" AS TIMESTAMP) IS NOT NULL AND b.\"contact\" IS NOT NULL AND j.\"text\" IS NOT NULL GROUP BY metric_period, contact, stage_text",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"archived_at\" as timestamp)) as metric_period, b.\"contact\" as contact, j.\"text\" as stage_text, count(*) as row_count from raw.opportunity b join raw.stage j on b.\"stage_id\" = j.id where try_cast(b.\"archived_at\" as timestamp) is not null and b.\"contact\" is not null and j.\"text\" is not null group by metric_period, contact, stage_text",
+      "cluster_id": "schemaopt_easy_lever_cluster_01",
+      "business_tag": "lever opportunity analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.opportunity",
+        "raw.stage"
+      ],
+      "columns": [
+        "metric_period",
+        "contact",
+        "stage_text",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "contact",
+        "stage_text"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"archived_at\"_as_timestamp)_is_not_null",
+        "b.\"contact\"_is_not_null",
+        "j.\"text\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"archived_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"contact\" IS NOT NULL",
+        "j.\"text\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "lever opportunity analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_vq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"archived_at\" AS TIMESTAMP)) AS metric_period, b.\"contact\" AS contact, COUNT(*) AS row_count FROM raw.opportunity b JOIN raw.stage j ON b.\"stage_id\" = j.id WHERE try_cast(b.\"archived_at\" AS TIMESTAMP) IS NOT NULL AND b.\"contact\" IS NOT NULL AND j.\"text\" IS NOT NULL GROUP BY metric_period, contact",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"archived_at\" as timestamp)) as metric_period, b.\"contact\" as contact, count(*) as row_count from raw.opportunity b join raw.stage j on b.\"stage_id\" = j.id where try_cast(b.\"archived_at\" as timestamp) is not null and b.\"contact\" is not null and j.\"text\" is not null group by metric_period, contact",
+      "cluster_id": "schemaopt_easy_lever_cluster_01",
+      "business_tag": "lever opportunity analytics",
+      "frequency_weight": 1.6,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.opportunity",
+        "raw.stage"
+      ],
+      "columns": [
+        "metric_period",
+        "contact",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "contact"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"archived_at\"_as_timestamp)_is_not_null",
+        "b.\"contact\"_is_not_null",
+        "j.\"text\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"archived_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"contact\" IS NOT NULL",
+        "j.\"text\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "lever opportunity analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_vq_c01_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"archived_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.opportunity b JOIN raw.stage j ON b.\"stage_id\" = j.id WHERE try_cast(b.\"archived_at\" AS TIMESTAMP) IS NOT NULL AND b.\"contact\" IS NOT NULL AND j.\"text\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"archived_at\" as timestamp)) as metric_period, count(*) as row_count from raw.opportunity b join raw.stage j on b.\"stage_id\" = j.id where try_cast(b.\"archived_at\" as timestamp) is not null and b.\"contact\" is not null and j.\"text\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_lever_cluster_01",
+      "business_tag": "lever opportunity analytics",
+      "frequency_weight": 1.75,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.opportunity",
+        "raw.stage"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"archived_at\"_as_timestamp)_is_not_null",
+        "b.\"contact\"_is_not_null",
+        "j.\"text\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"archived_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"contact\" IS NOT NULL",
+        "j.\"text\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "lever opportunity analytics variant 3 visible 3"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_vq_c01_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"archived_at\" AS TIMESTAMP)) AS metric_period, b.\"contact\" AS contact, j.\"text\" AS stage_text, COUNT(*) AS row_count FROM raw.opportunity b JOIN raw.stage j ON b.\"stage_id\" = j.id WHERE try_cast(b.\"archived_at\" AS TIMESTAMP) IS NOT NULL AND b.\"contact\" IS NOT NULL AND j.\"text\" IS NOT NULL GROUP BY metric_period, contact, stage_text",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"archived_at\" as timestamp)) as metric_period, b.\"contact\" as contact, j.\"text\" as stage_text, count(*) as row_count from raw.opportunity b join raw.stage j on b.\"stage_id\" = j.id where try_cast(b.\"archived_at\" as timestamp) is not null and b.\"contact\" is not null and j.\"text\" is not null group by metric_period, contact, stage_text",
+      "cluster_id": "schemaopt_easy_lever_cluster_01",
+      "business_tag": "lever opportunity analytics",
+      "frequency_weight": 1.45,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.opportunity",
+        "raw.stage"
+      ],
+      "columns": [
+        "metric_period",
+        "contact",
+        "stage_text",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "contact",
+        "stage_text"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"archived_at\"_as_timestamp)_is_not_null",
+        "b.\"contact\"_is_not_null",
+        "j.\"text\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"archived_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"contact\" IS NOT NULL",
+        "j.\"text\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "lever opportunity analytics variant 1 visible 4"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_vq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"backfill\" AS backfill, COUNT(*) AS row_count, SUM(b.\"compensation_band_max\") AS sum_compensation_band_max FROM raw.requisition b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"backfill\" IS NOT NULL GROUP BY metric_period, backfill",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"backfill\" as backfill, count(*) as row_count, sum(b.\"compensation_band_max\") as sum_compensation_band_max from raw.requisition b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"backfill\" is not null group by metric_period, backfill",
+      "cluster_id": "schemaopt_easy_lever_cluster_02",
+      "business_tag": "lever requisition analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.requisition"
+      ],
+      "columns": [
+        "metric_period",
+        "backfill",
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "group_by": [
+        "metric_period",
+        "backfill"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"backfill\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"backfill\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "lever requisition analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_vq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"compensation_band_max\") AS sum_compensation_band_max FROM raw.requisition b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"backfill\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"compensation_band_max\") as sum_compensation_band_max from raw.requisition b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"backfill\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_lever_cluster_02",
+      "business_tag": "lever requisition analytics",
+      "frequency_weight": 2.05,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.requisition"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"backfill\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"backfill\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "lever requisition analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_vq_c02_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"backfill\" AS backfill, COUNT(*) AS row_count, SUM(b.\"compensation_band_max\") AS sum_compensation_band_max FROM raw.requisition b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"backfill\" IS NOT NULL GROUP BY metric_period, backfill",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"backfill\" as backfill, count(*) as row_count, sum(b.\"compensation_band_max\") as sum_compensation_band_max from raw.requisition b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"backfill\" is not null group by metric_period, backfill",
+      "cluster_id": "schemaopt_easy_lever_cluster_02",
+      "business_tag": "lever requisition analytics",
+      "frequency_weight": 2.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.requisition"
+      ],
+      "columns": [
+        "metric_period",
+        "backfill",
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "group_by": [
+        "metric_period",
+        "backfill"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"backfill\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"backfill\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "lever requisition analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_vq_c02_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"compensation_band_max\") AS sum_compensation_band_max FROM raw.requisition b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"backfill\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"compensation_band_max\") as sum_compensation_band_max from raw.requisition b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"backfill\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_lever_cluster_02",
+      "business_tag": "lever requisition analytics",
+      "frequency_weight": 1.9,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.requisition"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"backfill\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"backfill\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "lever requisition analytics variant 2 visible 4"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_vq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"categories_commitment\" AS categories_commitment, COUNT(*) AS row_count FROM raw.posting b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"categories_commitment\" IS NOT NULL GROUP BY metric_period, categories_commitment",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"categories_commitment\" as categories_commitment, count(*) as row_count from raw.posting b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"categories_commitment\" is not null group by metric_period, categories_commitment",
+      "cluster_id": "schemaopt_easy_lever_cluster_03",
+      "business_tag": "lever posting analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.posting"
+      ],
+      "columns": [
+        "metric_period",
+        "categories_commitment",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "categories_commitment"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"categories_commitment\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"categories_commitment\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "lever posting analytics variant 1 visible 1"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_vq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.posting b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"categories_commitment\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count from raw.posting b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"categories_commitment\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_lever_cluster_03",
+      "business_tag": "lever posting analytics",
+      "frequency_weight": 2.5,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.posting"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"categories_commitment\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"categories_commitment\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "lever posting analytics variant 2 visible 2"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_vq_c03_03",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"categories_commitment\" AS categories_commitment, COUNT(*) AS row_count FROM raw.posting b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"categories_commitment\" IS NOT NULL GROUP BY metric_period, categories_commitment",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"categories_commitment\" as categories_commitment, count(*) as row_count from raw.posting b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"categories_commitment\" is not null group by metric_period, categories_commitment",
+      "cluster_id": "schemaopt_easy_lever_cluster_03",
+      "business_tag": "lever posting analytics",
+      "frequency_weight": 2.65,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.posting"
+      ],
+      "columns": [
+        "metric_period",
+        "categories_commitment",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "categories_commitment"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"categories_commitment\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"categories_commitment\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "lever posting analytics variant 1 visible 3"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_vq_c03_04",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.posting b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"categories_commitment\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count from raw.posting b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"categories_commitment\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_lever_cluster_03",
+      "business_tag": "lever posting analytics",
+      "frequency_weight": 2.35,
+      "priority_weight": 1.1,
+      "tables": [
+        "raw.posting"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"categories_commitment\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"categories_commitment\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "lever posting analytics variant 2 visible 4"
+    }
+  ],
+  "holdout_queries": [
+    {
+      "query_id": "schemaopt_easy_lever_hq_c01_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"archived_at\" AS TIMESTAMP)) AS metric_period, b.\"contact\" AS contact, COUNT(*) AS row_count FROM raw.opportunity b JOIN raw.stage j ON b.\"stage_id\" = j.id WHERE try_cast(b.\"archived_at\" AS TIMESTAMP) IS NOT NULL AND b.\"contact\" IS NOT NULL AND j.\"text\" IS NOT NULL GROUP BY metric_period, contact",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"archived_at\" as timestamp)) as metric_period, b.\"contact\" as contact, count(*) as row_count from raw.opportunity b join raw.stage j on b.\"stage_id\" = j.id where try_cast(b.\"archived_at\" as timestamp) is not null and b.\"contact\" is not null and j.\"text\" is not null group by metric_period, contact",
+      "cluster_id": "schemaopt_easy_lever_cluster_01",
+      "business_tag": "lever opportunity analytics",
+      "frequency_weight": 1.1,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.opportunity",
+        "raw.stage"
+      ],
+      "columns": [
+        "metric_period",
+        "contact",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "contact"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"archived_at\"_as_timestamp)_is_not_null",
+        "b.\"contact\"_is_not_null",
+        "j.\"text\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"archived_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"contact\" IS NOT NULL",
+        "j.\"text\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "lever opportunity analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_hq_c01_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"archived_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.opportunity b JOIN raw.stage j ON b.\"stage_id\" = j.id WHERE try_cast(b.\"archived_at\" AS TIMESTAMP) IS NOT NULL AND b.\"contact\" IS NOT NULL AND j.\"text\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"archived_at\" as timestamp)) as metric_period, count(*) as row_count from raw.opportunity b join raw.stage j on b.\"stage_id\" = j.id where try_cast(b.\"archived_at\" as timestamp) is not null and b.\"contact\" is not null and j.\"text\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_lever_cluster_01",
+      "business_tag": "lever opportunity analytics",
+      "frequency_weight": 1.2,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.opportunity",
+        "raw.stage"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"archived_at\"_as_timestamp)_is_not_null",
+        "b.\"contact\"_is_not_null",
+        "j.\"text\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"archived_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"contact\" IS NOT NULL",
+        "j.\"text\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket"
+      ],
+      "description": "lever opportunity analytics variant 3 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_hq_c02_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count, SUM(b.\"compensation_band_max\") AS sum_compensation_band_max FROM raw.requisition b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"backfill\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count, sum(b.\"compensation_band_max\") as sum_compensation_band_max from raw.requisition b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"backfill\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_lever_cluster_02",
+      "business_tag": "lever requisition analytics",
+      "frequency_weight": 1.4,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.requisition"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"backfill\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"backfill\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket"
+      ],
+      "description": "lever requisition analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_hq_c02_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"backfill\" AS backfill, COUNT(*) AS row_count, SUM(b.\"compensation_band_max\") AS sum_compensation_band_max FROM raw.requisition b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"backfill\" IS NOT NULL GROUP BY metric_period, backfill",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"backfill\" as backfill, count(*) as row_count, sum(b.\"compensation_band_max\") as sum_compensation_band_max from raw.requisition b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"backfill\" is not null group by metric_period, backfill",
+      "cluster_id": "schemaopt_easy_lever_cluster_02",
+      "business_tag": "lever requisition analytics",
+      "frequency_weight": 1.5,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.requisition"
+      ],
+      "columns": [
+        "metric_period",
+        "backfill",
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "group_by": [
+        "metric_period",
+        "backfill"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"backfill\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"backfill\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "aggregate_functions": [
+        "count",
+        "sum"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "lever requisition analytics variant 1 holdout 2"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_hq_c03_01",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, COUNT(*) AS row_count FROM raw.posting b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"categories_commitment\" IS NOT NULL GROUP BY metric_period",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, count(*) as row_count from raw.posting b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"categories_commitment\" is not null group by metric_period",
+      "cluster_id": "schemaopt_easy_lever_cluster_03",
+      "business_tag": "lever posting analytics",
+      "frequency_weight": 1.7,
+      "priority_weight": 1.05,
+      "tables": [
+        "raw.posting"
+      ],
+      "columns": [
+        "metric_period",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"categories_commitment\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"categories_commitment\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket"
+      ],
+      "description": "lever posting analytics variant 2 holdout 1"
+    },
+    {
+      "query_id": "schemaopt_easy_lever_hq_c03_02",
+      "sql": "SELECT date_trunc('month', try_cast(b.\"created_at\" AS TIMESTAMP)) AS metric_period, b.\"categories_commitment\" AS categories_commitment, COUNT(*) AS row_count FROM raw.posting b WHERE try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL AND b.\"categories_commitment\" IS NOT NULL GROUP BY metric_period, categories_commitment",
+      "normalized_sql": "select date_trunc('month', try_cast(b.\"created_at\" as timestamp)) as metric_period, b.\"categories_commitment\" as categories_commitment, count(*) as row_count from raw.posting b where try_cast(b.\"created_at\" as timestamp) is not null and b.\"categories_commitment\" is not null group by metric_period, categories_commitment",
+      "cluster_id": "schemaopt_easy_lever_cluster_03",
+      "business_tag": "lever posting analytics",
+      "frequency_weight": 1.8,
+      "priority_weight": 1.0,
+      "tables": [
+        "raw.posting"
+      ],
+      "columns": [
+        "metric_period",
+        "categories_commitment",
+        "row_count"
+      ],
+      "group_by": [
+        "metric_period",
+        "categories_commitment"
+      ],
+      "filter_tokens": [
+        "try_cast(b.\"created_at\"_as_timestamp)_is_not_null",
+        "b.\"categories_commitment\"_is_not_null"
+      ],
+      "filter_predicates": [
+        "try_cast(b.\"created_at\" AS TIMESTAMP) IS NOT NULL",
+        "b.\"categories_commitment\" IS NOT NULL"
+      ],
+      "measure_columns": [
+        "row_count"
+      ],
+      "aggregate_functions": [
+        "count"
+      ],
+      "plan_features": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "description": "lever posting analytics variant 1 holdout 2"
+    }
+  ],
+  "clusters": [
+    {
+      "cluster_id": "schemaopt_easy_lever_cluster_03",
+      "label": "posting workload",
+      "business_label": "lever posting analytics",
+      "query_ids": [
+        "schemaopt_easy_lever_vq_c03_01",
+        "schemaopt_easy_lever_vq_c03_02",
+        "schemaopt_easy_lever_vq_c03_03",
+        "schemaopt_easy_lever_vq_c03_04"
+      ],
+      "query_count": 4,
+      "total_frequency_weight": 9.85,
+      "total_weighted_baseline_cost": 10.335,
+      "top_tables": [
+        "raw.posting"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "categories_commitment"
+      ],
+      "representative_measures": [
+        "row_count"
+      ],
+      "hotspot_rank": 1,
+      "preferred_object_kind": "agg_matview"
+    },
+    {
+      "cluster_id": "schemaopt_easy_lever_cluster_02",
+      "label": "requisition workload",
+      "business_label": "lever requisition analytics",
+      "query_ids": [
+        "schemaopt_easy_lever_vq_c02_01",
+        "schemaopt_easy_lever_vq_c02_02",
+        "schemaopt_easy_lever_vq_c02_03",
+        "schemaopt_easy_lever_vq_c02_04"
+      ],
+      "query_count": 4,
+      "total_frequency_weight": 8.05,
+      "total_weighted_baseline_cost": 8.445,
+      "top_tables": [
+        "raw.requisition"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "numeric_aggregation",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "backfill"
+      ],
+      "representative_measures": [
+        "row_count",
+        "sum_compensation_band_max"
+      ],
+      "hotspot_rank": 2,
+      "preferred_object_kind": "denorm_table"
+    },
+    {
+      "cluster_id": "schemaopt_easy_lever_cluster_01",
+      "label": "opportunity workload",
+      "business_label": "lever opportunity analytics",
+      "query_ids": [
+        "schemaopt_easy_lever_vq_c01_01",
+        "schemaopt_easy_lever_vq_c01_02",
+        "schemaopt_easy_lever_vq_c01_03",
+        "schemaopt_easy_lever_vq_c01_04"
+      ],
+      "query_count": 4,
+      "total_frequency_weight": 6.25,
+      "total_weighted_baseline_cost": 6.555,
+      "top_tables": [
+        "raw.opportunity",
+        "raw.stage"
+      ],
+      "common_operator_patterns": [
+        "aggregate",
+        "filter",
+        "join",
+        "time_bucket",
+        "wide_group"
+      ],
+      "representative_dimensions": [
+        "metric_period",
+        "contact",
+        "stage_text"
+      ],
+      "representative_measures": [
+        "row_count"
+      ],
+      "hotspot_rank": 3,
+      "preferred_object_kind": "agg_matview"
+    }
+  ],
+  "budgets": {
+    "max_new_derived_objects": 3,
+    "max_storage_bytes": 12000000,
+    "max_refresh_runtime_ms": 8000.0,
+    "max_steps": 18
+  },
+  "allowed_object_kinds": [
+    "join_matview",
+    "agg_matview",
+    "filtered_projection",
+    "denorm_table"
+  ],
+  "engine_capabilities": {
+    "engine": "duckdb",
+    "uses_real_duckdb_database": true,
+    "uses_real_query_execution": true,
+    "uses_explain_plan_metrics": true,
+    "rewrite_model": "explicit_rewritten_sql"
+  }
+}

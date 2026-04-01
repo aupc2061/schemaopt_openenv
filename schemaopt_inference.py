@@ -39,7 +39,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from schemaopt_env.models import SchemaOptAction
 from schemaopt_env.server.schemaopt_environment import SchemaOptEnvironment
 
-MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.4-mini")
+MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.4")
 API_BASE_URL = os.getenv("API_BASE_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
 MAX_STEPS = int(os.getenv("MAX_STEPS", "20"))
@@ -87,6 +87,8 @@ Rules:
 - Do not invent query ids or cluster ids; use only ids provided in the observation.
 - For inspect_cluster, pass the cluster identifier in target_id (not cluster_id).
 - Prefer benchmarking before submitting.
+- Derived object names must be valid SQL identifiers matching ^[A-Za-z_][A-Za-z0-9_]*$.
+- Never use dots, spaces, or schema prefixes in the `name` field. Use names like `agg_installs_monthly`.
 - Never rely on any local heuristic policy. If earlier attempts were invalid, fix the output format and return a valid action.
 """
 
@@ -182,7 +184,7 @@ def build_user_prompt(observation: Any, history: List[str], parse_errors: Option
         "done": observation.done,
     }
 
-    prompt = json.dumps(prompt_payload, indent=2)
+    prompt = json.dumps(prompt_payload, indent=2, default=str)
     if parse_errors:
         prompt += (
             "\n\nPrevious action attempts were invalid. Return only a valid JSON action matching the schema."
@@ -243,6 +245,8 @@ def run_episode(task_id: str = TASK_ID) -> Dict[str, Any]:
 
     print(f"Starting schema optimization inference run for {task_id}")
 
+    terminated_due_to_max_steps = False
+
     for step in range(1, MAX_STEPS + 1):
         action = choose_action(observation, history, step)
         print(f"Step {step}: {json.dumps(action.model_dump(exclude_none=True), ensure_ascii=True)}")
@@ -263,9 +267,8 @@ def run_episode(task_id: str = TASK_ID) -> Dict[str, Any]:
             print("Episode complete.")
             break
     else:
-        print(f"Reached max steps ({MAX_STEPS}). Submitting final action.")
-        observation = env.step(SchemaOptAction(operation="submit"))
-        total_reward += observation.reward or 0.0
+        terminated_due_to_max_steps = True
+        print(f"Reached max steps ({MAX_STEPS}) without a model-issued submit action.")
 
     final_feedback = observation.action_feedback or {}
     result = {
@@ -276,6 +279,8 @@ def run_episode(task_id: str = TASK_ID) -> Dict[str, Any]:
         "derived_object_count": env.state.derived_object_count,
         "benchmark_runs": env.state.benchmark_runs,
         "final_message": observation.message,
+        "terminated_due_to_max_steps": terminated_due_to_max_steps,
+        "done": observation.done,
         "benchmark_context": observation.benchmark_context,
         "final_feedback": final_feedback,
     }
@@ -292,3 +297,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
