@@ -2,8 +2,8 @@
 
 Usage:
     python -m schemaopt_env.scripts.debug_walk_plan
-    python -m schemaopt_env.scripts.debug_walk_plan --task-id schemaopt_easy_lever
-    python -m schemaopt_env.scripts.debug_walk_plan --query-id q01
+    python -m schemaopt_env.scripts.debug_walk_plan --db-id concert_singer
+    python -m schemaopt_env.scripts.debug_walk_plan --query-id <visible_query_id>
     python -m schemaopt_env.scripts.debug_walk_plan --show-json
 """
 
@@ -14,9 +14,8 @@ import json
 from pprint import pprint
 from typing import Any, Dict, List, Tuple
 
-from schemaopt_env.models import SchemaOptAction
 from schemaopt_env.server.schemaopt_environment import SchemaOptEnvironment, _BLOCKING
-from schemaopt_env.tasks import TASK_CATALOG
+from schemaopt_env.spider_registry import list_spider_database_summaries
 
 
 def _trace_walk(
@@ -128,14 +127,18 @@ def _trace_walk(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Debug _walk_plan traversal for one query")
-    parser.add_argument("--task-id", help="Task id to load", default=None)
+    parser.add_argument("--db-id", help="Spider database id to load", default=None)
+    parser.add_argument("--spider-split", help="Spider split to sample from", default="dev")
+    parser.add_argument("--sample-size", help="How many workload queries to sample", type=int, default=8)
     parser.add_argument("--query-id", help="Visible query id to inspect", default=None)
     parser.add_argument("--show-json", action="store_true", help="Print raw EXPLAIN JSON too")
     args = parser.parse_args()
 
-    task_id = args.task_id or next(iter(TASK_CATALOG.keys()))
+    db_id = args.db_id or (list_spider_database_summaries()[0]["db_id"] if list_spider_database_summaries() else None)
+    if db_id is None:
+        raise RuntimeError("No Spider databases are available")
     env = SchemaOptEnvironment()
-    env.reset(task_id=task_id)
+    env.reset(db_id=db_id, spider_split=args.spider_split, spider_sample_size=args.sample_size, spider_holdout_size=max(1, args.sample_size // 2))
     if env._task is None:
         raise RuntimeError("Environment task is not initialized after reset")
 
@@ -143,7 +146,7 @@ def main() -> None:
     query = env._get_visible_query(query_id)
     print("SQL query:", query)
 
-    print(f"Task: {task_id}")
+    print(f"Spider DB: {db_id}")
     print(f"Query: {query_id}")
 
     baseline = env._baseline_for_query(query)

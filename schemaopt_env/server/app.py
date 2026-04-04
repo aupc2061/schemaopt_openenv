@@ -6,7 +6,7 @@ try:
     from openenv.core.env_server.http_server import create_app
 
     from ..models import SchemaOptAction, SchemaOptObservation
-    from ..tasks import list_task_summaries
+    from ..tasks import list_spider_databases
     from .schemaopt_environment import SchemaOptEnvironment
 except ImportError:
     try:
@@ -15,7 +15,7 @@ except ImportError:
         from openenv_core.env_server.http_server import create_app
 
     from models import SchemaOptAction, SchemaOptObservation
-    from tasks import list_task_summaries
+    from tasks import list_spider_databases
     from server.schemaopt_environment import SchemaOptEnvironment
 
 
@@ -31,8 +31,11 @@ router = APIRouter()
 
 @router.get("/tasks")
 def list_tasks():
+    spider_dbs = list_spider_databases()
     return {
-        "tasks": list_task_summaries(),
+        "tasks": spider_dbs,
+        "spider_databases": spider_dbs,
+        "spider_database_count": len(spider_dbs),
         "action_schema": SchemaOptAction.model_json_schema(),
     }
 

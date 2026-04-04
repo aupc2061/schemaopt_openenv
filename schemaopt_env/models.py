@@ -7,7 +7,7 @@ lightweight stdlib-backed models so the environment can still be smoke-tested lo
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, Sequence
 
 SchemaOptOperation = Literal[
     "inspect_catalog",
@@ -81,8 +81,8 @@ try:
 
         step_count: int = 0
         done: bool = False
-        task_id: str = "schemaopt_easy_lever"
-        difficulty: str = "easy"
+        task_id: str = "spider::unknown"
+        difficulty: str = "spider"
         derived_object_count: int = 0
         checkpoint_count: int = 0
         retrieval_count: int = 0
@@ -155,8 +155,8 @@ except ImportError:
     class SchemaOptState(State):
         step_count: int = 0
         done: bool = False
-        task_id: str = "schemaopt_easy_lever"
-        difficulty: str = "easy"
+        task_id: str = "spider::unknown"
+        difficulty: str = "spider"
         derived_object_count: int = 0
         checkpoint_count: int = 0
         retrieval_count: int = 0
@@ -164,6 +164,218 @@ except ImportError:
         storage_used_multiplier: float = 0.0
         final_score: Optional[float] = None
         last_error: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class TableSpec:
+    """Static table metadata exposed to the environment."""
+
+    name: str
+    columns: tuple[tuple[str, str], ...]
+    row_count: int = 0
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "name": self.name,
+            "columns": [{"name": name, "type": dtype} for name, dtype in self.columns],
+            "row_count": self.row_count,
+        }
+
+
+@dataclass(frozen=True)
+class QuerySpec:
+    """A single workload query and its precomputed metadata."""
+
+    query_id: str
+    sql: str
+    normalized_sql: str
+    cluster_id: str
+    business_tag: str
+    frequency_weight: float
+    priority_weight: float
+    tables: tuple[str, ...]
+    canonical_tables: tuple[str, ...]
+    columns: tuple[str, ...]
+    group_by: tuple[str, ...]
+    filter_tokens: tuple[str, ...]
+    filter_predicates: tuple[str, ...]
+    canonical_filter_predicates: tuple[str, ...]
+    measure_columns: tuple[str, ...]
+    aggregate_functions: tuple[str, ...]
+    plan_features: tuple[str, ...]
+    description: str
+
+    @property
+    def weighted_cost(self) -> float:
+        return round(self.frequency_weight * self.priority_weight, 6)
+
+    @property
+    def rewrite_template_hint(self) -> Dict[str, Any]:
+        return {
+            "canonical_source_tables": list(self.canonical_tables),
+            "canonical_predicates": list(self.canonical_filter_predicates),
+            "required_dimensions": list(self.group_by),
+            "required_measures": list(self.measure_columns),
+            "aggregate_functions": list(self.aggregate_functions),
+        }
+
+    def summary(self) -> Dict[str, Any]:
+        return {
+            "query_id": self.query_id,
+            "cluster_id": self.cluster_id,
+            "business_tag": self.business_tag,
+            "frequency_weight": self.frequency_weight,
+            "priority_weight": self.priority_weight,
+            "weighted_cost": self.weighted_cost,
+            "tables": list(self.tables),
+            "canonical_tables": list(self.canonical_tables),
+            "columns": list(self.columns),
+            "group_by": list(self.group_by),
+            "filter_tokens": list(self.filter_tokens),
+            "measure_columns": list(self.measure_columns),
+            "aggregate_functions": list(self.aggregate_functions),
+            "plan_features": list(self.plan_features),
+            "description": self.description,
+            "rewrite_template_hint": self.rewrite_template_hint,
+        }
+
+    def context(self, similar_ids: Sequence[str]) -> Dict[str, Any]:
+        payload = self.summary()
+        payload.update(
+            {
+                "sql": self.sql,
+                "filter_predicates": list(self.filter_predicates),
+                "canonical_filter_predicates": list(self.canonical_filter_predicates),
+                "similar_query_ids": list(similar_ids),
+                "suggested_exact_derived_shape": {
+                    "object_kind": "agg_matview",
+                    "source_objects": list(self.tables),
+                    "group_by": list(self.group_by),
+                    "canonical_predicates": list(self.canonical_filter_predicates),
+                    "measure_columns": list(self.measure_columns),
+                    "aggregate_functions": list(self.aggregate_functions),
+                },
+            }
+        )
+        return payload
+
+
+@dataclass(frozen=True)
+class ClusterSpec:
+    """A workload cluster used for reset summaries and retrieval."""
+
+    cluster_id: str
+    label: str
+    business_label: str
+    query_ids: tuple[str, ...]
+    query_count: int
+    total_frequency_weight: float
+    total_weighted_baseline_cost: float
+    top_tables: tuple[str, ...]
+    common_operator_patterns: tuple[str, ...]
+    representative_dimensions: tuple[str, ...]
+    representative_measures: tuple[str, ...]
+    hotspot_rank: int
+    preferred_object_kind: str
+    representative_query_id: Optional[str] = None
+    cluster_grain_emphasis: tuple[str, ...] = ()
+    suggested_exact_derived_shape: Dict[str, Any] | None = None
+    reference_rewrite_feasible: bool = True
+
+    def to_summary(self) -> Dict[str, Any]:
+        return {
+            "cluster_id": self.cluster_id,
+            "label": self.label,
+            "business_label": self.business_label,
+            "query_count": self.query_count,
+            "total_frequency_weight": self.total_frequency_weight,
+            "total_weighted_baseline_cost": self.total_weighted_baseline_cost,
+            "top_tables": list(self.top_tables),
+            "common_operator_patterns": list(self.common_operator_patterns),
+            "representative_dimensions": list(self.representative_dimensions),
+            "representative_measures": list(self.representative_measures),
+            "hotspot_rank": self.hotspot_rank,
+            "preferred_object_kind": self.preferred_object_kind,
+            "representative_query_id": self.representative_query_id,
+            "cluster_grain_emphasis": list(self.cluster_grain_emphasis),
+            "suggested_exact_derived_shape": dict(self.suggested_exact_derived_shape or {}),
+            "reference_rewrite_feasible": self.reference_rewrite_feasible,
+        }
+
+
+@dataclass(frozen=True)
+class TaskSpec:
+    """A complete schema optimization episode definition."""
+
+    task_id: str
+    difficulty: str
+    domain: str
+    objective: str
+    seed_source: str
+    dataset_dir: str
+    database_path: str
+    tables: tuple[TableSpec, ...]
+    visible_queries: tuple[QuerySpec, ...]
+    holdout_queries: tuple[QuerySpec, ...]
+    clusters: tuple[ClusterSpec, ...]
+    budgets: Dict[str, Any]
+    allowed_object_kinds: tuple[str, ...]
+    engine_capabilities: Dict[str, Any]
+
+    @property
+    def total_visible_weighted_cost(self) -> float:
+        return round(sum(query.weighted_cost for query in self.visible_queries), 6)
+
+    def task_summary(self) -> Dict[str, Any]:
+        return {
+            "id": self.task_id,
+            "difficulty": self.difficulty,
+            "domain": self.domain,
+            "objective": self.objective,
+            "seed_source": self.seed_source,
+            "dataset_dir": self.dataset_dir,
+            "database_path": self.database_path,
+            "visible_query_count": len(self.visible_queries),
+            "holdout_query_count": len(self.holdout_queries),
+            "cluster_count": len(self.clusters),
+            "budgets": self.budgets,
+            "allowed_object_kinds": list(self.allowed_object_kinds),
+            "engine_capabilities": dict(self.engine_capabilities),
+        }
+
+    def reset_payload(self) -> Dict[str, Any]:
+        return {
+            "task": {
+                "id": self.task_id,
+                "objective": self.objective,
+                "difficulty": self.difficulty,
+                "domain": self.domain,
+                "budgets": self.budgets,
+                "allowed_object_kinds": list(self.allowed_object_kinds),
+                "submission_rules": {
+                    "query_sql_visible_at_reset": False,
+                    "query_rewrites_allowed": False,
+                    "holdout_workload_used_only_on_submit": True,
+                },
+                "seed_source": self.seed_source,
+                "engine_capabilities": dict(self.engine_capabilities),
+            },
+            "catalog_summary": {
+                "schemas": ["raw", "derived"],
+                "tables": [table.to_dict() for table in self.tables],
+                "lineage_edges": [],
+                "derived_objects": [],
+                "storage_usage_estimate": 0.0,
+                "refresh_cost_estimate": 0.0,
+            },
+            "workload_summary": {
+                "visible_query_count": len(self.visible_queries),
+                "holdout_query_count": len(self.holdout_queries),
+                "total_weighted_baseline_cost": self.total_visible_weighted_cost,
+                "top_hotspot_clusters": [cluster.to_summary() for cluster in self.clusters[: min(3, len(self.clusters))]],
+                "all_clusters": [cluster.to_summary() for cluster in self.clusters],
+            },
+        }
 
 
 def _validate_action_payload(action: Any) -> None:

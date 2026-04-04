@@ -18,10 +18,14 @@ from uuid import uuid4
 
 try:
     from ..models import SchemaOptAction, SchemaOptObservation, SchemaOptState
-    from ..tasks import TASK_CATALOG, QuerySpec, TaskSpec, cluster_lookup, get_task, match_queries, query_lookup, similar_query_ids, visible_queries_for_cluster
+    from ..spider_registry import list_spider_database_summaries
+    from ..models import QuerySpec, TaskSpec
+    from ..tasks import build_spider_episode_task, cluster_lookup, match_queries, query_lookup, similar_query_ids, visible_queries_for_cluster
 except ImportError:
     from models import SchemaOptAction, SchemaOptObservation, SchemaOptState
-    from tasks import TASK_CATALOG, QuerySpec, TaskSpec, cluster_lookup, get_task, match_queries, query_lookup, similar_query_ids, visible_queries_for_cluster
+    from spider_registry import list_spider_database_summaries
+    from models import QuerySpec, TaskSpec
+    from tasks import build_spider_episode_task, cluster_lookup, match_queries, query_lookup, similar_query_ids, visible_queries_for_cluster
 
 try:
     from openenv.core.env_server.interfaces import Environment
@@ -70,6 +74,7 @@ class ParsedSQL:
     canonical_filter_predicates: List[str]
     measure_columns: List[str]
     aggregate_functions: List[str]
+    set_operations: List[str] = field(default_factory=list)
 
 @dataclass
 class DerivedObject:
@@ -95,8 +100,7 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
     LAST_GRADER_REPORT: Dict[str, Any] = {"available": False, "reason": "No episode executed yet."}
 
     def __init__(self):
-        first_task = next(iter(TASK_CATALOG.keys()), None)
-        self._task: Optional[TaskSpec] = get_task(first_task) if first_task else None
+        self._task: Optional[TaskSpec] = None
         self._visible_query_lookup: Dict[str, QuerySpec] = {}
         self._all_query_lookup: Dict[str, QuerySpec] = {}
         self._cluster_lookup: Dict[str, Any] = {}
@@ -113,32 +117,70 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         self._state = SchemaOptState(episode_id=str(uuid4()), step_count=0)
         self._episode_root: Optional[Path] = None
         self._episode_db_path: Optional[Path] = None
+        self._spider_mode: bool = False
         self._con: Any = None
         self._duckdb: Any = None
+        self._sqlglot: Any = None
 
     def reset(self, seed: Optional[int] = None, episode_id: Optional[str] = None, task_id: Optional[str] = None, **kwargs: Any) -> SchemaOptObservation:
-        selected_task = task_id or kwargs.get("task_id") or next(iter(TASK_CATALOG.keys()))
-        self._task = get_task(selected_task)
-        self._visible_query_lookup = {q.query_id: q for q in self._task.visible_queries}
-        self._all_query_lookup = query_lookup(self._task)
-        self._cluster_lookup = cluster_lookup(self._task)
+        db_id = kwargs.get("db_id")
+        spider_split = kwargs.get("spider_split") or kwargs.get("split") or "dev"
+        spider_sample_size = int(kwargs.get("spider_sample_size") or 24)
+        spider_holdout_size = int(kwargs.get("spider_holdout_size") or 8)
+        spider_seed = kwargs.get("spider_seed", seed)
+        spider_min_complexity = float(kwargs.get("spider_min_complexity") or 0.0)
+
+        selected_db_id = db_id or task_id or kwargs.get("task_id")
+        if not selected_db_id:
+            spider_dbs = list_spider_database_summaries()
+            selected_db_id = spider_dbs[0]["db_id"] if spider_dbs else None
+        if not selected_db_id:
+            raise RuntimeError("No Spider databases are available")
+
+        self._spider_mode = True
+        self._task = build_spider_episode_task(
+            db_id=selected_db_id,
+            split=spider_split,
+            sample_size=spider_sample_size,
+            holdout_size=spider_holdout_size,
+            seed=spider_seed,
+            min_complexity=spider_min_complexity,
+        )
+        selected_task = self._task.task_id
         self._derived_objects = {}
         self._checkpoints = []
         self._retrieval_context = {"last_request": None, "matched_queries": [], "matched_clusters": [], "retrieval_count": 0}
         self._benchmark_context = {"baseline_weighted_cost": None, "current_weighted_cost": None, "raw_improvement": 0.0, "gated_improvement": 0.0, "correctness_coverage": 1.0, "routed_query_count": 0, "incorrect_query_count": 0, "last_benchmarked_query_ids": [], "last_benchmarked_cluster_id": None, "latest_plan_deltas": {}}
-        self._router_summary = {"queries_routed": 0, "queries_unrouted": len(self._task.visible_queries), "dominant_rejection_reason": None, "candidate_object_coverage": {}, "last_scope": "reset"}
-        self._last_feedback = {"event": "reset", "task_id": selected_task}
+        self._last_feedback = {
+            "event": "reset",
+            "task_id": selected_task,
+            "spider_mode": self._spider_mode,
+            "db_id": self._task.domain if self._spider_mode else None,
+            "split": self._task.engine_capabilities.get("split") if self._spider_mode else None,
+        }
         self._baseline_cache = {}
         self._evaluation_cache = {}
         self._latest_visible_benchmark = {"gated_improvement": 0.0, "correctness_coverage": 1.0}
         self._bootstrap_episode_database()
+        if self._spider_mode:
+            filtered = self._filter_spider_queries(self._task)
+            dropped_visible = len(self._task.visible_queries) - len(filtered.visible_queries)
+            dropped_holdout = len(self._task.holdout_queries) - len(filtered.holdout_queries)
+            self._task = filtered
+            self._last_feedback["dropped_non_executable_visible_queries"] = dropped_visible
+            self._last_feedback["dropped_non_executable_holdout_queries"] = dropped_holdout
+
+        self._visible_query_lookup = {q.query_id: q for q in self._task.visible_queries}
+        self._all_query_lookup = query_lookup(self._task)
+        self._cluster_lookup = cluster_lookup(self._task)
+        self._router_summary = {"queries_routed": 0, "queries_unrouted": len(self._task.visible_queries), "dominant_rejection_reason": None, "candidate_object_coverage": {}, "last_scope": "reset"}
         self._base_table_stats = {table.name: self._collect_table_stats(table.name) for table in self._task.tables}
         self._state = SchemaOptState(episode_id=str(uuid4()) if episode_id is None else episode_id, step_count=0, done=False, task_id=self._task.task_id, difficulty=self._task.difficulty, derived_object_count=0, checkpoint_count=0, retrieval_count=0, benchmark_runs=0, storage_used_multiplier=0.0, final_score=None, last_error=None)
         payload = self._task.reset_payload()
-        return SchemaOptObservation(status="ok", message=f"Initialized task {self._task.task_id}", catalog_summary=self._catalog_summary(payload), workload_summary=payload["workload_summary"], retrieval_context=self._retrieval_context, benchmark_context=self._benchmark_context, router_summary=self._router_summary, action_feedback=self._last_feedback, reward=0.0, done=False, metadata={"task": payload["task"]})
+        return SchemaOptObservation(status="ok", message=f"Initialized task {self._task.task_id}", catalog_summary=self._catalog_summary(payload), workload_summary=payload["workload_summary"], retrieval_context=self._retrieval_context, benchmark_context=self._benchmark_context, router_summary=self._router_summary, action_feedback=self._last_feedback, reward=0.0, done=False, metadata={"task": payload["task"], "spider_mode": self._spider_mode})
 
     @property
-    def state(self) -> State:
+    def state(self) -> SchemaOptState:
         return self._state
 
     @classmethod
@@ -148,7 +190,10 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
     @classmethod
     def run_baseline(cls) -> Dict[str, Any]:
         env = cls()
-        env.reset(task_id=next(iter(TASK_CATALOG.keys())))
+        spider_dbs = list_spider_database_summaries()
+        if not spider_dbs:
+            raise RuntimeError("No Spider databases are available")
+        env.reset(db_id=spider_dbs[0]["db_id"])
         cluster = env._task.clusters[0]
         query = visible_queries_for_cluster(env._task, cluster.cluster_id)[0]
         env.step(SchemaOptAction(operation="create_derived_object", object_kind=cluster.preferred_object_kind, name="baseline_object", sql_definition=query.sql, source_objects=list(query.tables), grain_hint=",".join(query.group_by)))
@@ -166,6 +211,17 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         self._duckdb = duckdb
         return duckdb
 
+    def _import_sqlglot(self):
+        if self._sqlglot is not None:
+            return self._sqlglot
+        try:
+            import sqlglot  # type: ignore
+            from sqlglot import exp  # type: ignore
+        except ImportError as exc:
+            raise RuntimeError("sqlglot is required for AST-based SQL metadata parsing") from exc
+        self._sqlglot = (sqlglot, exp)
+        return self._sqlglot
+
     def _bootstrap_episode_database(self) -> None:
         duckdb = self._import_duckdb()
         if self._con is not None:
@@ -177,10 +233,134 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         source_db_path = Path(self._task.database_path)
         if not source_db_path.exists():
             raise FileNotFoundError(f"Task database not found: {source_db_path}")
-        self._episode_db_path = self._episode_root / source_db_path.name
-        shutil.copy2(source_db_path, self._episode_db_path)
-        self._con = duckdb.connect(str(self._episode_db_path))
+        if self._spider_mode:
+            self._episode_db_path = self._episode_root / "spider_episode.duckdb"
+            self._con = duckdb.connect(str(self._episode_db_path))
+            self._hydrate_spider_sqlite(source_db_path)
+        else:
+            self._episode_db_path = self._episode_root / source_db_path.name
+            shutil.copy2(source_db_path, self._episode_db_path)
+            self._con = duckdb.connect(str(self._episode_db_path))
         self._con.execute("CREATE SCHEMA IF NOT EXISTS derived")
+
+    def _hydrate_spider_sqlite(self, sqlite_path: Path) -> None:
+        sqlite_file = str(sqlite_path).replace("'", "''")
+        alias = "spider_src"
+        self._con.execute("INSTALL sqlite")
+        self._con.execute("LOAD sqlite")
+        self._con.execute("SET sqlite_all_varchar=true")
+        self._con.execute(f"ATTACH '{sqlite_file}' AS {alias} (TYPE SQLITE)")
+        table_rows = self._con.execute(
+            f"""
+            SELECT table_name
+            FROM information_schema.tables
+            WHERE table_catalog = '{alias}'
+              AND table_schema = 'main'
+              AND table_name NOT LIKE 'sqlite_%'
+            ORDER BY table_name
+            """
+        ).fetchall()
+        for row in table_rows:
+            table_name = str(row[0])
+            quoted = '"' + table_name.replace('"', '""') + '"'
+            self._con.execute(f"CREATE OR REPLACE TABLE {quoted} AS SELECT * FROM {alias}.main.{quoted}")
+
+    def _filter_spider_queries(self, task: TaskSpec) -> TaskSpec:
+        executable_visible: List[QuerySpec] = []
+        executable_holdout: List[QuerySpec] = []
+
+        for query in task.visible_queries:
+            try:
+                self._execute_query(query.sql, repeats=1, warmup=0)
+                executable_visible.append(query)
+            except Exception:
+                continue
+        for query in task.holdout_queries:
+            try:
+                self._execute_query(query.sql, repeats=1, warmup=0)
+                executable_holdout.append(query)
+            except Exception:
+                continue
+
+        if not executable_visible:
+            raise RuntimeError("Spider workload sampling produced no DuckDB-executable visible queries")
+
+        visible_lookup = {query.query_id: query for query in executable_visible}
+        clusters = []
+        for cluster in task.clusters:
+            ids = tuple(query_id for query_id in cluster.query_ids if query_id in visible_lookup)
+            if not ids:
+                continue
+            freq = sum(visible_lookup[query_id].frequency_weight for query_id in ids)
+            weighted = sum(visible_lookup[query_id].weighted_cost for query_id in ids)
+            clusters.append(
+                cluster.__class__(
+                    cluster_id=cluster.cluster_id,
+                    label=cluster.label,
+                    business_label=cluster.business_label,
+                    query_ids=ids,
+                    query_count=len(ids),
+                    total_frequency_weight=round(freq, 6),
+                    total_weighted_baseline_cost=round(weighted, 6),
+                    top_tables=cluster.top_tables,
+                    common_operator_patterns=cluster.common_operator_patterns,
+                    representative_dimensions=cluster.representative_dimensions,
+                    representative_measures=cluster.representative_measures,
+                    hotspot_rank=cluster.hotspot_rank,
+                    preferred_object_kind=cluster.preferred_object_kind,
+                    representative_query_id=ids[0],
+                    cluster_grain_emphasis=cluster.cluster_grain_emphasis,
+                    suggested_exact_derived_shape=cluster.suggested_exact_derived_shape,
+                    reference_rewrite_feasible=cluster.reference_rewrite_feasible,
+                )
+            )
+        if not clusters:
+            primary = executable_visible[0]
+            clusters = [
+                task.clusters[0].__class__(
+                    cluster_id=f"spider_{task.domain}_filtered",
+                    label=f"Spider filtered workload for {task.domain}",
+                    business_label=task.domain,
+                    query_ids=tuple(query.query_id for query in executable_visible),
+                    query_count=len(executable_visible),
+                    total_frequency_weight=round(sum(query.frequency_weight for query in executable_visible), 6),
+                    total_weighted_baseline_cost=round(sum(query.weighted_cost for query in executable_visible), 6),
+                    top_tables=tuple(primary.tables[:4]),
+                    common_operator_patterns=tuple(sorted({pattern for query in executable_visible for pattern in query.plan_features})),
+                    representative_dimensions=(),
+                    representative_measures=(),
+                    hotspot_rank=1,
+                    preferred_object_kind="agg_matview",
+                    representative_query_id=primary.query_id,
+                    cluster_grain_emphasis=(),
+                    suggested_exact_derived_shape={
+                        "object_kind": "agg_matview",
+                        "source_objects": list(primary.tables),
+                        "group_by": [],
+                        "canonical_predicates": [],
+                        "measure_columns": [],
+                        "aggregate_functions": [],
+                    },
+                    reference_rewrite_feasible=True,
+                )
+            ]
+
+        return task.__class__(
+            task_id=task.task_id,
+            difficulty=task.difficulty,
+            domain=task.domain,
+            objective=task.objective,
+            seed_source=task.seed_source,
+            dataset_dir=task.dataset_dir,
+            database_path=task.database_path,
+            tables=task.tables,
+            visible_queries=tuple(executable_visible),
+            holdout_queries=tuple(executable_holdout),
+            clusters=tuple(clusters),
+            budgets=task.budgets,
+            allowed_object_kinds=task.allowed_object_kinds,
+            engine_capabilities=task.engine_capabilities,
+        )
 
     def _catalog_summary(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         catalog = payload["catalog_summary"]
@@ -493,8 +673,12 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
             if rewrite is None:
                 best["rejection_reasons"].append({"object_name": obj.name, "reason": rejection_reason or "rewrite_not_applicable"})
                 continue
-            current = self._execute_query(rewrite["sql"])
-            correctness = self._compare_results(baseline, current)
+            try:
+                current = self._execute_query(rewrite["sql"])
+            except Exception as exc:
+                best["rejection_reasons"].append({"object_name": obj.name, "reason": "rewrite_execution_error", "detail": str(exc)[:180]})
+                continue
+            correctness = self._compare_results(baseline, current, query.sql)
             candidate = {
                 "routed": True,
                 "object_name": obj.name,
@@ -550,6 +734,8 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
     def _build_rewrite(self, query: QuerySpec, obj: DerivedObject) -> Tuple[Optional[Dict[str, str]], Optional[str]]:
         if obj.row_count == 0:
             return None, "empty_derived_object"
+        if self._spider_mode:
+            return self._build_spider_rewrite(query, obj)
         if sorted(query.canonical_tables) != sorted(obj.parsed_sql.canonical_tables):
             return None, "table_mismatch"
         if set(query.canonical_filter_predicates) != set(obj.parsed_sql.canonical_filter_predicates):
@@ -560,7 +746,11 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         if not set(query.measure_columns).issubset(set(obj.available_columns)):
             return None, "measure_columns_missing"
         if query_dims == obj.parsed_sql.group_by and set(query.columns).issubset(set(obj.available_columns)):
-            return {"sql": f"SELECT {', '.join(query.columns)} FROM derived.{obj.name}", "reason": "exact derived object match"}, None
+            selected_columns = list(query.columns) if query.columns else list(obj.available_columns)
+            if not selected_columns:
+                return {"sql": f"SELECT * FROM derived.{obj.name}", "reason": "exact derived object match"}, None
+            select_expr = ", ".join(self._quote_identifier(column) for column in selected_columns)
+            return {"sql": f"SELECT {select_expr} FROM derived.{obj.name}", "reason": "exact derived object match"}, None
         if obj.object_kind not in {"agg_matview", "denorm_table", "join_matview"}:
             return None, "object_kind_not_rollup_compatible"
         if not all(func in {"count", "sum"} for func in query.aggregate_functions):
@@ -570,6 +760,149 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         if query_dims:
             sql += " GROUP BY " + ", ".join(query_dims)
         return {"sql": sql, "reason": "rollup over derived object"}, None
+
+    def _build_spider_rewrite(self, query: QuerySpec, obj: DerivedObject) -> Tuple[Optional[Dict[str, str]], Optional[str]]:
+        try:
+            query_parsed = self._parse_sql_metadata(query.sql)
+        except Exception:
+            return None, "query_parse_failed"
+
+        diagnostics = self._spider_fragment_diagnostics(query_parsed, obj.parsed_sql)
+        if not diagnostics["eligible"]:
+            return None, diagnostics["reason"]
+
+        if diagnostics["exact_signature_match"]:
+            return {
+                "sql": f"SELECT * FROM derived.{obj.name}",
+                "reason": "spider_exact_fragment_match",
+            }, None
+
+        if diagnostics.get("partial_predicate_refinement_allowed"):
+            extra_predicates = diagnostics.get("extra_predicates") or []
+            sql = f"SELECT * FROM derived.{obj.name}"
+            if extra_predicates:
+                sql += " WHERE " + " AND ".join(extra_predicates)
+            return {
+                "sql": sql,
+                "reason": "spider_partial_predicate_refinement",
+            }, None
+
+        return None, diagnostics.get("reason") or "partial_fragment_not_enabled"
+
+    def _spider_fragment_diagnostics(self, query_parsed: ParsedSQL, object_parsed: ParsedSQL) -> Dict[str, Any]:
+        query_tables = set(query_parsed.canonical_tables)
+        object_tables = set(object_parsed.canonical_tables)
+        shared_tables = query_tables & object_tables
+        table_overlap_ratio = 0.0 if not query_tables else len(shared_tables) / max(1, len(query_tables))
+
+        query_preds = set(query_parsed.canonical_filter_predicates)
+        object_preds = set(object_parsed.canonical_filter_predicates)
+        shared_preds = query_preds & object_preds
+        predicate_overlap_ratio = 0.0 if not query_preds else len(shared_preds) / max(1, len(query_preds))
+
+        exact_signature_match = (
+            query_tables == object_tables
+            and query_preds == object_preds
+            and set(query_parsed.group_by) == set(object_parsed.group_by)
+            and set(query_parsed.aggregate_functions) == set(object_parsed.aggregate_functions)
+            and set(query_parsed.set_operations) == set(object_parsed.set_operations)
+        )
+
+        if not shared_tables:
+            return {
+                "eligible": False,
+                "reason": "no_table_overlap",
+                "table_overlap_ratio": table_overlap_ratio,
+                "predicate_overlap_ratio": predicate_overlap_ratio,
+                "exact_signature_match": exact_signature_match,
+            }
+
+        if query_parsed.set_operations and not exact_signature_match:
+            return {
+                "eligible": False,
+                "reason": "set_operation_requires_exact_match",
+                "table_overlap_ratio": table_overlap_ratio,
+                "predicate_overlap_ratio": predicate_overlap_ratio,
+                "exact_signature_match": exact_signature_match,
+            }
+
+        query_group = set(query_parsed.group_by)
+        object_group = set(object_parsed.group_by)
+        query_aggs = set(query_parsed.aggregate_functions)
+        object_aggs = set(object_parsed.aggregate_functions)
+
+        if query_group != object_group:
+            return {
+                "eligible": False,
+                "reason": "group_by_incompatible",
+                "table_overlap_ratio": table_overlap_ratio,
+                "predicate_overlap_ratio": predicate_overlap_ratio,
+                "exact_signature_match": exact_signature_match,
+            }
+        if query_aggs != object_aggs:
+            return {
+                "eligible": False,
+                "reason": "aggregate_incompatible",
+                "table_overlap_ratio": table_overlap_ratio,
+                "predicate_overlap_ratio": predicate_overlap_ratio,
+                "exact_signature_match": exact_signature_match,
+            }
+
+        object_pred_list = list(object_parsed.canonical_filter_predicates)
+        query_pred_list = list(query_parsed.canonical_filter_predicates)
+        object_pred_set = set(object_pred_list)
+        query_pred_set = set(query_pred_list)
+
+        if not object_pred_set.issubset(query_pred_set):
+            return {
+                "eligible": False,
+                "reason": "object_predicates_not_subset",
+                "table_overlap_ratio": table_overlap_ratio,
+                "predicate_overlap_ratio": predicate_overlap_ratio,
+                "exact_signature_match": exact_signature_match,
+            }
+
+        extra_predicates = [pred for pred in query_pred_list if pred not in object_pred_set]
+        if extra_predicates:
+            object_columns = {column.lower() for column in object_parsed.projection_aliases + object_parsed.group_by + object_parsed.measure_columns}
+            for predicate in extra_predicates:
+                referenced = self._extract_predicate_columns(predicate)
+                if not referenced.issubset(object_columns):
+                    return {
+                        "eligible": False,
+                        "reason": "partial_predicate_columns_missing",
+                        "table_overlap_ratio": table_overlap_ratio,
+                        "predicate_overlap_ratio": predicate_overlap_ratio,
+                        "exact_signature_match": exact_signature_match,
+                        "extra_predicates": extra_predicates,
+                    }
+
+        return {
+            "eligible": True,
+            "reason": "eligible_for_spider_fragment",
+            "table_overlap_ratio": table_overlap_ratio,
+            "predicate_overlap_ratio": predicate_overlap_ratio,
+            "exact_signature_match": exact_signature_match,
+            "partial_predicate_refinement_allowed": bool(extra_predicates) and not query_parsed.set_operations and not object_parsed.set_operations,
+            "extra_predicates": extra_predicates,
+        }
+
+    def _quote_identifier(self, identifier: str) -> str:
+        escaped = identifier.replace('"', '""')
+        return f'"{escaped}"'
+
+    def _extract_predicate_columns(self, predicate_sql: str) -> set[str]:
+        try:
+            sqlglot, exp = self._import_sqlglot()
+            expression = sqlglot.parse_one(f"SELECT 1 WHERE {predicate_sql}", read="sqlite")
+        except Exception:
+            return set()
+        columns: set[str] = set()
+        for column in expression.find_all(exp.Column):
+            name = str(getattr(column, "name", "") or "").strip().strip('"').lower()
+            if name:
+                columns.add(name)
+        return columns
 
     def _route_summary(self, query_id: str, route: Dict[str, Any]) -> Dict[str, Any]:
         rejection_reasons = list(route.get("rejection_reasons", []))
@@ -591,12 +924,21 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
             "blocking_operator_count": route["plan"].blocking_operator_count,
             "operators": list(route["plan"].operators),
         }
-    def _compare_results(self, baseline: QueryExecution, current: QueryExecution) -> bool:
+    def _compare_results(self, baseline: QueryExecution, current: QueryExecution, query_sql: Optional[str] = None) -> bool:
         if baseline.column_names != current.column_names or len(baseline.rows) != len(current.rows):
             return False
-        left = sorted(self._normalize_row(row) for row in baseline.rows)
-        right = sorted(self._normalize_row(row) for row in current.rows)
+        left = [self._normalize_row(row) for row in baseline.rows]
+        right = [self._normalize_row(row) for row in current.rows]
+        if not self._is_order_sensitive_sql(query_sql):
+            left = sorted(left)
+            right = sorted(right)
         return left == right
+
+    def _is_order_sensitive_sql(self, sql: Optional[str]) -> bool:
+        if not sql:
+            return False
+        lowered = " ".join(sql.lower().split())
+        return (" order by " in f" {lowered} ") or (" limit " in f" {lowered} ")
 
     def _normalize_row(self, row: Tuple[Any, ...]) -> Tuple[Any, ...]:
         result: List[Any] = []
@@ -733,6 +1075,7 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
             "group_by": [item.lower() for item in grain_dims],
             "measures": sorted(parsed.measure_columns),
             "aggregate_functions": sorted(parsed.aggregate_functions),
+            "set_operations": sorted(parsed.set_operations),
         }
         return hashlib.md5(json.dumps(material, sort_keys=True).encode('utf-8')).hexdigest()
 
@@ -780,64 +1123,103 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         }
 
     def _parse_sql_metadata(self, sql: str) -> ParsedSQL:
+        sqlglot, exp = self._import_sqlglot()
         normalized = sql.strip().rstrip(";")
-        lowered = normalized.lower()
-        select_start = lowered.find("select ")
-        from_start = lowered.find(" from ")
-        if select_start == -1 or from_start == -1:
+        if not normalized:
+            raise ValueError("SQL definition cannot be empty")
+
+        try:
+            parsed = sqlglot.parse_one(normalized, read="sqlite")
+        except Exception as exc:
+            raise ValueError(f"Failed to parse SQL definition: {exc}") from exc
+
+        select_nodes = list(parsed.find_all(exp.Select))
+        if not select_nodes:
             raise ValueError("Only SELECT-derived objects are supported")
-        select_clause = normalized[select_start + 7:from_start]
-        after_from = normalized[from_start + 6:]
-        where_match = re.search(r"\bwhere\b", after_from, re.IGNORECASE)
-        group_match = re.search(r"\bgroup\s+by\b", after_from, re.IGNORECASE)
-        where_clause = after_from[where_match.end():group_match.start() if group_match else len(after_from)] if where_match else ""
-        group_clause = after_from[group_match.end():] if group_match else ""
-        parts = self._split_sql_list(select_clause)
-        aliases = [self._extract_alias(part).lower() for part in parts]
-        measures = [alias for alias, part in zip(aliases, parts) if self._aggregate_function(part)]
-        funcs = [self._aggregate_function(part) for part in parts if self._aggregate_function(part)]
-        raw_filter_predicates = self._split_predicates(where_clause)
-        tables = [item.strip('"').lower() for item in re.findall(r'(?:from|join)\s+([A-Za-z0-9_\."]+)', normalized, flags=re.IGNORECASE)]
+        root_select = select_nodes[0]
+
+        table_names: List[str] = []
+        for table in parsed.find_all(exp.Table):
+            base_name = str(getattr(table, "name", "") or "").strip()
+            if not base_name:
+                continue
+            db_name = str(getattr(table, "db", "") or "").strip()
+            if db_name:
+                table_names.append(f"{db_name}.{base_name}")
+            else:
+                table_names.append(base_name)
+        canonical_tables = [self._canonicalize_table_name(item) for item in table_names]
+        table_names = self._dedupe_preserve_order(table_names)
+        canonical_tables = self._dedupe_preserve_order(canonical_tables)
+
+        projection_aliases: List[str] = []
+        measure_columns: List[str] = []
+        aggregate_functions: List[str] = []
+        for projection in list(root_select.expressions or []):
+            alias_name = (projection.alias_or_name or projection.output_name or projection.sql(dialect="sqlite")).strip('"').lower()
+            if alias_name:
+                projection_aliases.append(alias_name)
+            agg_nodes = list(projection.find_all(exp.AggFunc))
+            if agg_nodes:
+                if alias_name:
+                    measure_columns.append(alias_name)
+                else:
+                    measure_columns.append(projection.sql(dialect="sqlite").lower())
+                for agg in agg_nodes:
+                    aggregate_functions.append(str(getattr(agg, "key", "agg")).lower())
+
+        group_by: List[str] = []
+        group_expr = root_select.args.get("group")
+        if group_expr is not None:
+            for item in list(group_expr.expressions or []):
+                if isinstance(item, exp.Literal) and item.is_int:
+                    idx = int(item.this) - 1
+                    if 0 <= idx < len(projection_aliases):
+                        group_by.append(projection_aliases[idx])
+                else:
+                    group_by.append((item.alias_or_name or item.output_name or item.sql(dialect="sqlite")).strip('"').lower())
+
+        raw_filter_predicates: List[str] = []
+        where_expr = root_select.args.get("where")
+        if where_expr is not None and where_expr.this is not None:
+            raw_filter_predicates = self._flatten_and_predicates(where_expr.this)
+
+        set_operations: List[str] = []
+        for op_cls, label in ((exp.Union, "union"), (exp.Intersect, "intersect"), (exp.Except, "except")):
+            if any(True for _ in parsed.find_all(op_cls)):
+                set_operations.append(label)
+
         return ParsedSQL(
-            tables=tables,
-            canonical_tables=[self._canonicalize_table_name(item) for item in tables],
-            projection_aliases=aliases,
-            group_by=[item.lower() for item in self._parse_group_by(group_clause, aliases)],
+            tables=table_names,
+            canonical_tables=canonical_tables,
+            projection_aliases=projection_aliases,
+            group_by=group_by,
             raw_filter_predicates=raw_filter_predicates,
             canonical_filter_predicates=[self._normalize_predicate(item) for item in raw_filter_predicates],
-            measure_columns=measures,
-            aggregate_functions=[item.lower() for item in funcs if item],
+            measure_columns=measure_columns,
+            aggregate_functions=aggregate_functions,
+            set_operations=set_operations,
         )
 
-    def _split_sql_list(self, clause: str) -> List[str]:
-        parts: List[str] = []
-        current: List[str] = []
-        depth = 0
-        for char in clause:
-            if char == '(':
-                depth += 1
-            elif char == ')':
-                depth = max(0, depth - 1)
-            if char == ',' and depth == 0:
-                parts.append("".join(current).strip())
-                current = []
-            else:
-                current.append(char)
-        if current:
-            parts.append("".join(current).strip())
-        return parts
+    def _flatten_and_predicates(self, expression: Any) -> List[str]:
+        _, exp = self._import_sqlglot()
+        if expression is None:
+            return []
+        if isinstance(expression, exp.And):
+            left = self._flatten_and_predicates(expression.this)
+            right = self._flatten_and_predicates(expression.expression)
+            return left + right
+        return [expression.sql(dialect="sqlite")]
 
-    def _extract_alias(self, expression: str) -> str:
-        match = re.search(r'\bas\s+([A-Za-z_][A-Za-z0-9_]*)\s*$', expression, re.IGNORECASE)
-        return match.group(1) if match else expression.split('.')[-1].strip().strip('"')
-
-    def _aggregate_function(self, expression: str) -> Optional[str]:
-        match = re.search(r'\b(count|sum)\s*\(', expression, re.IGNORECASE)
-        return match.group(1).lower() if match else None
-
-    def _split_predicates(self, clause: str) -> List[str]:
-        clause = clause.strip()
-        return [part.strip() for part in re.split(r'\s+AND\s+', clause, flags=re.IGNORECASE) if part.strip()] if clause else []
+    def _dedupe_preserve_order(self, values: Sequence[str]) -> List[str]:
+        seen: set[str] = set()
+        ordered: List[str] = []
+        for value in values:
+            if value in seen:
+                continue
+            seen.add(value)
+            ordered.append(value)
+        return ordered
 
     def _normalize_predicate(self, predicate: str) -> str:
         normalized = " ".join(predicate.strip().lower().split())
@@ -845,20 +1227,5 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         normalized = normalized.replace("\"", "")
         normalized = normalized.replace("( ", "(").replace(" )", ")")
         return normalized
-
-    def _parse_group_by(self, clause: str, aliases: Sequence[str]) -> List[str]:
-        clause = clause.strip()
-        if not clause:
-            return []
-        items = [item.strip() for item in clause.split(',') if item.strip()]
-        result: List[str] = []
-        for item in items:
-            if item.isdigit():
-                idx = int(item) - 1
-                if 0 <= idx < len(aliases):
-                    result.append(aliases[idx])
-            else:
-                result.append(item.strip('"'))
-        return result
 
 

@@ -1,23 +1,40 @@
-"""LLM-driven inference loop for DataDAG Task 1.
+"""Inference runner for the standalone schema optimization benchmark.
 
 Environment variables:
 - OPENAI_API_KEY: required for OpenAI client auth
-- MODEL_NAME: model id to call (default: gpt-4o-mini)
-- API_BASE_URL: optional custom OpenAI-compatible base URL
 - HF_TOKEN: optional fallback token if OPENAI_API_KEY is not set
-- MAX_STEPS: optional max steps per episode (default: 8)
+- MODEL_NAME: optional model id to call (default: gpt-5.4-mini)
+- API_BASE_URL: optional custom OpenAI-compatible base URL
+- MAX_STEPS: optional max steps per episode (default: 25)
+- SPIDER_DB_ID: optional Spider database id (default: first available Spider db)
+- SPIDER_SPLIT: optional Spider split to sample from (default: dev)
+- SPIDER_SAMPLE_SIZE: optional visible workload sample size (default: 24)
+- SPIDER_HOLDOUT_SIZE: optional holdout sample size (default: 8)
+- SPIDER_MIN_COMPLEXITY: optional minimum Spider query complexity (default: 0.0)
+- MAX_ACTION_RETRIES: optional max model retries per environment step (default: 4)
 """
 
 from __future__ import annotations
 
+from collections import Counter
 import json
 import os
-from dotenv import load_dotenv
 import re
 import sys
 from pathlib import Path
-from typing import List, Set
-from openai import OpenAI
+from typing import Any, Dict, List, Optional
+
+try:
+    from dotenv import load_dotenv
+except ImportError:
+
+    def load_dotenv() -> bool:
+        return False
+
+try:
+    from openai import OpenAI
+except ImportError:
+    OpenAI = None
 
 load_dotenv()
 
@@ -25,287 +42,358 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from datadag_env.models import DatadagAction
-from datadag_env.server.datadag_environment import DatadagEnvironment
+from schemaopt_env.models import SchemaOptAction
+from schemaopt_env.server.schemaopt_environment import SchemaOptEnvironment
+from schemaopt_env.spider_registry import list_spider_database_summaries
 
-MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5-mini")
+MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.4-mini")
 API_BASE_URL = os.getenv("API_BASE_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
-MAX_STEPS = int(os.getenv("MAX_STEPS", "8"))
-TEMPERATURE = 0.1
-MAX_TOKENS = 2000
+MAX_STEPS = int(os.getenv("MAX_STEPS", "25"))
+SPIDER_DB_ID = os.getenv("SPIDER_DB_ID") or os.getenv("DB_ID") or os.getenv("TASK_ID")
+SPIDER_SPLIT = os.getenv("SPIDER_SPLIT", "dev")
+SPIDER_SAMPLE_SIZE = int(os.getenv("SPIDER_SAMPLE_SIZE", "24"))
+SPIDER_HOLDOUT_SIZE = int(os.getenv("SPIDER_HOLDOUT_SIZE", "8"))
+SPIDER_MIN_COMPLEXITY = float(os.getenv("SPIDER_MIN_COMPLEXITY", "0.0"))
+MAX_ACTION_RETRIES = int(os.getenv("MAX_ACTION_RETRIES", "4"))
 
-FALLBACK_ACTION = {
-    "pipeline_command": "create_node",
-    "model_identifier": "stg_transactions",
-    "sql_syntax": (
-        "SELECT transaction_id, CAST(user_id AS INTEGER) AS user_id, "
-        "CAST(amount_usd AS DOUBLE) AS amount_usd, status "
-        "FROM raw_transactions WHERE status = 'completed'"
-    ),
-    "upstream_dependencies": [],
-}
+SYSTEM_PROMPT = """You are operating a workload-adaptive schema optimization environment.
 
-SYSTEM_PROMPT = """You are operating a DataDAG environment for data engineering.
+Your job is to improve weighted workload cost by creating derived logical objects while preserving semantics.
+You cannot rewrite workload queries. Query text is fixed. You must use environment actions only.
 
-Your goal in Task 1:
-1) Create a staging model from raw_transactions with proper type casting and completed status filter.
-2) Create a mart model that joins raw_users to staging and aggregates lifetime revenue per user.
-3) Execute the DAG.
+Important strategy:
+1. Inspect hotspot clusters first.
+2. Retrieve query summaries and full context for a small hotspot subset.
+3. Copy the target query's predicates, tables, dimensions, and measures exactly unless router diagnostics show a concrete mismatch to fix.
+4. Create or modify one focused derived object, then benchmark or inspect router status before making another schema change.
+5. Submit once routed improvement is positive, or when repeated router checks show no routeable progress, or when step budget is low.
+
+Operation guide:
+- inspect_cluster: inspect one cluster profile and representative query hints using target_id.
+- inspect_query: inspect one visible query summary using target_id.
+- inspect_query_plan: show baseline vs current routed plan summary for one visible query using target_id.
+- inspect_router_status: show route decision, top candidate, and rejection reasons for selected visible queries. Always pass cluster_id or query_ids; never call it unscoped.
+- retrieve_queries: retrieve visible query summaries by cluster/pattern/table/column/plan features.
+- get_query_context: return full context for specific query_ids, including SQL, exact predicates, canonical predicates, and rewrite template hints.
+- create_derived_object: create one derived object from SQL and metadata.
+- modify_derived_object: replace an existing derived object definition.
+- drop_derived_object: remove one derived object by target_id.
+- list_derived_objects: list all derived objects currently available.
+- checkpoint: save current derived object set.
+- revert_checkpoint: restore to a previous checkpoint.
+- benchmark_subset: benchmark specific visible query_ids.
+- benchmark_cluster: benchmark all visible queries in one cluster_id.
+- submit: run final visible+holdout evaluation and finish episode.
+
+Decision triggers:
+- Before the first create_derived_object for a cluster, call inspect_query_plan at least once for that cluster.
+- After create_derived_object or modify_derived_object, the next schema-related action must be inspect_router_status or benchmark_cluster/benchmark_subset, scoped to the same intended cluster or explicit query_ids.
+- If inspect_router_status shows only predicate_mismatch for the current object, the next schema-related action must be modify_derived_object or drop_derived_object.
+- If two consecutive benchmarks show routed_query_count == 0, either submit or explicitly switch clusters based on hotspot evidence.
+- If step budget remaining is <= 3, strongly prefer submit.
+- Prefer modify_derived_object over creating near-duplicate objects in the same cluster.
+- Do not request the same get_query_context for the same query_ids repeatedly unless new router evidence justifies it.
+- For inspect_router_status, always include cluster_id or query_ids. Unscoped router checks mix unrelated clusters and are low value.
 
 Action schema:
 {
-  "pipeline_command": "create_node" | "update_node" | "execute_dag" | "view_lineage",
-  "model_identifier": "optional string",
-  "sql_syntax": "optional SQL string",
-  "upstream_dependencies": ["optional", "list", "of", "strings"]
+  "operation": "inspect_catalog" | "inspect_table_stats" | "inspect_cluster" | "inspect_query" |
+               "inspect_query_plan" | "inspect_router_status" | "retrieve_queries" |
+               "get_query_context" | "create_derived_object" | "modify_derived_object" |
+               "drop_derived_object" | "list_derived_objects" | "checkpoint" |
+               "revert_checkpoint" | "benchmark_subset" | "benchmark_cluster" | "submit",
+  "target_id": "required for inspect_table_stats|inspect_cluster|inspect_query|inspect_query_plan",
+  "query_ids": ["optional query ids"],
+  "pattern": "optional regex or substring",
+  "cluster_id": "used by retrieve_queries and required by benchmark_cluster",
+  "tables": ["optional tables"],
+  "columns": ["optional columns"],
+  "plan_features": ["optional plan features"],
+  "top_k": 1,
+  "object_kind": "optional join_matview|agg_matview|filtered_projection|denorm_table",
+  "name": "optional object name",
+  "sql_definition": "optional SQL definition",
+  "source_objects": ["required for create/modify"],
+  "grain_hint": "optional comma-separated grain columns",
+  "intended_clusters": ["optional cluster ids"],
+  "routing_tags": ["optional routing tags"]
 }
 
 Rules:
-- For create_node/update_node, include model_identifier and sql_syntax.
-- For execute_dag/view_lineage, do not include sql_syntax.
-- sql_syntax MUST be only a SELECT query body (no CREATE/VIEW/TABLE/INSERT/DROP statements).
-- raw_transactions and raw_users are source tables, NOT DAG dependencies. upstream_dependencies must
-    contain only previously created model names.
-- For stg_transactions use columns: transaction_id, user_id, amount_usd, status.
-- For mart_user_lifetime_revenue output columns: user_id, country, lifetime_revenue.
-- Do not use columns amount, currency, or created_at.
-- Recommended order: create stg_transactions -> create mart_user_lifetime_revenue -> execute_dag.
-- Return ONLY a JSON object, no markdown fences, no extra text.
+- Return ONLY a JSON object, with no markdown and no explanation.
+- Do not invent query ids or cluster ids; use only ids provided in the observation.
+- For inspect_cluster, pass the cluster identifier in target_id (not cluster_id).
+- Derived object names must be valid SQL identifiers matching ^[A-Za-z_][A-Za-z0-9_]*$.
+- Never use dots, spaces, or schema prefixes in the name field.
+- For create_derived_object and modify_derived_object, always include source_objects and ensure they match tables used in sql_definition.
+- Never rely on any local heuristic policy. If earlier attempts were invalid, fix the output format and return a valid action.
 """
 
-STG_SQL = (
-        "SELECT transaction_id, CAST(user_id AS INTEGER) AS user_id, "
-        "CAST(amount_usd AS DOUBLE) AS amount_usd, status "
-        "FROM raw_transactions WHERE status = 'completed'"
-)
 
-MART_SQL = (
-        "SELECT u.user_id, u.country, COALESCE(SUM(t.amount_usd), 0.0) AS lifetime_revenue "
-        "FROM raw_users u "
-        "LEFT JOIN stg_transactions t ON u.user_id = t.user_id "
-        "GROUP BY u.user_id, u.country"
-)
-
-
-def build_user_prompt(observation, history: List[str]) -> str:
-    metadata = observation.metadata or {}
-    task = metadata.get("task", {})
-
-    history_text = "\n".join(history[-6:]) if history else "(none)"
-    sample_text = (
-        json.dumps(observation.data_sample, ensure_ascii=True)
-        if observation.data_sample is not None
-        else "null"
-    )
-
-    return (
-        f"Task: {task}\n"
-        f"Current status: {observation.dag_integrity_status}\n"
-        f"Execution trace:\n{observation.execution_trace}\n\n"
-        f"Cascading failures: {observation.cascading_failure_nodes}\n"
-        f"Data sample: {sample_text}\n"
-        f"Recent history:\n{history_text}\n\n"
-        "Provide the next action as strict JSON."
-    )
-
-
-def _extract_json_object(text: str) -> str:
+def _extract_json_object_candidates(text: str) -> List[Dict[str, Any]]:
     text = text.strip()
+    candidates: List[Dict[str, Any]] = []
 
     code_fence_match = re.search(r"```(?:json)?\s*(\{.*\})\s*```", text, re.DOTALL)
     if code_fence_match:
-        return code_fence_match.group(1)
-
-    start = text.find("{")
-    end = text.rfind("}")
-    if start != -1 and end != -1 and end > start:
-        return text[start : end + 1]
-
-    return text
-
-
-def parse_model_action(response_text: str) -> DatadagAction:
-    candidate = _extract_json_object(response_text)
-
-    try:
-        payload = json.loads(candidate)
-        return DatadagAction.model_validate(payload)
-    except Exception:
-        return DatadagAction.model_validate(FALLBACK_ACTION)
-
-
-def _extract_select_body(sql: str) -> str:
-    sql_clean = sql.strip().rstrip(";")
-    if re.match(r"(?is)^\s*select\b", sql_clean):
-        return sql_clean
-
-    # Handle model outputs like: CREATE OR REPLACE VIEW x AS SELECT ...
-    match = re.search(r"(?is)\bas\s+(select\b.*)$", sql_clean)
-    if match:
-        return match.group(1).strip().rstrip(";")
-
-    return sql_clean
-
-
-def _planned_safe_action(created_models: Set[str]) -> DatadagAction:
-    if "stg_transactions" not in created_models:
-        return DatadagAction(
-            pipeline_command="create_node",
-            model_identifier="stg_transactions",
-            sql_syntax=STG_SQL,
-            upstream_dependencies=[],
-        )
-    if "mart_user_lifetime_revenue" not in created_models:
-        return DatadagAction(
-            pipeline_command="create_node",
-            model_identifier="mart_user_lifetime_revenue",
-            sql_syntax=MART_SQL,
-            upstream_dependencies=["stg_transactions"],
-        )
-    return DatadagAction(pipeline_command="execute_dag")
-
-
-def sanitize_action(
-    action: DatadagAction,
-    observation,
-    created_models: Set[str],
-) -> DatadagAction:
-    """Normalize model-proposed actions to the environment's strict contract."""
-
-    # Never execute before required models are created.
-    if action.pipeline_command == "execute_dag" and not {
-        "stg_transactions",
-        "mart_user_lifetime_revenue",
-    }.issubset(created_models):
-        return _planned_safe_action(created_models)
-
-    # If previous step errored, prefer deterministic recovery plan.
-    if "ERROR:" in (observation.execution_trace or ""):
-        return _planned_safe_action(created_models)
-
-    # Once both required models are present and no active error, terminate by execution.
-    if {
-        "stg_transactions",
-        "mart_user_lifetime_revenue",
-    }.issubset(created_models):
-        return DatadagAction(pipeline_command="execute_dag")
-
-    if action.pipeline_command in ("create_node", "update_node"):
-        model_id = action.model_identifier or ""
-        sql = _extract_select_body(action.sql_syntax or "")
-
-        # If model already exists, treat a repeated create as an update to avoid avoidable errors.
-        command = action.pipeline_command
-        if command == "create_node" and model_id in created_models:
-            command = "update_node"
-
-        # Dependency list can only include created model names.
-        deps = [d for d in action.upstream_dependencies if d in created_models]
-
-        if model_id == "stg_transactions":
-            deps = []
-            # Repair common invalid source-column patterns.
-            if re.search(r"\b(amount|currency|created_at)\b", sql, flags=re.IGNORECASE):
-                sql = STG_SQL
-            if not re.search(r"\bamount_usd\b", sql, flags=re.IGNORECASE):
-                sql = STG_SQL
-
-        if model_id == "mart_user_lifetime_revenue":
-            deps = ["stg_transactions"] if "stg_transactions" in created_models else []
-            if not re.search(r"\blifetime_revenue\b", sql, flags=re.IGNORECASE):
-                sql = MART_SQL
-
-        # If model id is missing or unknown, use safe planner.
-        if model_id not in {"stg_transactions", "mart_user_lifetime_revenue"}:
-            return _planned_safe_action(created_models)
-
+        fenced = code_fence_match.group(1)
         try:
-            return DatadagAction(
-                pipeline_command=command,
-                model_identifier=model_id,
-                sql_syntax=sql,
-                upstream_dependencies=deps,
-            )
-        except Exception:
-            return _planned_safe_action(created_models)
+            payload = json.loads(fenced)
+            if isinstance(payload, dict):
+                candidates.append(payload)
+        except json.JSONDecodeError:
+            pass
 
-    return action
+    decoder = json.JSONDecoder()
+    cursor = 0
+    while cursor < len(text):
+        start = text.find("{", cursor)
+        if start == -1:
+            break
+        try:
+            payload, offset = decoder.raw_decode(text[start:])
+        except json.JSONDecodeError:
+            cursor = start + 1
+            continue
+        if isinstance(payload, dict):
+            candidates.append(payload)
+        cursor = start + offset
+    return candidates
+
+
+def _normalize_action_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+    normalized = dict(payload)
+    op = normalized.get("operation")
+
+    inspect_ops = {"inspect_table_stats", "inspect_cluster", "inspect_query", "inspect_query_plan"}
+    if op in inspect_ops and not normalized.get("target_id"):
+        if normalized.get("cluster_id"):
+            normalized["target_id"] = normalized["cluster_id"]
+        elif normalized.get("query_id"):
+            normalized["target_id"] = normalized["query_id"]
+
+    if op == "benchmark_cluster" and not normalized.get("cluster_id") and normalized.get("target_id"):
+        normalized["cluster_id"] = normalized["target_id"]
+
+    return normalized
+
+
+def parse_action(response_text: str) -> Optional[SchemaOptAction]:
+    candidates = _extract_json_object_candidates(response_text)
+    if not candidates:
+        return None
+
+    for payload in candidates:
+        normalized = _normalize_action_payload(payload)
+        try:
+            return SchemaOptAction(**normalized)
+        except Exception as exc:
+            print(f"Rejected candidate: {json.dumps(normalized, ensure_ascii=True)} | reason: {exc}")
+
+    return None
+
+
+def build_user_prompt(
+    observation: Any,
+    history: List[str],
+    step: int,
+    benchmark_history: List[Dict[str, Any]],
+    cluster_attempts: Dict[str, int],
+    query_context_requests: Dict[str, int],
+    parse_errors: Optional[List[str]] = None,
+) -> str:
+    metadata = observation.metadata or {}
+    task = metadata.get("task", {})
+    history_text = "\n".join(history[-6:]) if history else "(none)"
+    budgets = task.get("budgets", {})
+    max_steps = int(budgets.get("max_steps") or MAX_STEPS)
+    derived_objects = (observation.catalog_summary or {}).get("derived_objects", [])
+    repeated_context_requests = {key: value for key, value in query_context_requests.items() if value > 1}
+    prompt_payload = {
+        "task": task,
+        "catalog_summary": observation.catalog_summary,
+        "workload_summary": observation.workload_summary,
+        "retrieval_context": observation.retrieval_context,
+        "benchmark_context": observation.benchmark_context,
+        "router_summary": getattr(observation, "router_summary", {}) or {},
+        "action_feedback": observation.action_feedback,
+        "recent_history": history_text,
+        "recent_benchmark_history": benchmark_history[-2:],
+        "cluster_attempts": dict(cluster_attempts),
+        "derived_object_summaries": derived_objects,
+        "repeated_query_context_requests": repeated_context_requests,
+        "remaining_budget_summary": {
+            "steps_remaining": max(0, min(MAX_STEPS, max_steps) - step + 1),
+            "max_steps": max_steps,
+            "max_new_derived_objects": budgets.get("max_new_derived_objects"),
+            "max_storage_bytes": budgets.get("max_storage_bytes"),
+            "max_refresh_runtime_ms": budgets.get("max_refresh_runtime_ms"),
+            "current_derived_object_count": len(derived_objects),
+            "current_routed_query_count": (observation.benchmark_context or {}).get("routed_query_count"),
+        },
+        "step_reward": observation.reward,
+        "done": observation.done,
+    }
+
+    prompt = json.dumps(prompt_payload, indent=2, default=str)
+    if parse_errors:
+        prompt += (
+            "\n\nPrevious action attempts were invalid. Return only a valid JSON action matching the schema."
+            "\nValidation issues:\n- " + "\n- ".join(parse_errors[-3:])
+        )
+    return prompt
+
 
 def request_model_action(user_content: str) -> str:
-    messages = [
-        {"role": "developer", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": user_content}
-    ]
+    if OpenAI is None:
+        raise RuntimeError("openai package is not installed. Install it to run model-driven inference.")
+    if not OPENAI_API_KEY:
+        raise RuntimeError("OPENAI_API_KEY or HF_TOKEN must be set for model-driven inference.")
 
     try:
-        client = OpenAI()
-        responses = client.responses.create(
+        client_kwargs: Dict[str, Any] = {"api_key": OPENAI_API_KEY}
+        if API_BASE_URL:
+            client_kwargs["base_url"] = API_BASE_URL
+        client = OpenAI(**client_kwargs)
+        response = client.responses.create(
             model=MODEL_NAME,
-            input=messages,
-            # max_output_tokens=MAX_TOKENS,
+            input=[
+                {"role": "developer", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_content},
+            ],
         )
-        return responses.output_text or ""
+        return response.output_text or ""
     except Exception as exc:
-        print(f"Model request failed ({exc}). Using fallback action.")
-        return json.dumps(FALLBACK_ACTION)
+        raise RuntimeError(f"Model request failed: {exc}") from exc
 
 
-def run_episode() -> dict:
-    env = DatadagEnvironment()
-    created_models: Set[str] = set()
+def choose_action(
+    observation: Any,
+    history: List[str],
+    step: int,
+    benchmark_history: List[Dict[str, Any]],
+    cluster_attempts: Dict[str, int],
+    query_context_requests: Dict[str, int],
+) -> SchemaOptAction:
+    errors: List[str] = []
+    for attempt in range(1, MAX_ACTION_RETRIES + 1):
+        user_content = build_user_prompt(
+            observation,
+            history,
+            step,
+            benchmark_history,
+            cluster_attempts,
+            query_context_requests,
+            parse_errors=errors,
+        )
+        response_text = request_model_action(user_content)
+        if not response_text.strip():
+            errors.append("empty model response")
+            continue
+        action = parse_action(response_text)
+        if action is not None:
+            print(f"Model action parsed successfully on attempt {attempt}.")
+            return action
+        truncated = response_text.strip().replace("\n", " ")
+        errors.append(f"unparseable action payload: {truncated[:300]}")
 
-    observation = env.reset()
+    raise RuntimeError(
+        f"Model failed to produce a valid SchemaOptAction after {MAX_ACTION_RETRIES} attempts."
+    )
+
+
+def _resolve_default_db_id() -> str:
+    if SPIDER_DB_ID:
+        return SPIDER_DB_ID
+    spider_dbs = list_spider_database_summaries()
+    if not spider_dbs:
+        raise RuntimeError("No Spider databases are available")
+    return spider_dbs[0]["db_id"]
+
+
+def run_episode(db_id: Optional[str] = None) -> Dict[str, Any]:
+    selected_db_id = db_id or _resolve_default_db_id()
+    env = SchemaOptEnvironment()
+    observation = env.reset(
+        db_id=selected_db_id,
+        spider_split=SPIDER_SPLIT,
+        spider_sample_size=SPIDER_SAMPLE_SIZE,
+        spider_holdout_size=SPIDER_HOLDOUT_SIZE,
+        spider_min_complexity=SPIDER_MIN_COMPLEXITY,
+    )
     history: List[str] = []
+    benchmark_history: List[Dict[str, Any]] = []
+    cluster_attempts: Counter[str] = Counter()
+    query_context_requests: Counter[str] = Counter()
     total_reward = 0.0
 
-    print("Starting DataDAG Task 1 inference run")
+    print(f"Starting schema optimization inference run for db_id={selected_db_id} split={SPIDER_SPLIT}")
+
+    terminated_due_to_max_steps = False
 
     for step in range(1, MAX_STEPS + 1):
-        user_content = build_user_prompt(observation, history)
-        response_text = request_model_action(user_content)
-        action = parse_model_action(response_text)
-        action = sanitize_action(action, observation, created_models)
-
-        print(f"Step {step}: model suggested -> {action.model_dump()}")
+        action = choose_action(observation, history, step, benchmark_history, dict(cluster_attempts), dict(query_context_requests))
+        print(f"Step {step}: {json.dumps(action.model_dump(exclude_none=True), ensure_ascii=True)}")
 
         observation = env.step(action)
-        if action.pipeline_command in ("create_node", "update_node") and action.model_identifier:
-            if observation.dag_integrity_status == "valid":
-                created_models.add(action.model_identifier)
-
         reward = observation.reward or 0.0
         total_reward += reward
 
+        if action.operation in {"benchmark_cluster", "benchmark_subset"}:
+            benchmark_history.append(
+                {
+                    "operation": action.operation,
+                    "cluster_id": action.cluster_id,
+                    "query_ids": list(action.query_ids),
+                    "benchmark_context": observation.benchmark_context,
+                    "router_summary": getattr(observation, "router_summary", {}) or {},
+                }
+            )
+        if action.operation in {"create_derived_object", "modify_derived_object"}:
+            cluster_key = ",".join(action.intended_clusters) if action.intended_clusters else "(unscoped)"
+            cluster_attempts[cluster_key] += 1
+        if action.operation == "get_query_context":
+            query_context_requests["|".join(sorted(action.query_ids))] += 1
+
         history_line = (
-            f"Step {step}: {action.pipeline_command} -> reward {reward:+.3f}, "
-            f"integrity={observation.dag_integrity_status}"
+            f"Step {step}: {action.operation} -> reward {reward:+.3f}, "
+            f"status={observation.status}, done={observation.done}, "
+            f"router={json.dumps(getattr(observation, 'router_summary', {}) or {}, ensure_ascii=True)}"
         )
         history.append(history_line)
 
-        print(
-            f"  Reward: {reward:+.3f} | Done: {observation.done} | "
-            f"Integrity: {observation.dag_integrity_status}"
-        )
+        print(f"  Reward: {reward:+.3f} | Done: {observation.done} | Message: {observation.message}")
 
         if observation.done:
             print("Episode complete.")
             break
     else:
-        print(f"Reached max steps ({MAX_STEPS}).")
+        terminated_due_to_max_steps = True
+        print(f"Reached max steps ({MAX_STEPS}) without a model-issued submit action.")
 
-    rubric = (observation.metadata or {}).get("task1_rubric")
+    final_feedback = observation.action_feedback or {}
     result = {
-        "task_id": "task1_easy",
-        "score": env.state.final_score,
+        "db_id": selected_db_id,
+        "spider_split": SPIDER_SPLIT,
+        "spider_sample_size": SPIDER_SAMPLE_SIZE,
+        "spider_holdout_size": SPIDER_HOLDOUT_SIZE,
+        "final_score": env.state.final_score,
         "total_reward": round(total_reward, 6),
         "steps": env.state.step_count,
-        "rubric": rubric,
-        "last_trace": observation.execution_trace,
+        "derived_object_count": env.state.derived_object_count,
+        "benchmark_runs": env.state.benchmark_runs,
+        "final_message": observation.message,
+        "terminated_due_to_max_steps": terminated_due_to_max_steps,
+        "done": observation.done,
+        "benchmark_context": observation.benchmark_context,
+        "router_summary": getattr(observation, "router_summary", {}) or {},
+        "final_feedback": final_feedback,
     }
 
     print("\nFinal result:")
-    print(json.dumps(result, indent=2))
+    with open(f"inference_result_{selected_db_id}_{MODEL_NAME}.json", "w", encoding="utf-8") as f:
+        json.dump(result, f, indent=2)
     return result
 
 
