@@ -1,4 +1,4 @@
-"""Build manifest-backed schema optimization task assets from dacomp-de-impl datasets."""
+"""Build the curated SchemaOpt task assets from the local benchmark datasets."""
 
 from __future__ import annotations
 
@@ -12,18 +12,12 @@ DATASET_ROOT = REPO_ROOT / "datasets" / "dacomp-de"
 ASSET_ROOT = REPO_ROOT / "schemaopt_env" / "task_assets"
 
 SELECTED_TASKS = [
-    ("schemaopt_easy_lever", "easy", "lever", 1),
-    ("schemaopt_easy_pendo", "easy", "pendo", 2),
-    ("schemaopt_easy_customer360", "easy", "customer360", 3),
-    ("schemaopt_easy_salesforce", "easy", "salesforce", 4),
-    ("schemaopt_medium_google_ads", "medium", "google_ads", 5),
-    ("schemaopt_medium_ad_reporting", "medium", "ad_reporting", 6),
-    ("schemaopt_medium_app_reporting", "medium", "app_reporting", 7),
-    ("schemaopt_medium_asana", "medium", "asana", 8),
-    ("schemaopt_hard_google_play", "hard", "google_play", 9),
-    ("schemaopt_hard_hubspot", "hard", "hubspot", 10),
-    ("schemaopt_hard_jira", "hard", "jira", 11),
-    ("schemaopt_hard_marketo", "hard", "marketo", 12),
+    ("schemaopt_easy_hiring_pipeline", "easy", "lever", 1),
+    ("schemaopt_easy_product_adoption", "easy", "pendo", 2),
+    ("schemaopt_medium_campaign_performance", "medium", "google_ads", 5),
+    ("schemaopt_medium_delivery_operations", "medium", "asana", 8),
+    ("schemaopt_hard_mobile_revenue_ops", "hard", "google_play", 9),
+    ("schemaopt_hard_lifecycle_engagement", "hard", "marketo", 12),
 ]
 
 DIFFICULTY_CONFIG: Dict[str, Dict[str, Any]] = {

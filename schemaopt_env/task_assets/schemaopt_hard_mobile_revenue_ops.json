@@ -1,11 +1,11 @@
 {
-  "task_id": "schemaopt_hard_google_play",
+  "task_id": "schemaopt_hard_mobile_revenue_ops",
   "difficulty": "hard",
-  "domain": "google_play",
-  "objective": "Optimize the google play workload over the real DuckDB source database by materializing derived objects that reduce measured execution cost while preserving exact query results.",
-  "seed_source": "datasets/dacomp-de/dacomp-de-impl-009",
-  "dataset_dir": "datasets/dacomp-de/dacomp-de-impl-009",
-  "database_path": "datasets/dacomp-de/dacomp-de-impl-009/google_play_start.duckdb",
+  "domain": "mobile_revenue_ops",
+  "objective": "Optimize a mobile revenue operations workload over a real DuckDB warehouse by designing reusable derived objects that improve install, release, geography, platform, and monetization reporting under tight budgets.",
+  "seed_source": "datasets/schemaopt_curated/mobile_revenue_ops",
+  "dataset_dir": "datasets/schemaopt_curated/mobile_revenue_ops",
+  "database_path": "datasets/schemaopt_curated/mobile_revenue_ops/mobile_revenue_ops_start.duckdb",
   "tables": [
     {
       "name": "raw.earnings",
@@ -1004,11 +1004,11 @@
   ],
   "visible_queries": [
     {
-      "query_id": "schemaopt_hard_google_play_vq_c01_01",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_01",
-      "business_tag": "google_play earnings analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
+      "business_tag": "monetization yield reporting",
       "frequency_weight": 1.45,
       "priority_weight": 1.0,
       "tables": [
@@ -1047,14 +1047,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play earnings analytics variant 1 visible 1"
+      "description": "monetization yield reporting report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c01_02",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_01",
-      "business_tag": "google_play earnings analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
+      "business_tag": "monetization yield reporting",
       "frequency_weight": 1.6,
       "priority_weight": 1.1,
       "tables": [
@@ -1090,14 +1090,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play earnings analytics variant 2 visible 2"
+      "description": "monetization yield reporting report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c01_03",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_01",
-      "business_tag": "google_play earnings analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
+      "business_tag": "monetization yield reporting",
       "frequency_weight": 1.75,
       "priority_weight": 1.0,
       "tables": [
@@ -1136,14 +1136,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play earnings analytics variant 1 visible 3"
+      "description": "monetization yield reporting report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c01_04",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_01",
-      "business_tag": "google_play earnings analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
+      "business_tag": "monetization yield reporting",
       "frequency_weight": 1.45,
       "priority_weight": 1.1,
       "tables": [
@@ -1179,14 +1179,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play earnings analytics variant 2 visible 4"
+      "description": "monetization yield reporting report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c01_05",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_01",
-      "business_tag": "google_play earnings analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
+      "business_tag": "monetization yield reporting",
       "frequency_weight": 1.6,
       "priority_weight": 1.0,
       "tables": [
@@ -1225,14 +1225,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play earnings analytics variant 1 visible 5"
+      "description": "monetization yield reporting report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c01_06",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_01",
-      "business_tag": "google_play earnings analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
+      "business_tag": "monetization yield reporting",
       "frequency_weight": 1.75,
       "priority_weight": 1.1,
       "tables": [
@@ -1268,14 +1268,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play earnings analytics variant 2 visible 6"
+      "description": "monetization yield reporting report slice 6 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c01_07",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_07",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_01",
-      "business_tag": "google_play earnings analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
+      "business_tag": "monetization yield reporting",
       "frequency_weight": 1.45,
       "priority_weight": 1.0,
       "tables": [
@@ -1314,14 +1314,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play earnings analytics variant 1 visible 7"
+      "description": "monetization yield reporting report slice 7 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c02_01",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_02",
-      "business_tag": "google_play stats_installs_app_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
+      "business_tag": "release performance analytics",
       "frequency_weight": 1.9,
       "priority_weight": 1.0,
       "tables": [
@@ -1360,14 +1360,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_app_version analytics variant 1 visible 1"
+      "description": "release performance analytics report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c02_02",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_02",
-      "business_tag": "google_play stats_installs_app_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
+      "business_tag": "release performance analytics",
       "frequency_weight": 2.05,
       "priority_weight": 1.1,
       "tables": [
@@ -1403,14 +1403,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_app_version analytics variant 2 visible 2"
+      "description": "release performance analytics report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c02_03",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_02",
-      "business_tag": "google_play stats_installs_app_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
+      "business_tag": "release performance analytics",
       "frequency_weight": 2.2,
       "priority_weight": 1.0,
       "tables": [
@@ -1449,14 +1449,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_app_version analytics variant 1 visible 3"
+      "description": "release performance analytics report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c02_04",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_02",
-      "business_tag": "google_play stats_installs_app_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
+      "business_tag": "release performance analytics",
       "frequency_weight": 1.9,
       "priority_weight": 1.1,
       "tables": [
@@ -1492,14 +1492,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_app_version analytics variant 2 visible 4"
+      "description": "release performance analytics report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c02_05",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_02",
-      "business_tag": "google_play stats_installs_app_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
+      "business_tag": "release performance analytics",
       "frequency_weight": 2.05,
       "priority_weight": 1.0,
       "tables": [
@@ -1538,14 +1538,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_app_version analytics variant 1 visible 5"
+      "description": "release performance analytics report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c02_06",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_02",
-      "business_tag": "google_play stats_installs_app_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
+      "business_tag": "release performance analytics",
       "frequency_weight": 2.2,
       "priority_weight": 1.1,
       "tables": [
@@ -1581,14 +1581,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_app_version analytics variant 2 visible 6"
+      "description": "release performance analytics report slice 6 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c02_07",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_07",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_02",
-      "business_tag": "google_play stats_installs_app_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
+      "business_tag": "release performance analytics",
       "frequency_weight": 1.9,
       "priority_weight": 1.0,
       "tables": [
@@ -1627,14 +1627,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_app_version analytics variant 1 visible 7"
+      "description": "release performance analytics report slice 7 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c03_01",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_country b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_country b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_03",
-      "business_tag": "google_play stats_installs_country analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
+      "business_tag": "geo growth analytics",
       "frequency_weight": 2.35,
       "priority_weight": 1.0,
       "tables": [
@@ -1673,14 +1673,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_country analytics variant 1 visible 1"
+      "description": "geo growth analytics report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c03_02",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_country b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_country b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_03",
-      "business_tag": "google_play stats_installs_country analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
+      "business_tag": "geo growth analytics",
       "frequency_weight": 2.5,
       "priority_weight": 1.1,
       "tables": [
@@ -1716,14 +1716,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_country analytics variant 2 visible 2"
+      "description": "geo growth analytics report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c03_03",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_country b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_country b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_03",
-      "business_tag": "google_play stats_installs_country analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
+      "business_tag": "geo growth analytics",
       "frequency_weight": 2.65,
       "priority_weight": 1.0,
       "tables": [
@@ -1762,14 +1762,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_country analytics variant 1 visible 3"
+      "description": "geo growth analytics report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c03_04",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_country b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_country b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_03",
-      "business_tag": "google_play stats_installs_country analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
+      "business_tag": "geo growth analytics",
       "frequency_weight": 2.35,
       "priority_weight": 1.1,
       "tables": [
@@ -1805,14 +1805,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_country analytics variant 2 visible 4"
+      "description": "geo growth analytics report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c03_05",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_country b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_country b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_03",
-      "business_tag": "google_play stats_installs_country analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
+      "business_tag": "geo growth analytics",
       "frequency_weight": 2.5,
       "priority_weight": 1.0,
       "tables": [
@@ -1851,14 +1851,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_country analytics variant 1 visible 5"
+      "description": "geo growth analytics report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c03_06",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_country b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_country b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_03",
-      "business_tag": "google_play stats_installs_country analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
+      "business_tag": "geo growth analytics",
       "frequency_weight": 2.65,
       "priority_weight": 1.1,
       "tables": [
@@ -1894,14 +1894,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_country analytics variant 2 visible 6"
+      "description": "geo growth analytics report slice 6 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c03_07",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_07",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_country b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_country b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_03",
-      "business_tag": "google_play stats_installs_country analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
+      "business_tag": "geo growth analytics",
       "frequency_weight": 2.35,
       "priority_weight": 1.0,
       "tables": [
@@ -1940,14 +1940,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_country analytics variant 1 visible 7"
+      "description": "geo growth analytics report slice 7 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c04_01",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_device b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_device b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_04",
-      "business_tag": "google_play stats_installs_device analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
+      "business_tag": "device mix reporting",
       "frequency_weight": 2.8,
       "priority_weight": 1.0,
       "tables": [
@@ -1986,14 +1986,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_device analytics variant 1 visible 1"
+      "description": "device mix reporting report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c04_02",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_device b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_device b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_04",
-      "business_tag": "google_play stats_installs_device analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
+      "business_tag": "device mix reporting",
       "frequency_weight": 2.95,
       "priority_weight": 1.1,
       "tables": [
@@ -2029,14 +2029,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_device analytics variant 2 visible 2"
+      "description": "device mix reporting report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c04_03",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_device b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_device b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_04",
-      "business_tag": "google_play stats_installs_device analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
+      "business_tag": "device mix reporting",
       "frequency_weight": 3.1,
       "priority_weight": 1.0,
       "tables": [
@@ -2075,14 +2075,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_device analytics variant 1 visible 3"
+      "description": "device mix reporting report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c04_04",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_device b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_device b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_04",
-      "business_tag": "google_play stats_installs_device analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
+      "business_tag": "device mix reporting",
       "frequency_weight": 2.8,
       "priority_weight": 1.1,
       "tables": [
@@ -2118,14 +2118,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_device analytics variant 2 visible 4"
+      "description": "device mix reporting report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c04_05",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_device b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_device b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_04",
-      "business_tag": "google_play stats_installs_device analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
+      "business_tag": "device mix reporting",
       "frequency_weight": 2.95,
       "priority_weight": 1.0,
       "tables": [
@@ -2164,14 +2164,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_device analytics variant 1 visible 5"
+      "description": "device mix reporting report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c04_06",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_device b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_device b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_04",
-      "business_tag": "google_play stats_installs_device analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
+      "business_tag": "device mix reporting",
       "frequency_weight": 3.1,
       "priority_weight": 1.1,
       "tables": [
@@ -2207,14 +2207,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_device analytics variant 2 visible 6"
+      "description": "device mix reporting report slice 6 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c04_07",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_07",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_device b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_device b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_04",
-      "business_tag": "google_play stats_installs_device analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
+      "business_tag": "device mix reporting",
       "frequency_weight": 2.8,
       "priority_weight": 1.0,
       "tables": [
@@ -2253,14 +2253,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_device analytics variant 1 visible 7"
+      "description": "device mix reporting report slice 7 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c05_01",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_os_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_os_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_05",
-      "business_tag": "google_play stats_installs_os_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_05",
+      "business_tag": "platform mix reporting",
       "frequency_weight": 3.25,
       "priority_weight": 1.0,
       "tables": [
@@ -2299,14 +2299,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_os_version analytics variant 1 visible 1"
+      "description": "platform mix reporting report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c05_02",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_os_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_os_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_05",
-      "business_tag": "google_play stats_installs_os_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_05",
+      "business_tag": "platform mix reporting",
       "frequency_weight": 3.4,
       "priority_weight": 1.1,
       "tables": [
@@ -2342,14 +2342,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_os_version analytics variant 2 visible 2"
+      "description": "platform mix reporting report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c05_03",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_os_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_os_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_05",
-      "business_tag": "google_play stats_installs_os_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_05",
+      "business_tag": "platform mix reporting",
       "frequency_weight": 3.55,
       "priority_weight": 1.0,
       "tables": [
@@ -2388,14 +2388,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_os_version analytics variant 1 visible 3"
+      "description": "platform mix reporting report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c05_04",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_os_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_os_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_05",
-      "business_tag": "google_play stats_installs_os_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_05",
+      "business_tag": "platform mix reporting",
       "frequency_weight": 3.25,
       "priority_weight": 1.1,
       "tables": [
@@ -2431,14 +2431,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_os_version analytics variant 2 visible 4"
+      "description": "platform mix reporting report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c05_05",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_os_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_os_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_05",
-      "business_tag": "google_play stats_installs_os_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_05",
+      "business_tag": "platform mix reporting",
       "frequency_weight": 3.4,
       "priority_weight": 1.0,
       "tables": [
@@ -2477,14 +2477,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_os_version analytics variant 1 visible 5"
+      "description": "platform mix reporting report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c05_06",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_os_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_os_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_05",
-      "business_tag": "google_play stats_installs_os_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_05",
+      "business_tag": "platform mix reporting",
       "frequency_weight": 3.55,
       "priority_weight": 1.1,
       "tables": [
@@ -2520,14 +2520,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_os_version analytics variant 2 visible 6"
+      "description": "platform mix reporting report slice 6 (visible)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_vq_c05_07",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_07",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_os_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_os_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_05",
-      "business_tag": "google_play stats_installs_os_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_05",
+      "business_tag": "platform mix reporting",
       "frequency_weight": 3.25,
       "priority_weight": 1.0,
       "tables": [
@@ -2566,16 +2566,16 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_os_version analytics variant 1 visible 7"
+      "description": "platform mix reporting report slice 7 (visible)"
     }
   ],
   "holdout_queries": [
     {
-      "query_id": "schemaopt_hard_google_play_hq_c01_01",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c01_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_01",
-      "business_tag": "google_play earnings analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
+      "business_tag": "monetization yield reporting",
       "frequency_weight": 1.1,
       "priority_weight": 1.05,
       "tables": [
@@ -2611,14 +2611,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play earnings analytics variant 2 holdout 1"
+      "description": "monetization yield reporting report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c01_02",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c01_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_01",
-      "business_tag": "google_play earnings analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
+      "business_tag": "monetization yield reporting",
       "frequency_weight": 1.2,
       "priority_weight": 1.0,
       "tables": [
@@ -2657,14 +2657,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play earnings analytics variant 1 holdout 2"
+      "description": "monetization yield reporting report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c01_03",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c01_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_01",
-      "business_tag": "google_play earnings analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
+      "business_tag": "monetization yield reporting",
       "frequency_weight": 1.1,
       "priority_weight": 1.05,
       "tables": [
@@ -2700,14 +2700,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play earnings analytics variant 2 holdout 3"
+      "description": "monetization yield reporting report slice 3 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c01_04",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c01_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.earnings b WHERE coalesce(try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"transaction_date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"transaction_date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.earnings b where coalesce(try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"transaction_date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"transaction_date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_01",
-      "business_tag": "google_play earnings analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
+      "business_tag": "monetization yield reporting",
       "frequency_weight": 1.2,
       "priority_weight": 1.0,
       "tables": [
@@ -2746,14 +2746,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play earnings analytics variant 1 holdout 4"
+      "description": "monetization yield reporting report slice 4 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c02_01",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c02_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_02",
-      "business_tag": "google_play stats_installs_app_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
+      "business_tag": "release performance analytics",
       "frequency_weight": 1.4,
       "priority_weight": 1.05,
       "tables": [
@@ -2789,14 +2789,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_app_version analytics variant 2 holdout 1"
+      "description": "release performance analytics report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c02_02",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c02_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_02",
-      "business_tag": "google_play stats_installs_app_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
+      "business_tag": "release performance analytics",
       "frequency_weight": 1.5,
       "priority_weight": 1.0,
       "tables": [
@@ -2835,14 +2835,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_app_version analytics variant 1 holdout 2"
+      "description": "release performance analytics report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c02_03",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c02_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_02",
-      "business_tag": "google_play stats_installs_app_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
+      "business_tag": "release performance analytics",
       "frequency_weight": 1.4,
       "priority_weight": 1.05,
       "tables": [
@@ -2878,14 +2878,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_app_version analytics variant 2 holdout 3"
+      "description": "release performance analytics report slice 3 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c02_04",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c02_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_app_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_app_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_02",
-      "business_tag": "google_play stats_installs_app_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
+      "business_tag": "release performance analytics",
       "frequency_weight": 1.5,
       "priority_weight": 1.0,
       "tables": [
@@ -2924,14 +2924,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_app_version analytics variant 1 holdout 4"
+      "description": "release performance analytics report slice 4 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c03_01",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c03_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_country b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_country b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_03",
-      "business_tag": "google_play stats_installs_country analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
+      "business_tag": "geo growth analytics",
       "frequency_weight": 1.7,
       "priority_weight": 1.05,
       "tables": [
@@ -2967,14 +2967,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_country analytics variant 2 holdout 1"
+      "description": "geo growth analytics report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c03_02",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c03_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_country b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_country b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_03",
-      "business_tag": "google_play stats_installs_country analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
+      "business_tag": "geo growth analytics",
       "frequency_weight": 1.8,
       "priority_weight": 1.0,
       "tables": [
@@ -3013,14 +3013,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_country analytics variant 1 holdout 2"
+      "description": "geo growth analytics report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c03_03",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c03_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_country b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_country b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_03",
-      "business_tag": "google_play stats_installs_country analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
+      "business_tag": "geo growth analytics",
       "frequency_weight": 1.7,
       "priority_weight": 1.05,
       "tables": [
@@ -3056,14 +3056,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_country analytics variant 2 holdout 3"
+      "description": "geo growth analytics report slice 3 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c03_04",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c03_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_country b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_country b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_03",
-      "business_tag": "google_play stats_installs_country analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
+      "business_tag": "geo growth analytics",
       "frequency_weight": 1.8,
       "priority_weight": 1.0,
       "tables": [
@@ -3102,14 +3102,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_country analytics variant 1 holdout 4"
+      "description": "geo growth analytics report slice 4 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c04_01",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c04_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_device b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_device b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_04",
-      "business_tag": "google_play stats_installs_device analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
+      "business_tag": "device mix reporting",
       "frequency_weight": 2.0,
       "priority_weight": 1.05,
       "tables": [
@@ -3145,14 +3145,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_device analytics variant 2 holdout 1"
+      "description": "device mix reporting report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c04_02",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c04_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_device b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_device b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_04",
-      "business_tag": "google_play stats_installs_device analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
+      "business_tag": "device mix reporting",
       "frequency_weight": 2.1,
       "priority_weight": 1.0,
       "tables": [
@@ -3191,14 +3191,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_device analytics variant 1 holdout 2"
+      "description": "device mix reporting report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c04_03",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c04_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_device b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_device b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_04",
-      "business_tag": "google_play stats_installs_device analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
+      "business_tag": "device mix reporting",
       "frequency_weight": 2.0,
       "priority_weight": 1.05,
       "tables": [
@@ -3234,14 +3234,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_device analytics variant 2 holdout 3"
+      "description": "device mix reporting report slice 3 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c04_04",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c04_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_device b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_device b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_04",
-      "business_tag": "google_play stats_installs_device analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
+      "business_tag": "device mix reporting",
       "frequency_weight": 2.1,
       "priority_weight": 1.0,
       "tables": [
@@ -3280,14 +3280,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_device analytics variant 1 holdout 4"
+      "description": "device mix reporting report slice 4 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c05_01",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c05_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_os_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_os_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_05",
-      "business_tag": "google_play stats_installs_os_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_05",
+      "business_tag": "platform mix reporting",
       "frequency_weight": 2.3,
       "priority_weight": 1.05,
       "tables": [
@@ -3323,14 +3323,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_os_version analytics variant 2 holdout 1"
+      "description": "platform mix reporting report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c05_02",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c05_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_os_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_os_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_05",
-      "business_tag": "google_play stats_installs_os_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_05",
+      "business_tag": "platform mix reporting",
       "frequency_weight": 2.4,
       "priority_weight": 1.0,
       "tables": [
@@ -3369,14 +3369,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_os_version analytics variant 1 holdout 2"
+      "description": "platform mix reporting report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c05_03",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c05_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_os_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_os_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period",
-      "cluster_id": "schemaopt_hard_google_play_cluster_05",
-      "business_tag": "google_play stats_installs_os_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_05",
+      "business_tag": "platform mix reporting",
       "frequency_weight": 2.3,
       "priority_weight": 1.05,
       "tables": [
@@ -3412,14 +3412,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_play stats_installs_os_version analytics variant 2 holdout 3"
+      "description": "platform mix reporting report slice 3 (holdout)"
     },
     {
-      "query_id": "schemaopt_hard_google_play_hq_c05_04",
+      "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c05_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"_file\" AS _file, COUNT(*) AS row_count, SUM(b.\"_line\") AS sum__line FROM raw.stats_installs_os_version b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"_file\" IS NOT NULL GROUP BY metric_period, _file",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"_file\" as _file, count(*) as row_count, sum(b.\"_line\") as sum__line from raw.stats_installs_os_version b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"_file\" is not null group by metric_period, _file",
-      "cluster_id": "schemaopt_hard_google_play_cluster_05",
-      "business_tag": "google_play stats_installs_os_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_05",
+      "business_tag": "platform mix reporting",
       "frequency_weight": 2.4,
       "priority_weight": 1.0,
       "tables": [
@@ -3458,22 +3458,22 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_play stats_installs_os_version analytics variant 1 holdout 4"
+      "description": "platform mix reporting report slice 4 (holdout)"
     }
   ],
   "clusters": [
     {
-      "cluster_id": "schemaopt_hard_google_play_cluster_05",
-      "label": "stats_installs_os_version workload",
-      "business_label": "google_play stats_installs_os_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_05",
+      "label": "platform mix workload",
+      "business_label": "platform mix reporting",
       "query_ids": [
-        "schemaopt_hard_google_play_vq_c05_01",
-        "schemaopt_hard_google_play_vq_c05_02",
-        "schemaopt_hard_google_play_vq_c05_03",
-        "schemaopt_hard_google_play_vq_c05_04",
-        "schemaopt_hard_google_play_vq_c05_05",
-        "schemaopt_hard_google_play_vq_c05_06",
-        "schemaopt_hard_google_play_vq_c05_07"
+        "schemaopt_hard_mobile_revenue_ops_vq_c05_01",
+        "schemaopt_hard_mobile_revenue_ops_vq_c05_02",
+        "schemaopt_hard_mobile_revenue_ops_vq_c05_03",
+        "schemaopt_hard_mobile_revenue_ops_vq_c05_04",
+        "schemaopt_hard_mobile_revenue_ops_vq_c05_05",
+        "schemaopt_hard_mobile_revenue_ops_vq_c05_06",
+        "schemaopt_hard_mobile_revenue_ops_vq_c05_07"
       ],
       "query_count": 7,
       "total_frequency_weight": 23.65,
@@ -3500,17 +3500,17 @@
       "preferred_object_kind": "agg_matview"
     },
     {
-      "cluster_id": "schemaopt_hard_google_play_cluster_04",
-      "label": "stats_installs_device workload",
-      "business_label": "google_play stats_installs_device analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
+      "label": "device mix workload",
+      "business_label": "device mix reporting",
       "query_ids": [
-        "schemaopt_hard_google_play_vq_c04_01",
-        "schemaopt_hard_google_play_vq_c04_02",
-        "schemaopt_hard_google_play_vq_c04_03",
-        "schemaopt_hard_google_play_vq_c04_04",
-        "schemaopt_hard_google_play_vq_c04_05",
-        "schemaopt_hard_google_play_vq_c04_06",
-        "schemaopt_hard_google_play_vq_c04_07"
+        "schemaopt_hard_mobile_revenue_ops_vq_c04_01",
+        "schemaopt_hard_mobile_revenue_ops_vq_c04_02",
+        "schemaopt_hard_mobile_revenue_ops_vq_c04_03",
+        "schemaopt_hard_mobile_revenue_ops_vq_c04_04",
+        "schemaopt_hard_mobile_revenue_ops_vq_c04_05",
+        "schemaopt_hard_mobile_revenue_ops_vq_c04_06",
+        "schemaopt_hard_mobile_revenue_ops_vq_c04_07"
       ],
       "query_count": 7,
       "total_frequency_weight": 20.5,
@@ -3537,17 +3537,17 @@
       "preferred_object_kind": "join_matview"
     },
     {
-      "cluster_id": "schemaopt_hard_google_play_cluster_03",
-      "label": "stats_installs_country workload",
-      "business_label": "google_play stats_installs_country analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
+      "label": "geo growth workload",
+      "business_label": "geo growth analytics",
       "query_ids": [
-        "schemaopt_hard_google_play_vq_c03_01",
-        "schemaopt_hard_google_play_vq_c03_02",
-        "schemaopt_hard_google_play_vq_c03_03",
-        "schemaopt_hard_google_play_vq_c03_04",
-        "schemaopt_hard_google_play_vq_c03_05",
-        "schemaopt_hard_google_play_vq_c03_06",
-        "schemaopt_hard_google_play_vq_c03_07"
+        "schemaopt_hard_mobile_revenue_ops_vq_c03_01",
+        "schemaopt_hard_mobile_revenue_ops_vq_c03_02",
+        "schemaopt_hard_mobile_revenue_ops_vq_c03_03",
+        "schemaopt_hard_mobile_revenue_ops_vq_c03_04",
+        "schemaopt_hard_mobile_revenue_ops_vq_c03_05",
+        "schemaopt_hard_mobile_revenue_ops_vq_c03_06",
+        "schemaopt_hard_mobile_revenue_ops_vq_c03_07"
       ],
       "query_count": 7,
       "total_frequency_weight": 17.35,
@@ -3574,17 +3574,17 @@
       "preferred_object_kind": "agg_matview"
     },
     {
-      "cluster_id": "schemaopt_hard_google_play_cluster_02",
-      "label": "stats_installs_app_version workload",
-      "business_label": "google_play stats_installs_app_version analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
+      "label": "release performance workload",
+      "business_label": "release performance analytics",
       "query_ids": [
-        "schemaopt_hard_google_play_vq_c02_01",
-        "schemaopt_hard_google_play_vq_c02_02",
-        "schemaopt_hard_google_play_vq_c02_03",
-        "schemaopt_hard_google_play_vq_c02_04",
-        "schemaopt_hard_google_play_vq_c02_05",
-        "schemaopt_hard_google_play_vq_c02_06",
-        "schemaopt_hard_google_play_vq_c02_07"
+        "schemaopt_hard_mobile_revenue_ops_vq_c02_01",
+        "schemaopt_hard_mobile_revenue_ops_vq_c02_02",
+        "schemaopt_hard_mobile_revenue_ops_vq_c02_03",
+        "schemaopt_hard_mobile_revenue_ops_vq_c02_04",
+        "schemaopt_hard_mobile_revenue_ops_vq_c02_05",
+        "schemaopt_hard_mobile_revenue_ops_vq_c02_06",
+        "schemaopt_hard_mobile_revenue_ops_vq_c02_07"
       ],
       "query_count": 7,
       "total_frequency_weight": 14.2,
@@ -3611,17 +3611,17 @@
       "preferred_object_kind": "denorm_table"
     },
     {
-      "cluster_id": "schemaopt_hard_google_play_cluster_01",
-      "label": "earnings workload",
-      "business_label": "google_play earnings analytics",
+      "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
+      "label": "monetization yield workload",
+      "business_label": "monetization yield reporting",
       "query_ids": [
-        "schemaopt_hard_google_play_vq_c01_01",
-        "schemaopt_hard_google_play_vq_c01_02",
-        "schemaopt_hard_google_play_vq_c01_03",
-        "schemaopt_hard_google_play_vq_c01_04",
-        "schemaopt_hard_google_play_vq_c01_05",
-        "schemaopt_hard_google_play_vq_c01_06",
-        "schemaopt_hard_google_play_vq_c01_07"
+        "schemaopt_hard_mobile_revenue_ops_vq_c01_01",
+        "schemaopt_hard_mobile_revenue_ops_vq_c01_02",
+        "schemaopt_hard_mobile_revenue_ops_vq_c01_03",
+        "schemaopt_hard_mobile_revenue_ops_vq_c01_04",
+        "schemaopt_hard_mobile_revenue_ops_vq_c01_05",
+        "schemaopt_hard_mobile_revenue_ops_vq_c01_06",
+        "schemaopt_hard_mobile_revenue_ops_vq_c01_07"
       ],
       "query_count": 7,
       "total_frequency_weight": 11.05,

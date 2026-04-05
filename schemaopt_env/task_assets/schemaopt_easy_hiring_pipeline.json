@@ -1,11 +1,11 @@
 {
-  "task_id": "schemaopt_easy_lever",
+  "task_id": "schemaopt_easy_hiring_pipeline",
   "difficulty": "easy",
-  "domain": "lever",
-  "objective": "Optimize the lever workload over the real DuckDB source database by materializing derived objects that reduce measured execution cost while preserving exact query results.",
-  "seed_source": "datasets/dacomp-de/dacomp-de-impl-001",
-  "dataset_dir": "datasets/dacomp-de/dacomp-de-impl-001",
-  "database_path": "datasets/dacomp-de/dacomp-de-impl-001/lever_start.duckdb",
+  "domain": "hiring_pipeline",
+  "objective": "Optimize a hiring pipeline analytics workload over a real DuckDB warehouse by designing reusable derived objects that accelerate recruiter funnel reporting while preserving exact query semantics.",
+  "seed_source": "datasets/schemaopt_curated/hiring_pipeline",
+  "dataset_dir": "datasets/schemaopt_curated/hiring_pipeline",
+  "database_path": "datasets/schemaopt_curated/hiring_pipeline/hiring_pipeline_start.duckdb",
   "tables": [
     {
       "name": "raw.application",
@@ -850,11 +850,11 @@
   ],
   "visible_queries": [
     {
-      "query_id": "schemaopt_easy_lever_vq_c01_01",
+      "query_id": "schemaopt_easy_hiring_pipeline_vq_c01_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"archived_at\" AS TIMESTAMP))) AS metric_period, b.\"contact\" AS contact, j.\"text\" AS stage_text, COUNT(*) AS row_count FROM raw.opportunity b JOIN raw.stage j ON b.\"stage_id\" = j.id WHERE coalesce(try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"archived_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"contact\" IS NOT NULL AND j.\"text\" IS NOT NULL GROUP BY metric_period, contact, stage_text",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"archived_at\" as timestamp))) as metric_period, b.\"contact\" as contact, j.\"text\" as stage_text, count(*) as row_count from raw.opportunity b join raw.stage j on b.\"stage_id\" = j.id where coalesce(try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"archived_at\" as timestamp)) is not null and b.\"contact\" is not null and j.\"text\" is not null group by metric_period, contact, stage_text",
-      "cluster_id": "schemaopt_easy_lever_cluster_01",
-      "business_tag": "lever opportunity analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_01",
+      "business_tag": "candidate pipeline performance",
       "frequency_weight": 1.45,
       "priority_weight": 1.0,
       "tables": [
@@ -895,14 +895,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "lever opportunity analytics variant 1 visible 1"
+      "description": "candidate pipeline performance report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_easy_lever_vq_c01_02",
+      "query_id": "schemaopt_easy_hiring_pipeline_vq_c01_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"archived_at\" AS TIMESTAMP))) AS metric_period, b.\"contact\" AS contact, COUNT(*) AS row_count FROM raw.opportunity b JOIN raw.stage j ON b.\"stage_id\" = j.id WHERE coalesce(try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"archived_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"contact\" IS NOT NULL AND j.\"text\" IS NOT NULL GROUP BY metric_period, contact",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"archived_at\" as timestamp))) as metric_period, b.\"contact\" as contact, count(*) as row_count from raw.opportunity b join raw.stage j on b.\"stage_id\" = j.id where coalesce(try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"archived_at\" as timestamp)) is not null and b.\"contact\" is not null and j.\"text\" is not null group by metric_period, contact",
-      "cluster_id": "schemaopt_easy_lever_cluster_01",
-      "business_tag": "lever opportunity analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_01",
+      "business_tag": "candidate pipeline performance",
       "frequency_weight": 1.6,
       "priority_weight": 1.1,
       "tables": [
@@ -941,14 +941,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "lever opportunity analytics variant 2 visible 2"
+      "description": "candidate pipeline performance report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_easy_lever_vq_c01_03",
+      "query_id": "schemaopt_easy_hiring_pipeline_vq_c01_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"archived_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.opportunity b JOIN raw.stage j ON b.\"stage_id\" = j.id WHERE coalesce(try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"archived_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"contact\" IS NOT NULL AND j.\"text\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"archived_at\" as timestamp))) as metric_period, count(*) as row_count from raw.opportunity b join raw.stage j on b.\"stage_id\" = j.id where coalesce(try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"archived_at\" as timestamp)) is not null and b.\"contact\" is not null and j.\"text\" is not null group by metric_period",
-      "cluster_id": "schemaopt_easy_lever_cluster_01",
-      "business_tag": "lever opportunity analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_01",
+      "business_tag": "candidate pipeline performance",
       "frequency_weight": 1.75,
       "priority_weight": 1.0,
       "tables": [
@@ -984,14 +984,14 @@
         "join",
         "time_bucket"
       ],
-      "description": "lever opportunity analytics variant 3 visible 3"
+      "description": "candidate pipeline performance report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_easy_lever_vq_c01_04",
+      "query_id": "schemaopt_easy_hiring_pipeline_vq_c01_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"archived_at\" AS TIMESTAMP))) AS metric_period, b.\"contact\" AS contact, j.\"text\" AS stage_text, COUNT(*) AS row_count FROM raw.opportunity b JOIN raw.stage j ON b.\"stage_id\" = j.id WHERE coalesce(try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"archived_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"contact\" IS NOT NULL AND j.\"text\" IS NOT NULL GROUP BY metric_period, contact, stage_text",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"archived_at\" as timestamp))) as metric_period, b.\"contact\" as contact, j.\"text\" as stage_text, count(*) as row_count from raw.opportunity b join raw.stage j on b.\"stage_id\" = j.id where coalesce(try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"archived_at\" as timestamp)) is not null and b.\"contact\" is not null and j.\"text\" is not null group by metric_period, contact, stage_text",
-      "cluster_id": "schemaopt_easy_lever_cluster_01",
-      "business_tag": "lever opportunity analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_01",
+      "business_tag": "candidate pipeline performance",
       "frequency_weight": 1.45,
       "priority_weight": 1.1,
       "tables": [
@@ -1032,14 +1032,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "lever opportunity analytics variant 1 visible 4"
+      "description": "candidate pipeline performance report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_easy_lever_vq_c02_01",
+      "query_id": "schemaopt_easy_hiring_pipeline_vq_c02_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"backfill\" AS backfill, COUNT(*) AS row_count, SUM(b.\"compensation_band_max\") AS sum_compensation_band_max FROM raw.requisition b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"backfill\" IS NOT NULL GROUP BY metric_period, backfill",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"backfill\" as backfill, count(*) as row_count, sum(b.\"compensation_band_max\") as sum_compensation_band_max from raw.requisition b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"backfill\" is not null group by metric_period, backfill",
-      "cluster_id": "schemaopt_easy_lever_cluster_02",
-      "business_tag": "lever requisition analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_02",
+      "business_tag": "requisition intake operations",
       "frequency_weight": 1.9,
       "priority_weight": 1.0,
       "tables": [
@@ -1078,14 +1078,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "lever requisition analytics variant 1 visible 1"
+      "description": "requisition intake operations report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_easy_lever_vq_c02_02",
+      "query_id": "schemaopt_easy_hiring_pipeline_vq_c02_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"compensation_band_max\") AS sum_compensation_band_max FROM raw.requisition b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"backfill\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"compensation_band_max\") as sum_compensation_band_max from raw.requisition b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"backfill\" is not null group by metric_period",
-      "cluster_id": "schemaopt_easy_lever_cluster_02",
-      "business_tag": "lever requisition analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_02",
+      "business_tag": "requisition intake operations",
       "frequency_weight": 2.05,
       "priority_weight": 1.1,
       "tables": [
@@ -1121,14 +1121,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "lever requisition analytics variant 2 visible 2"
+      "description": "requisition intake operations report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_easy_lever_vq_c02_03",
+      "query_id": "schemaopt_easy_hiring_pipeline_vq_c02_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"backfill\" AS backfill, COUNT(*) AS row_count, SUM(b.\"compensation_band_max\") AS sum_compensation_band_max FROM raw.requisition b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"backfill\" IS NOT NULL GROUP BY metric_period, backfill",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"backfill\" as backfill, count(*) as row_count, sum(b.\"compensation_band_max\") as sum_compensation_band_max from raw.requisition b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"backfill\" is not null group by metric_period, backfill",
-      "cluster_id": "schemaopt_easy_lever_cluster_02",
-      "business_tag": "lever requisition analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_02",
+      "business_tag": "requisition intake operations",
       "frequency_weight": 2.2,
       "priority_weight": 1.0,
       "tables": [
@@ -1167,14 +1167,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "lever requisition analytics variant 1 visible 3"
+      "description": "requisition intake operations report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_easy_lever_vq_c02_04",
+      "query_id": "schemaopt_easy_hiring_pipeline_vq_c02_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"compensation_band_max\") AS sum_compensation_band_max FROM raw.requisition b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"backfill\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"compensation_band_max\") as sum_compensation_band_max from raw.requisition b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"backfill\" is not null group by metric_period",
-      "cluster_id": "schemaopt_easy_lever_cluster_02",
-      "business_tag": "lever requisition analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_02",
+      "business_tag": "requisition intake operations",
       "frequency_weight": 1.9,
       "priority_weight": 1.1,
       "tables": [
@@ -1210,14 +1210,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "lever requisition analytics variant 2 visible 4"
+      "description": "requisition intake operations report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_easy_lever_vq_c03_01",
+      "query_id": "schemaopt_easy_hiring_pipeline_vq_c03_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"categories_commitment\" AS categories_commitment, COUNT(*) AS row_count FROM raw.posting b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"categories_commitment\" IS NOT NULL GROUP BY metric_period, categories_commitment",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"categories_commitment\" as categories_commitment, count(*) as row_count from raw.posting b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"categories_commitment\" is not null group by metric_period, categories_commitment",
-      "cluster_id": "schemaopt_easy_lever_cluster_03",
-      "business_tag": "lever posting analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_03",
+      "business_tag": "job posting health reporting",
       "frequency_weight": 2.35,
       "priority_weight": 1.0,
       "tables": [
@@ -1252,14 +1252,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "lever posting analytics variant 1 visible 1"
+      "description": "job posting health reporting report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_easy_lever_vq_c03_02",
+      "query_id": "schemaopt_easy_hiring_pipeline_vq_c03_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.posting b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"categories_commitment\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count from raw.posting b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"categories_commitment\" is not null group by metric_period",
-      "cluster_id": "schemaopt_easy_lever_cluster_03",
-      "business_tag": "lever posting analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_03",
+      "business_tag": "job posting health reporting",
       "frequency_weight": 2.5,
       "priority_weight": 1.1,
       "tables": [
@@ -1291,14 +1291,14 @@
         "filter",
         "time_bucket"
       ],
-      "description": "lever posting analytics variant 2 visible 2"
+      "description": "job posting health reporting report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_easy_lever_vq_c03_03",
+      "query_id": "schemaopt_easy_hiring_pipeline_vq_c03_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"categories_commitment\" AS categories_commitment, COUNT(*) AS row_count FROM raw.posting b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"categories_commitment\" IS NOT NULL GROUP BY metric_period, categories_commitment",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"categories_commitment\" as categories_commitment, count(*) as row_count from raw.posting b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"categories_commitment\" is not null group by metric_period, categories_commitment",
-      "cluster_id": "schemaopt_easy_lever_cluster_03",
-      "business_tag": "lever posting analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_03",
+      "business_tag": "job posting health reporting",
       "frequency_weight": 2.65,
       "priority_weight": 1.0,
       "tables": [
@@ -1333,14 +1333,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "lever posting analytics variant 1 visible 3"
+      "description": "job posting health reporting report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_easy_lever_vq_c03_04",
+      "query_id": "schemaopt_easy_hiring_pipeline_vq_c03_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.posting b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"categories_commitment\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count from raw.posting b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"categories_commitment\" is not null group by metric_period",
-      "cluster_id": "schemaopt_easy_lever_cluster_03",
-      "business_tag": "lever posting analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_03",
+      "business_tag": "job posting health reporting",
       "frequency_weight": 2.35,
       "priority_weight": 1.1,
       "tables": [
@@ -1372,16 +1372,16 @@
         "filter",
         "time_bucket"
       ],
-      "description": "lever posting analytics variant 2 visible 4"
+      "description": "job posting health reporting report slice 4 (visible)"
     }
   ],
   "holdout_queries": [
     {
-      "query_id": "schemaopt_easy_lever_hq_c01_01",
+      "query_id": "schemaopt_easy_hiring_pipeline_hq_c01_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"archived_at\" AS TIMESTAMP))) AS metric_period, b.\"contact\" AS contact, COUNT(*) AS row_count FROM raw.opportunity b JOIN raw.stage j ON b.\"stage_id\" = j.id WHERE coalesce(try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"archived_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"contact\" IS NOT NULL AND j.\"text\" IS NOT NULL GROUP BY metric_period, contact",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"archived_at\" as timestamp))) as metric_period, b.\"contact\" as contact, count(*) as row_count from raw.opportunity b join raw.stage j on b.\"stage_id\" = j.id where coalesce(try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"archived_at\" as timestamp)) is not null and b.\"contact\" is not null and j.\"text\" is not null group by metric_period, contact",
-      "cluster_id": "schemaopt_easy_lever_cluster_01",
-      "business_tag": "lever opportunity analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_01",
+      "business_tag": "candidate pipeline performance",
       "frequency_weight": 1.1,
       "priority_weight": 1.05,
       "tables": [
@@ -1420,14 +1420,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "lever opportunity analytics variant 2 holdout 1"
+      "description": "candidate pipeline performance report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_easy_lever_hq_c01_02",
+      "query_id": "schemaopt_easy_hiring_pipeline_hq_c01_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"archived_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.opportunity b JOIN raw.stage j ON b.\"stage_id\" = j.id WHERE coalesce(try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"archived_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"archived_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"contact\" IS NOT NULL AND j.\"text\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"archived_at\" as timestamp))) as metric_period, count(*) as row_count from raw.opportunity b join raw.stage j on b.\"stage_id\" = j.id where coalesce(try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"archived_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"archived_at\" as timestamp)) is not null and b.\"contact\" is not null and j.\"text\" is not null group by metric_period",
-      "cluster_id": "schemaopt_easy_lever_cluster_01",
-      "business_tag": "lever opportunity analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_01",
+      "business_tag": "candidate pipeline performance",
       "frequency_weight": 1.2,
       "priority_weight": 1.0,
       "tables": [
@@ -1463,14 +1463,14 @@
         "join",
         "time_bucket"
       ],
-      "description": "lever opportunity analytics variant 3 holdout 2"
+      "description": "candidate pipeline performance report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_easy_lever_hq_c02_01",
+      "query_id": "schemaopt_easy_hiring_pipeline_hq_c02_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"compensation_band_max\") AS sum_compensation_band_max FROM raw.requisition b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"backfill\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"compensation_band_max\") as sum_compensation_band_max from raw.requisition b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"backfill\" is not null group by metric_period",
-      "cluster_id": "schemaopt_easy_lever_cluster_02",
-      "business_tag": "lever requisition analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_02",
+      "business_tag": "requisition intake operations",
       "frequency_weight": 1.4,
       "priority_weight": 1.05,
       "tables": [
@@ -1506,14 +1506,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "lever requisition analytics variant 2 holdout 1"
+      "description": "requisition intake operations report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_easy_lever_hq_c02_02",
+      "query_id": "schemaopt_easy_hiring_pipeline_hq_c02_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"backfill\" AS backfill, COUNT(*) AS row_count, SUM(b.\"compensation_band_max\") AS sum_compensation_band_max FROM raw.requisition b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"backfill\" IS NOT NULL GROUP BY metric_period, backfill",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"backfill\" as backfill, count(*) as row_count, sum(b.\"compensation_band_max\") as sum_compensation_band_max from raw.requisition b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"backfill\" is not null group by metric_period, backfill",
-      "cluster_id": "schemaopt_easy_lever_cluster_02",
-      "business_tag": "lever requisition analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_02",
+      "business_tag": "requisition intake operations",
       "frequency_weight": 1.5,
       "priority_weight": 1.0,
       "tables": [
@@ -1552,14 +1552,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "lever requisition analytics variant 1 holdout 2"
+      "description": "requisition intake operations report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_easy_lever_hq_c03_01",
+      "query_id": "schemaopt_easy_hiring_pipeline_hq_c03_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.posting b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"categories_commitment\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count from raw.posting b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"categories_commitment\" is not null group by metric_period",
-      "cluster_id": "schemaopt_easy_lever_cluster_03",
-      "business_tag": "lever posting analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_03",
+      "business_tag": "job posting health reporting",
       "frequency_weight": 1.7,
       "priority_weight": 1.05,
       "tables": [
@@ -1591,14 +1591,14 @@
         "filter",
         "time_bucket"
       ],
-      "description": "lever posting analytics variant 2 holdout 1"
+      "description": "job posting health reporting report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_easy_lever_hq_c03_02",
+      "query_id": "schemaopt_easy_hiring_pipeline_hq_c03_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"categories_commitment\" AS categories_commitment, COUNT(*) AS row_count FROM raw.posting b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"categories_commitment\" IS NOT NULL GROUP BY metric_period, categories_commitment",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"categories_commitment\" as categories_commitment, count(*) as row_count from raw.posting b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"categories_commitment\" is not null group by metric_period, categories_commitment",
-      "cluster_id": "schemaopt_easy_lever_cluster_03",
-      "business_tag": "lever posting analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_03",
+      "business_tag": "job posting health reporting",
       "frequency_weight": 1.8,
       "priority_weight": 1.0,
       "tables": [
@@ -1633,19 +1633,19 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "lever posting analytics variant 1 holdout 2"
+      "description": "job posting health reporting report slice 2 (holdout)"
     }
   ],
   "clusters": [
     {
-      "cluster_id": "schemaopt_easy_lever_cluster_03",
-      "label": "posting workload",
-      "business_label": "lever posting analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_03",
+      "label": "job posting health workload",
+      "business_label": "job posting health reporting",
       "query_ids": [
-        "schemaopt_easy_lever_vq_c03_01",
-        "schemaopt_easy_lever_vq_c03_02",
-        "schemaopt_easy_lever_vq_c03_03",
-        "schemaopt_easy_lever_vq_c03_04"
+        "schemaopt_easy_hiring_pipeline_vq_c03_01",
+        "schemaopt_easy_hiring_pipeline_vq_c03_02",
+        "schemaopt_easy_hiring_pipeline_vq_c03_03",
+        "schemaopt_easy_hiring_pipeline_vq_c03_04"
       ],
       "query_count": 4,
       "total_frequency_weight": 9.85,
@@ -1670,14 +1670,14 @@
       "preferred_object_kind": "agg_matview"
     },
     {
-      "cluster_id": "schemaopt_easy_lever_cluster_02",
-      "label": "requisition workload",
-      "business_label": "lever requisition analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_02",
+      "label": "requisition intake workload",
+      "business_label": "requisition intake operations",
       "query_ids": [
-        "schemaopt_easy_lever_vq_c02_01",
-        "schemaopt_easy_lever_vq_c02_02",
-        "schemaopt_easy_lever_vq_c02_03",
-        "schemaopt_easy_lever_vq_c02_04"
+        "schemaopt_easy_hiring_pipeline_vq_c02_01",
+        "schemaopt_easy_hiring_pipeline_vq_c02_02",
+        "schemaopt_easy_hiring_pipeline_vq_c02_03",
+        "schemaopt_easy_hiring_pipeline_vq_c02_04"
       ],
       "query_count": 4,
       "total_frequency_weight": 8.05,
@@ -1704,14 +1704,14 @@
       "preferred_object_kind": "denorm_table"
     },
     {
-      "cluster_id": "schemaopt_easy_lever_cluster_01",
-      "label": "opportunity workload",
-      "business_label": "lever opportunity analytics",
+      "cluster_id": "schemaopt_easy_hiring_pipeline_cluster_01",
+      "label": "candidate pipeline workload",
+      "business_label": "candidate pipeline performance",
       "query_ids": [
-        "schemaopt_easy_lever_vq_c01_01",
-        "schemaopt_easy_lever_vq_c01_02",
-        "schemaopt_easy_lever_vq_c01_03",
-        "schemaopt_easy_lever_vq_c01_04"
+        "schemaopt_easy_hiring_pipeline_vq_c01_01",
+        "schemaopt_easy_hiring_pipeline_vq_c01_02",
+        "schemaopt_easy_hiring_pipeline_vq_c01_03",
+        "schemaopt_easy_hiring_pipeline_vq_c01_04"
       ],
       "query_count": 4,
       "total_frequency_weight": 6.25,

@@ -1,11 +1,11 @@
 {
-  "task_id": "schemaopt_medium_google_ads",
+  "task_id": "schemaopt_medium_campaign_performance",
   "difficulty": "medium",
-  "domain": "google_ads",
-  "objective": "Optimize the google ads workload over the real DuckDB source database by materializing derived objects that reduce measured execution cost while preserving exact query results.",
-  "seed_source": "datasets/dacomp-de/dacomp-de-impl-005",
-  "dataset_dir": "datasets/dacomp-de/dacomp-de-impl-005",
-  "database_path": "datasets/dacomp-de/dacomp-de-impl-005/google_ads_start.duckdb",
+  "domain": "campaign_performance",
+  "objective": "Optimize a digital campaign performance warehouse workload over a real DuckDB database by creating derived objects that improve reusable reporting paths across portfolio, campaign, ad-group, and keyword slices.",
+  "seed_source": "datasets/schemaopt_curated/campaign_performance",
+  "dataset_dir": "datasets/schemaopt_curated/campaign_performance",
+  "database_path": "datasets/schemaopt_curated/campaign_performance/campaign_performance_start.duckdb",
   "tables": [
     {
       "name": "raw.account_history_data",
@@ -692,11 +692,11 @@
   ],
   "visible_queries": [
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c01_01",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c01_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period, ad_group_base_ad_group",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period, ad_group_base_ad_group",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
-      "business_tag": "google_ads keyword_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
+      "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.45,
       "priority_weight": 1.0,
       "tables": [
@@ -735,14 +735,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads keyword_stats_data analytics variant 1 visible 1"
+      "description": "keyword efficiency reporting report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c01_02",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c01_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
-      "business_tag": "google_ads keyword_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
+      "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.6,
       "priority_weight": 1.1,
       "tables": [
@@ -778,14 +778,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads keyword_stats_data analytics variant 2 visible 2"
+      "description": "keyword efficiency reporting report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c01_03",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c01_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period, ad_group_base_ad_group",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period, ad_group_base_ad_group",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
-      "business_tag": "google_ads keyword_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
+      "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.75,
       "priority_weight": 1.0,
       "tables": [
@@ -824,14 +824,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads keyword_stats_data analytics variant 1 visible 3"
+      "description": "keyword efficiency reporting report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c01_04",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c01_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
-      "business_tag": "google_ads keyword_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
+      "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.45,
       "priority_weight": 1.1,
       "tables": [
@@ -867,14 +867,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads keyword_stats_data analytics variant 2 visible 4"
+      "description": "keyword efficiency reporting report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c01_05",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c01_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period, ad_group_base_ad_group",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period, ad_group_base_ad_group",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
-      "business_tag": "google_ads keyword_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
+      "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.6,
       "priority_weight": 1.0,
       "tables": [
@@ -913,14 +913,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads keyword_stats_data analytics variant 1 visible 5"
+      "description": "keyword efficiency reporting report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c01_06",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c01_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
-      "business_tag": "google_ads keyword_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
+      "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.75,
       "priority_weight": 1.1,
       "tables": [
@@ -956,14 +956,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads keyword_stats_data analytics variant 2 visible 6"
+      "description": "keyword efficiency reporting report slice 6 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c02_01",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c02_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
-      "business_tag": "google_ads ad_group_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
+      "business_tag": "ad group mix analysis",
       "frequency_weight": 1.9,
       "priority_weight": 1.0,
       "tables": [
@@ -1002,14 +1002,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads ad_group_stats_data analytics variant 1 visible 1"
+      "description": "ad group mix analysis report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c02_02",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c02_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
-      "business_tag": "google_ads ad_group_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
+      "business_tag": "ad group mix analysis",
       "frequency_weight": 2.05,
       "priority_weight": 1.1,
       "tables": [
@@ -1045,14 +1045,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads ad_group_stats_data analytics variant 2 visible 2"
+      "description": "ad group mix analysis report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c02_03",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c02_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
-      "business_tag": "google_ads ad_group_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
+      "business_tag": "ad group mix analysis",
       "frequency_weight": 2.2,
       "priority_weight": 1.0,
       "tables": [
@@ -1091,14 +1091,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads ad_group_stats_data analytics variant 1 visible 3"
+      "description": "ad group mix analysis report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c02_04",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c02_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
-      "business_tag": "google_ads ad_group_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
+      "business_tag": "ad group mix analysis",
       "frequency_weight": 1.9,
       "priority_weight": 1.1,
       "tables": [
@@ -1134,14 +1134,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads ad_group_stats_data analytics variant 2 visible 4"
+      "description": "ad group mix analysis report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c02_05",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c02_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
-      "business_tag": "google_ads ad_group_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
+      "business_tag": "ad group mix analysis",
       "frequency_weight": 2.05,
       "priority_weight": 1.0,
       "tables": [
@@ -1180,14 +1180,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads ad_group_stats_data analytics variant 1 visible 5"
+      "description": "ad group mix analysis report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c02_06",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c02_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
-      "business_tag": "google_ads ad_group_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
+      "business_tag": "ad group mix analysis",
       "frequency_weight": 2.2,
       "priority_weight": 1.1,
       "tables": [
@@ -1223,14 +1223,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads ad_group_stats_data analytics variant 2 visible 6"
+      "description": "ad group mix analysis report slice 6 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c03_01",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c03_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
-      "business_tag": "google_ads campaign_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
+      "business_tag": "campaign performance reporting",
       "frequency_weight": 2.35,
       "priority_weight": 1.0,
       "tables": [
@@ -1269,14 +1269,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads campaign_stats_data analytics variant 1 visible 1"
+      "description": "campaign performance reporting report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c03_02",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c03_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
-      "business_tag": "google_ads campaign_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
+      "business_tag": "campaign performance reporting",
       "frequency_weight": 2.5,
       "priority_weight": 1.1,
       "tables": [
@@ -1312,14 +1312,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads campaign_stats_data analytics variant 2 visible 2"
+      "description": "campaign performance reporting report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c03_03",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c03_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
-      "business_tag": "google_ads campaign_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
+      "business_tag": "campaign performance reporting",
       "frequency_weight": 2.65,
       "priority_weight": 1.0,
       "tables": [
@@ -1358,14 +1358,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads campaign_stats_data analytics variant 1 visible 3"
+      "description": "campaign performance reporting report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c03_04",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c03_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
-      "business_tag": "google_ads campaign_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
+      "business_tag": "campaign performance reporting",
       "frequency_weight": 2.35,
       "priority_weight": 1.1,
       "tables": [
@@ -1401,14 +1401,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads campaign_stats_data analytics variant 2 visible 4"
+      "description": "campaign performance reporting report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c03_05",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c03_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
-      "business_tag": "google_ads campaign_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
+      "business_tag": "campaign performance reporting",
       "frequency_weight": 2.5,
       "priority_weight": 1.0,
       "tables": [
@@ -1447,14 +1447,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads campaign_stats_data analytics variant 1 visible 5"
+      "description": "campaign performance reporting report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c03_06",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c03_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
-      "business_tag": "google_ads campaign_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
+      "business_tag": "campaign performance reporting",
       "frequency_weight": 2.65,
       "priority_weight": 1.1,
       "tables": [
@@ -1490,14 +1490,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads campaign_stats_data analytics variant 2 visible 6"
+      "description": "campaign performance reporting report slice 6 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c04_01",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c04_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
-      "business_tag": "google_ads account_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
+      "business_tag": "portfolio health reporting",
       "frequency_weight": 2.8,
       "priority_weight": 1.0,
       "tables": [
@@ -1536,14 +1536,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads account_stats_data analytics variant 1 visible 1"
+      "description": "portfolio health reporting report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c04_02",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c04_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
-      "business_tag": "google_ads account_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
+      "business_tag": "portfolio health reporting",
       "frequency_weight": 2.95,
       "priority_weight": 1.1,
       "tables": [
@@ -1579,14 +1579,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads account_stats_data analytics variant 2 visible 2"
+      "description": "portfolio health reporting report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c04_03",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c04_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
-      "business_tag": "google_ads account_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
+      "business_tag": "portfolio health reporting",
       "frequency_weight": 3.1,
       "priority_weight": 1.0,
       "tables": [
@@ -1625,14 +1625,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads account_stats_data analytics variant 1 visible 3"
+      "description": "portfolio health reporting report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c04_04",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c04_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
-      "business_tag": "google_ads account_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
+      "business_tag": "portfolio health reporting",
       "frequency_weight": 2.8,
       "priority_weight": 1.1,
       "tables": [
@@ -1668,14 +1668,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads account_stats_data analytics variant 2 visible 4"
+      "description": "portfolio health reporting report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c04_05",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c04_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
-      "business_tag": "google_ads account_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
+      "business_tag": "portfolio health reporting",
       "frequency_weight": 2.95,
       "priority_weight": 1.0,
       "tables": [
@@ -1714,14 +1714,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads account_stats_data analytics variant 1 visible 5"
+      "description": "portfolio health reporting report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_vq_c04_06",
+      "query_id": "schemaopt_medium_campaign_performance_vq_c04_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
-      "business_tag": "google_ads account_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
+      "business_tag": "portfolio health reporting",
       "frequency_weight": 3.1,
       "priority_weight": 1.1,
       "tables": [
@@ -1757,16 +1757,16 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads account_stats_data analytics variant 2 visible 6"
+      "description": "portfolio health reporting report slice 6 (visible)"
     }
   ],
   "holdout_queries": [
     {
-      "query_id": "schemaopt_medium_google_ads_hq_c01_01",
+      "query_id": "schemaopt_medium_campaign_performance_hq_c01_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
-      "business_tag": "google_ads keyword_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
+      "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.1,
       "priority_weight": 1.05,
       "tables": [
@@ -1802,14 +1802,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads keyword_stats_data analytics variant 2 holdout 1"
+      "description": "keyword efficiency reporting report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_hq_c01_02",
+      "query_id": "schemaopt_medium_campaign_performance_hq_c01_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period, ad_group_base_ad_group",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period, ad_group_base_ad_group",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
-      "business_tag": "google_ads keyword_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
+      "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.2,
       "priority_weight": 1.0,
       "tables": [
@@ -1848,14 +1848,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads keyword_stats_data analytics variant 1 holdout 2"
+      "description": "keyword efficiency reporting report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_hq_c01_03",
+      "query_id": "schemaopt_medium_campaign_performance_hq_c01_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
-      "business_tag": "google_ads keyword_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
+      "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.1,
       "priority_weight": 1.05,
       "tables": [
@@ -1891,14 +1891,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads keyword_stats_data analytics variant 2 holdout 3"
+      "description": "keyword efficiency reporting report slice 3 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_hq_c02_01",
+      "query_id": "schemaopt_medium_campaign_performance_hq_c02_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
-      "business_tag": "google_ads ad_group_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
+      "business_tag": "ad group mix analysis",
       "frequency_weight": 1.4,
       "priority_weight": 1.05,
       "tables": [
@@ -1934,14 +1934,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads ad_group_stats_data analytics variant 2 holdout 1"
+      "description": "ad group mix analysis report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_hq_c02_02",
+      "query_id": "schemaopt_medium_campaign_performance_hq_c02_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
-      "business_tag": "google_ads ad_group_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
+      "business_tag": "ad group mix analysis",
       "frequency_weight": 1.5,
       "priority_weight": 1.0,
       "tables": [
@@ -1980,14 +1980,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads ad_group_stats_data analytics variant 1 holdout 2"
+      "description": "ad group mix analysis report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_hq_c02_03",
+      "query_id": "schemaopt_medium_campaign_performance_hq_c02_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
-      "business_tag": "google_ads ad_group_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
+      "business_tag": "ad group mix analysis",
       "frequency_weight": 1.4,
       "priority_weight": 1.05,
       "tables": [
@@ -2023,14 +2023,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads ad_group_stats_data analytics variant 2 holdout 3"
+      "description": "ad group mix analysis report slice 3 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_hq_c03_01",
+      "query_id": "schemaopt_medium_campaign_performance_hq_c03_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
-      "business_tag": "google_ads campaign_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
+      "business_tag": "campaign performance reporting",
       "frequency_weight": 1.7,
       "priority_weight": 1.05,
       "tables": [
@@ -2066,14 +2066,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads campaign_stats_data analytics variant 2 holdout 1"
+      "description": "campaign performance reporting report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_hq_c03_02",
+      "query_id": "schemaopt_medium_campaign_performance_hq_c03_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
-      "business_tag": "google_ads campaign_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
+      "business_tag": "campaign performance reporting",
       "frequency_weight": 1.8,
       "priority_weight": 1.0,
       "tables": [
@@ -2112,14 +2112,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads campaign_stats_data analytics variant 1 holdout 2"
+      "description": "campaign performance reporting report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_hq_c03_03",
+      "query_id": "schemaopt_medium_campaign_performance_hq_c03_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
-      "business_tag": "google_ads campaign_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
+      "business_tag": "campaign performance reporting",
       "frequency_weight": 1.7,
       "priority_weight": 1.05,
       "tables": [
@@ -2155,14 +2155,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads campaign_stats_data analytics variant 2 holdout 3"
+      "description": "campaign performance reporting report slice 3 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_hq_c04_01",
+      "query_id": "schemaopt_medium_campaign_performance_hq_c04_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
-      "business_tag": "google_ads account_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
+      "business_tag": "portfolio health reporting",
       "frequency_weight": 2.0,
       "priority_weight": 1.05,
       "tables": [
@@ -2198,14 +2198,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads account_stats_data analytics variant 2 holdout 1"
+      "description": "portfolio health reporting report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_hq_c04_02",
+      "query_id": "schemaopt_medium_campaign_performance_hq_c04_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
-      "business_tag": "google_ads account_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
+      "business_tag": "portfolio health reporting",
       "frequency_weight": 2.1,
       "priority_weight": 1.0,
       "tables": [
@@ -2244,14 +2244,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "google_ads account_stats_data analytics variant 1 holdout 2"
+      "description": "portfolio health reporting report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_google_ads_hq_c04_03",
+      "query_id": "schemaopt_medium_campaign_performance_hq_c04_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
-      "business_tag": "google_ads account_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
+      "business_tag": "portfolio health reporting",
       "frequency_weight": 2.0,
       "priority_weight": 1.05,
       "tables": [
@@ -2287,21 +2287,21 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "google_ads account_stats_data analytics variant 2 holdout 3"
+      "description": "portfolio health reporting report slice 3 (holdout)"
     }
   ],
   "clusters": [
     {
-      "cluster_id": "schemaopt_medium_google_ads_cluster_04",
-      "label": "account_stats_data workload",
-      "business_label": "google_ads account_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
+      "label": "portfolio health workload",
+      "business_label": "portfolio health reporting",
       "query_ids": [
-        "schemaopt_medium_google_ads_vq_c04_01",
-        "schemaopt_medium_google_ads_vq_c04_02",
-        "schemaopt_medium_google_ads_vq_c04_03",
-        "schemaopt_medium_google_ads_vq_c04_04",
-        "schemaopt_medium_google_ads_vq_c04_05",
-        "schemaopt_medium_google_ads_vq_c04_06"
+        "schemaopt_medium_campaign_performance_vq_c04_01",
+        "schemaopt_medium_campaign_performance_vq_c04_02",
+        "schemaopt_medium_campaign_performance_vq_c04_03",
+        "schemaopt_medium_campaign_performance_vq_c04_04",
+        "schemaopt_medium_campaign_performance_vq_c04_05",
+        "schemaopt_medium_campaign_performance_vq_c04_06"
       ],
       "query_count": 6,
       "total_frequency_weight": 17.7,
@@ -2328,16 +2328,16 @@
       "preferred_object_kind": "join_matview"
     },
     {
-      "cluster_id": "schemaopt_medium_google_ads_cluster_03",
-      "label": "campaign_stats_data workload",
-      "business_label": "google_ads campaign_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
+      "label": "campaign performance workload",
+      "business_label": "campaign performance reporting",
       "query_ids": [
-        "schemaopt_medium_google_ads_vq_c03_01",
-        "schemaopt_medium_google_ads_vq_c03_02",
-        "schemaopt_medium_google_ads_vq_c03_03",
-        "schemaopt_medium_google_ads_vq_c03_04",
-        "schemaopt_medium_google_ads_vq_c03_05",
-        "schemaopt_medium_google_ads_vq_c03_06"
+        "schemaopt_medium_campaign_performance_vq_c03_01",
+        "schemaopt_medium_campaign_performance_vq_c03_02",
+        "schemaopt_medium_campaign_performance_vq_c03_03",
+        "schemaopt_medium_campaign_performance_vq_c03_04",
+        "schemaopt_medium_campaign_performance_vq_c03_05",
+        "schemaopt_medium_campaign_performance_vq_c03_06"
       ],
       "query_count": 6,
       "total_frequency_weight": 15.0,
@@ -2364,16 +2364,16 @@
       "preferred_object_kind": "agg_matview"
     },
     {
-      "cluster_id": "schemaopt_medium_google_ads_cluster_02",
-      "label": "ad_group_stats_data workload",
-      "business_label": "google_ads ad_group_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
+      "label": "ad group mix workload",
+      "business_label": "ad group mix analysis",
       "query_ids": [
-        "schemaopt_medium_google_ads_vq_c02_01",
-        "schemaopt_medium_google_ads_vq_c02_02",
-        "schemaopt_medium_google_ads_vq_c02_03",
-        "schemaopt_medium_google_ads_vq_c02_04",
-        "schemaopt_medium_google_ads_vq_c02_05",
-        "schemaopt_medium_google_ads_vq_c02_06"
+        "schemaopt_medium_campaign_performance_vq_c02_01",
+        "schemaopt_medium_campaign_performance_vq_c02_02",
+        "schemaopt_medium_campaign_performance_vq_c02_03",
+        "schemaopt_medium_campaign_performance_vq_c02_04",
+        "schemaopt_medium_campaign_performance_vq_c02_05",
+        "schemaopt_medium_campaign_performance_vq_c02_06"
       ],
       "query_count": 6,
       "total_frequency_weight": 12.3,
@@ -2400,16 +2400,16 @@
       "preferred_object_kind": "denorm_table"
     },
     {
-      "cluster_id": "schemaopt_medium_google_ads_cluster_01",
-      "label": "keyword_stats_data workload",
-      "business_label": "google_ads keyword_stats_data analytics",
+      "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
+      "label": "keyword efficiency workload",
+      "business_label": "keyword efficiency reporting",
       "query_ids": [
-        "schemaopt_medium_google_ads_vq_c01_01",
-        "schemaopt_medium_google_ads_vq_c01_02",
-        "schemaopt_medium_google_ads_vq_c01_03",
-        "schemaopt_medium_google_ads_vq_c01_04",
-        "schemaopt_medium_google_ads_vq_c01_05",
-        "schemaopt_medium_google_ads_vq_c01_06"
+        "schemaopt_medium_campaign_performance_vq_c01_01",
+        "schemaopt_medium_campaign_performance_vq_c01_02",
+        "schemaopt_medium_campaign_performance_vq_c01_03",
+        "schemaopt_medium_campaign_performance_vq_c01_04",
+        "schemaopt_medium_campaign_performance_vq_c01_05",
+        "schemaopt_medium_campaign_performance_vq_c01_06"
       ],
       "query_count": 6,
       "total_frequency_weight": 9.6,

@@ -2,7 +2,7 @@
 
 Usage:
     python -m schemaopt_env.scripts.debug_walk_plan
-    python -m schemaopt_env.scripts.debug_walk_plan --task-id schemaopt_easy_lever
+    python -m schemaopt_env.scripts.debug_walk_plan --task-id schemaopt_easy_hiring_pipeline
     python -m schemaopt_env.scripts.debug_walk_plan --query-id q01
     python -m schemaopt_env.scripts.debug_walk_plan --show-json
 """

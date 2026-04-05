@@ -1,11 +1,11 @@
 {
-  "task_id": "schemaopt_medium_asana",
+  "task_id": "schemaopt_medium_delivery_operations",
   "difficulty": "medium",
-  "domain": "asana",
-  "objective": "Optimize the asana workload over the real DuckDB source database by materializing derived objects that reduce measured execution cost while preserving exact query results.",
-  "seed_source": "datasets/dacomp-de/dacomp-de-impl-008",
-  "dataset_dir": "datasets/dacomp-de/dacomp-de-impl-008",
-  "database_path": "datasets/dacomp-de/dacomp-de-impl-008/asana_start.duckdb",
+  "domain": "delivery_operations",
+  "objective": "Optimize a delivery operations analytics workload over a real DuckDB warehouse by building derived objects that support project, execution, and collaboration reporting with exact-result guarantees.",
+  "seed_source": "datasets/schemaopt_curated/delivery_operations",
+  "dataset_dir": "datasets/schemaopt_curated/delivery_operations",
+  "database_path": "datasets/schemaopt_curated/delivery_operations/delivery_operations_start.duckdb",
   "tables": [
     {
       "name": "raw.project_data",
@@ -320,11 +320,11 @@
   ],
   "visible_queries": [
     {
-      "query_id": "schemaopt_medium_asana_vq_c01_01",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c01_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP))) AS metric_period, b.\"completed\" AS completed, COUNT(*) AS row_count FROM raw.task_data b WHERE coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"completed\" IS NOT NULL GROUP BY metric_period, completed",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp))) as metric_period, b.\"completed\" as completed, count(*) as row_count from raw.task_data b where coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp)) is not null and b.\"completed\" is not null group by metric_period, completed",
-      "cluster_id": "schemaopt_medium_asana_cluster_01",
-      "business_tag": "asana task_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_01",
+      "business_tag": "execution backlog reporting",
       "frequency_weight": 1.45,
       "priority_weight": 1.0,
       "tables": [
@@ -359,14 +359,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana task_data analytics variant 1 visible 1"
+      "description": "execution backlog reporting report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c01_02",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c01_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.task_data b WHERE coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"completed\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp))) as metric_period, count(*) as row_count from raw.task_data b where coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp)) is not null and b.\"completed\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_01",
-      "business_tag": "asana task_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_01",
+      "business_tag": "execution backlog reporting",
       "frequency_weight": 1.6,
       "priority_weight": 1.1,
       "tables": [
@@ -398,14 +398,14 @@
         "filter",
         "time_bucket"
       ],
-      "description": "asana task_data analytics variant 2 visible 2"
+      "description": "execution backlog reporting report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c01_03",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c01_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP))) AS metric_period, b.\"completed\" AS completed, COUNT(*) AS row_count FROM raw.task_data b WHERE coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"completed\" IS NOT NULL GROUP BY metric_period, completed",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp))) as metric_period, b.\"completed\" as completed, count(*) as row_count from raw.task_data b where coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp)) is not null and b.\"completed\" is not null group by metric_period, completed",
-      "cluster_id": "schemaopt_medium_asana_cluster_01",
-      "business_tag": "asana task_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_01",
+      "business_tag": "execution backlog reporting",
       "frequency_weight": 1.75,
       "priority_weight": 1.0,
       "tables": [
@@ -440,14 +440,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana task_data analytics variant 1 visible 3"
+      "description": "execution backlog reporting report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c01_04",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c01_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.task_data b WHERE coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"completed\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp))) as metric_period, count(*) as row_count from raw.task_data b where coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp)) is not null and b.\"completed\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_01",
-      "business_tag": "asana task_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_01",
+      "business_tag": "execution backlog reporting",
       "frequency_weight": 1.45,
       "priority_weight": 1.1,
       "tables": [
@@ -479,14 +479,14 @@
         "filter",
         "time_bucket"
       ],
-      "description": "asana task_data analytics variant 2 visible 4"
+      "description": "execution backlog reporting report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c01_05",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c01_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP))) AS metric_period, b.\"completed\" AS completed, COUNT(*) AS row_count FROM raw.task_data b WHERE coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"completed\" IS NOT NULL GROUP BY metric_period, completed",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp))) as metric_period, b.\"completed\" as completed, count(*) as row_count from raw.task_data b where coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp)) is not null and b.\"completed\" is not null group by metric_period, completed",
-      "cluster_id": "schemaopt_medium_asana_cluster_01",
-      "business_tag": "asana task_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_01",
+      "business_tag": "execution backlog reporting",
       "frequency_weight": 1.6,
       "priority_weight": 1.0,
       "tables": [
@@ -521,14 +521,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana task_data analytics variant 1 visible 5"
+      "description": "execution backlog reporting report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c01_06",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c01_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.task_data b WHERE coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"completed\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp))) as metric_period, count(*) as row_count from raw.task_data b where coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp)) is not null and b.\"completed\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_01",
-      "business_tag": "asana task_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_01",
+      "business_tag": "execution backlog reporting",
       "frequency_weight": 1.75,
       "priority_weight": 1.1,
       "tables": [
@@ -560,14 +560,14 @@
         "filter",
         "time_bucket"
       ],
-      "description": "asana task_data analytics variant 2 visible 6"
+      "description": "execution backlog reporting report slice 6 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c02_01",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c02_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"archived\" AS archived, COUNT(*) AS row_count, SUM(b.\"public\") AS sum_public FROM raw.project_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"archived\" IS NOT NULL GROUP BY metric_period, archived",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"archived\" as archived, count(*) as row_count, sum(b.\"public\") as sum_public from raw.project_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"archived\" is not null group by metric_period, archived",
-      "cluster_id": "schemaopt_medium_asana_cluster_02",
-      "business_tag": "asana project_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_02",
+      "business_tag": "portfolio delivery analysis",
       "frequency_weight": 1.9,
       "priority_weight": 1.0,
       "tables": [
@@ -606,14 +606,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana project_data analytics variant 1 visible 1"
+      "description": "portfolio delivery analysis report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c02_02",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c02_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"public\") AS sum_public FROM raw.project_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"archived\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"public\") as sum_public from raw.project_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"archived\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_02",
-      "business_tag": "asana project_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_02",
+      "business_tag": "portfolio delivery analysis",
       "frequency_weight": 2.05,
       "priority_weight": 1.1,
       "tables": [
@@ -649,14 +649,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "asana project_data analytics variant 2 visible 2"
+      "description": "portfolio delivery analysis report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c02_03",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c02_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"archived\" AS archived, COUNT(*) AS row_count, SUM(b.\"public\") AS sum_public FROM raw.project_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"archived\" IS NOT NULL GROUP BY metric_period, archived",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"archived\" as archived, count(*) as row_count, sum(b.\"public\") as sum_public from raw.project_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"archived\" is not null group by metric_period, archived",
-      "cluster_id": "schemaopt_medium_asana_cluster_02",
-      "business_tag": "asana project_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_02",
+      "business_tag": "portfolio delivery analysis",
       "frequency_weight": 2.2,
       "priority_weight": 1.0,
       "tables": [
@@ -695,14 +695,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana project_data analytics variant 1 visible 3"
+      "description": "portfolio delivery analysis report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c02_04",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c02_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"public\") AS sum_public FROM raw.project_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"archived\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"public\") as sum_public from raw.project_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"archived\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_02",
-      "business_tag": "asana project_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_02",
+      "business_tag": "portfolio delivery analysis",
       "frequency_weight": 1.9,
       "priority_weight": 1.1,
       "tables": [
@@ -738,14 +738,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "asana project_data analytics variant 2 visible 4"
+      "description": "portfolio delivery analysis report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c02_05",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c02_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"archived\" AS archived, COUNT(*) AS row_count, SUM(b.\"public\") AS sum_public FROM raw.project_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"archived\" IS NOT NULL GROUP BY metric_period, archived",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"archived\" as archived, count(*) as row_count, sum(b.\"public\") as sum_public from raw.project_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"archived\" is not null group by metric_period, archived",
-      "cluster_id": "schemaopt_medium_asana_cluster_02",
-      "business_tag": "asana project_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_02",
+      "business_tag": "portfolio delivery analysis",
       "frequency_weight": 2.05,
       "priority_weight": 1.0,
       "tables": [
@@ -784,14 +784,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana project_data analytics variant 1 visible 5"
+      "description": "portfolio delivery analysis report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c02_06",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c02_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"public\") AS sum_public FROM raw.project_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"archived\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"public\") as sum_public from raw.project_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"archived\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_02",
-      "business_tag": "asana project_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_02",
+      "business_tag": "portfolio delivery analysis",
       "frequency_weight": 2.2,
       "priority_weight": 1.1,
       "tables": [
@@ -827,14 +827,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "asana project_data analytics variant 2 visible 6"
+      "description": "portfolio delivery analysis report slice 6 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c03_01",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c03_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"hearted\" AS hearted, COUNT(*) AS row_count FROM raw.story_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"hearted\" IS NOT NULL GROUP BY metric_period, hearted",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"hearted\" as hearted, count(*) as row_count from raw.story_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"hearted\" is not null group by metric_period, hearted",
-      "cluster_id": "schemaopt_medium_asana_cluster_03",
-      "business_tag": "asana story_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_03",
+      "business_tag": "collaboration activity analytics",
       "frequency_weight": 2.35,
       "priority_weight": 1.0,
       "tables": [
@@ -869,14 +869,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana story_data analytics variant 1 visible 1"
+      "description": "collaboration activity analytics report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c03_02",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c03_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.story_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"hearted\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count from raw.story_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"hearted\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_03",
-      "business_tag": "asana story_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_03",
+      "business_tag": "collaboration activity analytics",
       "frequency_weight": 2.5,
       "priority_weight": 1.1,
       "tables": [
@@ -908,14 +908,14 @@
         "filter",
         "time_bucket"
       ],
-      "description": "asana story_data analytics variant 2 visible 2"
+      "description": "collaboration activity analytics report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c03_03",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c03_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"hearted\" AS hearted, COUNT(*) AS row_count FROM raw.story_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"hearted\" IS NOT NULL GROUP BY metric_period, hearted",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"hearted\" as hearted, count(*) as row_count from raw.story_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"hearted\" is not null group by metric_period, hearted",
-      "cluster_id": "schemaopt_medium_asana_cluster_03",
-      "business_tag": "asana story_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_03",
+      "business_tag": "collaboration activity analytics",
       "frequency_weight": 2.65,
       "priority_weight": 1.0,
       "tables": [
@@ -950,14 +950,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana story_data analytics variant 1 visible 3"
+      "description": "collaboration activity analytics report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c03_04",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c03_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.story_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"hearted\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count from raw.story_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"hearted\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_03",
-      "business_tag": "asana story_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_03",
+      "business_tag": "collaboration activity analytics",
       "frequency_weight": 2.35,
       "priority_weight": 1.1,
       "tables": [
@@ -989,14 +989,14 @@
         "filter",
         "time_bucket"
       ],
-      "description": "asana story_data analytics variant 2 visible 4"
+      "description": "collaboration activity analytics report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c03_05",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c03_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"hearted\" AS hearted, COUNT(*) AS row_count FROM raw.story_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"hearted\" IS NOT NULL GROUP BY metric_period, hearted",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"hearted\" as hearted, count(*) as row_count from raw.story_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"hearted\" is not null group by metric_period, hearted",
-      "cluster_id": "schemaopt_medium_asana_cluster_03",
-      "business_tag": "asana story_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_03",
+      "business_tag": "collaboration activity analytics",
       "frequency_weight": 2.5,
       "priority_weight": 1.0,
       "tables": [
@@ -1031,14 +1031,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana story_data analytics variant 1 visible 5"
+      "description": "collaboration activity analytics report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c03_06",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c03_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.story_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"hearted\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count from raw.story_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"hearted\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_03",
-      "business_tag": "asana story_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_03",
+      "business_tag": "collaboration activity analytics",
       "frequency_weight": 2.65,
       "priority_weight": 1.1,
       "tables": [
@@ -1070,14 +1070,14 @@
         "filter",
         "time_bucket"
       ],
-      "description": "asana story_data analytics variant 2 visible 6"
+      "description": "collaboration activity analytics report slice 6 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c04_01",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c04_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"message\" AS message, COUNT(*) AS row_count, SUM(b.\"color\") AS sum_color FROM raw.tag_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"message\" IS NOT NULL GROUP BY metric_period, message",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"message\" as message, count(*) as row_count, sum(b.\"color\") as sum_color from raw.tag_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"message\" is not null group by metric_period, message",
-      "cluster_id": "schemaopt_medium_asana_cluster_04",
-      "business_tag": "asana tag_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_04",
+      "business_tag": "taxonomy usage reporting",
       "frequency_weight": 2.8,
       "priority_weight": 1.0,
       "tables": [
@@ -1116,14 +1116,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana tag_data analytics variant 1 visible 1"
+      "description": "taxonomy usage reporting report slice 1 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c04_02",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c04_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"color\") AS sum_color FROM raw.tag_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"message\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"color\") as sum_color from raw.tag_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"message\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_04",
-      "business_tag": "asana tag_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_04",
+      "business_tag": "taxonomy usage reporting",
       "frequency_weight": 2.95,
       "priority_weight": 1.1,
       "tables": [
@@ -1159,14 +1159,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "asana tag_data analytics variant 2 visible 2"
+      "description": "taxonomy usage reporting report slice 2 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c04_03",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c04_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"message\" AS message, COUNT(*) AS row_count, SUM(b.\"color\") AS sum_color FROM raw.tag_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"message\" IS NOT NULL GROUP BY metric_period, message",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"message\" as message, count(*) as row_count, sum(b.\"color\") as sum_color from raw.tag_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"message\" is not null group by metric_period, message",
-      "cluster_id": "schemaopt_medium_asana_cluster_04",
-      "business_tag": "asana tag_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_04",
+      "business_tag": "taxonomy usage reporting",
       "frequency_weight": 3.1,
       "priority_weight": 1.0,
       "tables": [
@@ -1205,14 +1205,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana tag_data analytics variant 1 visible 3"
+      "description": "taxonomy usage reporting report slice 3 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c04_04",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c04_04",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"color\") AS sum_color FROM raw.tag_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"message\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"color\") as sum_color from raw.tag_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"message\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_04",
-      "business_tag": "asana tag_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_04",
+      "business_tag": "taxonomy usage reporting",
       "frequency_weight": 2.8,
       "priority_weight": 1.1,
       "tables": [
@@ -1248,14 +1248,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "asana tag_data analytics variant 2 visible 4"
+      "description": "taxonomy usage reporting report slice 4 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c04_05",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c04_05",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"message\" AS message, COUNT(*) AS row_count, SUM(b.\"color\") AS sum_color FROM raw.tag_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"message\" IS NOT NULL GROUP BY metric_period, message",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"message\" as message, count(*) as row_count, sum(b.\"color\") as sum_color from raw.tag_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"message\" is not null group by metric_period, message",
-      "cluster_id": "schemaopt_medium_asana_cluster_04",
-      "business_tag": "asana tag_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_04",
+      "business_tag": "taxonomy usage reporting",
       "frequency_weight": 2.95,
       "priority_weight": 1.0,
       "tables": [
@@ -1294,14 +1294,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana tag_data analytics variant 1 visible 5"
+      "description": "taxonomy usage reporting report slice 5 (visible)"
     },
     {
-      "query_id": "schemaopt_medium_asana_vq_c04_06",
+      "query_id": "schemaopt_medium_delivery_operations_vq_c04_06",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"color\") AS sum_color FROM raw.tag_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"message\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"color\") as sum_color from raw.tag_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"message\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_04",
-      "business_tag": "asana tag_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_04",
+      "business_tag": "taxonomy usage reporting",
       "frequency_weight": 3.1,
       "priority_weight": 1.1,
       "tables": [
@@ -1337,16 +1337,16 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "asana tag_data analytics variant 2 visible 6"
+      "description": "taxonomy usage reporting report slice 6 (visible)"
     }
   ],
   "holdout_queries": [
     {
-      "query_id": "schemaopt_medium_asana_hq_c01_01",
+      "query_id": "schemaopt_medium_delivery_operations_hq_c01_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.task_data b WHERE coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"completed\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp))) as metric_period, count(*) as row_count from raw.task_data b where coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp)) is not null and b.\"completed\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_01",
-      "business_tag": "asana task_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_01",
+      "business_tag": "execution backlog reporting",
       "frequency_weight": 1.1,
       "priority_weight": 1.05,
       "tables": [
@@ -1378,14 +1378,14 @@
         "filter",
         "time_bucket"
       ],
-      "description": "asana task_data analytics variant 2 holdout 1"
+      "description": "execution backlog reporting report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_asana_hq_c01_02",
+      "query_id": "schemaopt_medium_delivery_operations_hq_c01_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP))) AS metric_period, b.\"completed\" AS completed, COUNT(*) AS row_count FROM raw.task_data b WHERE coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"completed\" IS NOT NULL GROUP BY metric_period, completed",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp))) as metric_period, b.\"completed\" as completed, count(*) as row_count from raw.task_data b where coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp)) is not null and b.\"completed\" is not null group by metric_period, completed",
-      "cluster_id": "schemaopt_medium_asana_cluster_01",
-      "business_tag": "asana task_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_01",
+      "business_tag": "execution backlog reporting",
       "frequency_weight": 1.2,
       "priority_weight": 1.0,
       "tables": [
@@ -1420,14 +1420,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana task_data analytics variant 1 holdout 2"
+      "description": "execution backlog reporting report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_asana_hq_c01_03",
+      "query_id": "schemaopt_medium_delivery_operations_hq_c01_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.task_data b WHERE coalesce(try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"completed_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"completed_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"completed\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp))) as metric_period, count(*) as row_count from raw.task_data b where coalesce(try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"completed_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"completed_at\" as timestamp)) is not null and b.\"completed\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_01",
-      "business_tag": "asana task_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_01",
+      "business_tag": "execution backlog reporting",
       "frequency_weight": 1.1,
       "priority_weight": 1.05,
       "tables": [
@@ -1459,14 +1459,14 @@
         "filter",
         "time_bucket"
       ],
-      "description": "asana task_data analytics variant 2 holdout 3"
+      "description": "execution backlog reporting report slice 3 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_asana_hq_c02_01",
+      "query_id": "schemaopt_medium_delivery_operations_hq_c02_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"public\") AS sum_public FROM raw.project_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"archived\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"public\") as sum_public from raw.project_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"archived\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_02",
-      "business_tag": "asana project_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_02",
+      "business_tag": "portfolio delivery analysis",
       "frequency_weight": 1.4,
       "priority_weight": 1.05,
       "tables": [
@@ -1502,14 +1502,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "asana project_data analytics variant 2 holdout 1"
+      "description": "portfolio delivery analysis report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_asana_hq_c02_02",
+      "query_id": "schemaopt_medium_delivery_operations_hq_c02_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"archived\" AS archived, COUNT(*) AS row_count, SUM(b.\"public\") AS sum_public FROM raw.project_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"archived\" IS NOT NULL GROUP BY metric_period, archived",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"archived\" as archived, count(*) as row_count, sum(b.\"public\") as sum_public from raw.project_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"archived\" is not null group by metric_period, archived",
-      "cluster_id": "schemaopt_medium_asana_cluster_02",
-      "business_tag": "asana project_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_02",
+      "business_tag": "portfolio delivery analysis",
       "frequency_weight": 1.5,
       "priority_weight": 1.0,
       "tables": [
@@ -1548,14 +1548,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana project_data analytics variant 1 holdout 2"
+      "description": "portfolio delivery analysis report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_asana_hq_c02_03",
+      "query_id": "schemaopt_medium_delivery_operations_hq_c02_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"public\") AS sum_public FROM raw.project_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"archived\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"public\") as sum_public from raw.project_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"archived\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_02",
-      "business_tag": "asana project_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_02",
+      "business_tag": "portfolio delivery analysis",
       "frequency_weight": 1.4,
       "priority_weight": 1.05,
       "tables": [
@@ -1591,14 +1591,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "asana project_data analytics variant 2 holdout 3"
+      "description": "portfolio delivery analysis report slice 3 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_asana_hq_c03_01",
+      "query_id": "schemaopt_medium_delivery_operations_hq_c03_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.story_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"hearted\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count from raw.story_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"hearted\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_03",
-      "business_tag": "asana story_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_03",
+      "business_tag": "collaboration activity analytics",
       "frequency_weight": 1.7,
       "priority_weight": 1.05,
       "tables": [
@@ -1630,14 +1630,14 @@
         "filter",
         "time_bucket"
       ],
-      "description": "asana story_data analytics variant 2 holdout 1"
+      "description": "collaboration activity analytics report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_asana_hq_c03_02",
+      "query_id": "schemaopt_medium_delivery_operations_hq_c03_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"hearted\" AS hearted, COUNT(*) AS row_count FROM raw.story_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"hearted\" IS NOT NULL GROUP BY metric_period, hearted",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"hearted\" as hearted, count(*) as row_count from raw.story_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"hearted\" is not null group by metric_period, hearted",
-      "cluster_id": "schemaopt_medium_asana_cluster_03",
-      "business_tag": "asana story_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_03",
+      "business_tag": "collaboration activity analytics",
       "frequency_weight": 1.8,
       "priority_weight": 1.0,
       "tables": [
@@ -1672,14 +1672,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana story_data analytics variant 1 holdout 2"
+      "description": "collaboration activity analytics report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_asana_hq_c03_03",
+      "query_id": "schemaopt_medium_delivery_operations_hq_c03_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count FROM raw.story_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"hearted\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count from raw.story_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"hearted\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_03",
-      "business_tag": "asana story_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_03",
+      "business_tag": "collaboration activity analytics",
       "frequency_weight": 1.7,
       "priority_weight": 1.05,
       "tables": [
@@ -1711,14 +1711,14 @@
         "filter",
         "time_bucket"
       ],
-      "description": "asana story_data analytics variant 2 holdout 3"
+      "description": "collaboration activity analytics report slice 3 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_asana_hq_c04_01",
+      "query_id": "schemaopt_medium_delivery_operations_hq_c04_01",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"color\") AS sum_color FROM raw.tag_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"message\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"color\") as sum_color from raw.tag_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"message\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_04",
-      "business_tag": "asana tag_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_04",
+      "business_tag": "taxonomy usage reporting",
       "frequency_weight": 2.0,
       "priority_weight": 1.05,
       "tables": [
@@ -1754,14 +1754,14 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "asana tag_data analytics variant 2 holdout 1"
+      "description": "taxonomy usage reporting report slice 1 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_asana_hq_c04_02",
+      "query_id": "schemaopt_medium_delivery_operations_hq_c04_02",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, b.\"message\" AS message, COUNT(*) AS row_count, SUM(b.\"color\") AS sum_color FROM raw.tag_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"message\" IS NOT NULL GROUP BY metric_period, message",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, b.\"message\" as message, count(*) as row_count, sum(b.\"color\") as sum_color from raw.tag_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"message\" is not null group by metric_period, message",
-      "cluster_id": "schemaopt_medium_asana_cluster_04",
-      "business_tag": "asana tag_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_04",
+      "business_tag": "taxonomy usage reporting",
       "frequency_weight": 2.1,
       "priority_weight": 1.0,
       "tables": [
@@ -1800,14 +1800,14 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "asana tag_data analytics variant 1 holdout 2"
+      "description": "taxonomy usage reporting report slice 2 (holdout)"
     },
     {
-      "query_id": "schemaopt_medium_asana_hq_c04_03",
+      "query_id": "schemaopt_medium_delivery_operations_hq_c04_03",
       "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"color\") AS sum_color FROM raw.tag_data b WHERE coalesce(try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"created_at\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"created_at\" AS TIMESTAMP)) IS NOT NULL AND b.\"message\" IS NOT NULL GROUP BY metric_period",
       "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"color\") as sum_color from raw.tag_data b where coalesce(try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"created_at\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"created_at\" as timestamp)) is not null and b.\"message\" is not null group by metric_period",
-      "cluster_id": "schemaopt_medium_asana_cluster_04",
-      "business_tag": "asana tag_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_04",
+      "business_tag": "taxonomy usage reporting",
       "frequency_weight": 2.0,
       "priority_weight": 1.05,
       "tables": [
@@ -1843,21 +1843,21 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "asana tag_data analytics variant 2 holdout 3"
+      "description": "taxonomy usage reporting report slice 3 (holdout)"
     }
   ],
   "clusters": [
     {
-      "cluster_id": "schemaopt_medium_asana_cluster_04",
-      "label": "tag_data workload",
-      "business_label": "asana tag_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_04",
+      "label": "taxonomy usage workload",
+      "business_label": "taxonomy usage reporting",
       "query_ids": [
-        "schemaopt_medium_asana_vq_c04_01",
-        "schemaopt_medium_asana_vq_c04_02",
-        "schemaopt_medium_asana_vq_c04_03",
-        "schemaopt_medium_asana_vq_c04_04",
-        "schemaopt_medium_asana_vq_c04_05",
-        "schemaopt_medium_asana_vq_c04_06"
+        "schemaopt_medium_delivery_operations_vq_c04_01",
+        "schemaopt_medium_delivery_operations_vq_c04_02",
+        "schemaopt_medium_delivery_operations_vq_c04_03",
+        "schemaopt_medium_delivery_operations_vq_c04_04",
+        "schemaopt_medium_delivery_operations_vq_c04_05",
+        "schemaopt_medium_delivery_operations_vq_c04_06"
       ],
       "query_count": 6,
       "total_frequency_weight": 17.7,
@@ -1884,16 +1884,16 @@
       "preferred_object_kind": "join_matview"
     },
     {
-      "cluster_id": "schemaopt_medium_asana_cluster_03",
-      "label": "story_data workload",
-      "business_label": "asana story_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_03",
+      "label": "collaboration activity workload",
+      "business_label": "collaboration activity analytics",
       "query_ids": [
-        "schemaopt_medium_asana_vq_c03_01",
-        "schemaopt_medium_asana_vq_c03_02",
-        "schemaopt_medium_asana_vq_c03_03",
-        "schemaopt_medium_asana_vq_c03_04",
-        "schemaopt_medium_asana_vq_c03_05",
-        "schemaopt_medium_asana_vq_c03_06"
+        "schemaopt_medium_delivery_operations_vq_c03_01",
+        "schemaopt_medium_delivery_operations_vq_c03_02",
+        "schemaopt_medium_delivery_operations_vq_c03_03",
+        "schemaopt_medium_delivery_operations_vq_c03_04",
+        "schemaopt_medium_delivery_operations_vq_c03_05",
+        "schemaopt_medium_delivery_operations_vq_c03_06"
       ],
       "query_count": 6,
       "total_frequency_weight": 15.0,
@@ -1918,16 +1918,16 @@
       "preferred_object_kind": "agg_matview"
     },
     {
-      "cluster_id": "schemaopt_medium_asana_cluster_02",
-      "label": "project_data workload",
-      "business_label": "asana project_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_02",
+      "label": "portfolio delivery workload",
+      "business_label": "portfolio delivery analysis",
       "query_ids": [
-        "schemaopt_medium_asana_vq_c02_01",
-        "schemaopt_medium_asana_vq_c02_02",
-        "schemaopt_medium_asana_vq_c02_03",
-        "schemaopt_medium_asana_vq_c02_04",
-        "schemaopt_medium_asana_vq_c02_05",
-        "schemaopt_medium_asana_vq_c02_06"
+        "schemaopt_medium_delivery_operations_vq_c02_01",
+        "schemaopt_medium_delivery_operations_vq_c02_02",
+        "schemaopt_medium_delivery_operations_vq_c02_03",
+        "schemaopt_medium_delivery_operations_vq_c02_04",
+        "schemaopt_medium_delivery_operations_vq_c02_05",
+        "schemaopt_medium_delivery_operations_vq_c02_06"
       ],
       "query_count": 6,
       "total_frequency_weight": 12.3,
@@ -1954,16 +1954,16 @@
       "preferred_object_kind": "denorm_table"
     },
     {
-      "cluster_id": "schemaopt_medium_asana_cluster_01",
-      "label": "task_data workload",
-      "business_label": "asana task_data analytics",
+      "cluster_id": "schemaopt_medium_delivery_operations_cluster_01",
+      "label": "execution backlog workload",
+      "business_label": "execution backlog reporting",
       "query_ids": [
-        "schemaopt_medium_asana_vq_c01_01",
-        "schemaopt_medium_asana_vq_c01_02",
-        "schemaopt_medium_asana_vq_c01_03",
-        "schemaopt_medium_asana_vq_c01_04",
-        "schemaopt_medium_asana_vq_c01_05",
-        "schemaopt_medium_asana_vq_c01_06"
+        "schemaopt_medium_delivery_operations_vq_c01_01",
+        "schemaopt_medium_delivery_operations_vq_c01_02",
+        "schemaopt_medium_delivery_operations_vq_c01_03",
+        "schemaopt_medium_delivery_operations_vq_c01_04",
+        "schemaopt_medium_delivery_operations_vq_c01_05",
+        "schemaopt_medium_delivery_operations_vq_c01_06"
       ],
       "query_count": 6,
       "total_frequency_weight": 9.6,

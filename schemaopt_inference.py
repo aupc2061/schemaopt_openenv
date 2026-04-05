@@ -6,7 +6,7 @@ Environment variables:
 - MODEL_NAME: optional model id to call (default: gpt-5.4-mini)
 - API_BASE_URL: optional custom OpenAI-compatible base URL
 - MAX_STEPS: optional max steps per episode (default: 8)
-- TASK_ID: optional benchmark task id (default: schemaopt_hard_google_play)
+- TASK_ID: optional benchmark task id (default: schemaopt_hard_mobile_revenue_ops)
 - MAX_ACTION_RETRIES: optional max model retries per environment step (default: 4)
 """
 
@@ -45,7 +45,7 @@ DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.4")
 DEFAULT_API_BASE_URL = os.getenv("API_BASE_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
 DEFAULT_MAX_STEPS = int(os.getenv("MAX_STEPS", "25"))
-DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_google_play")
+DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
 DEFAULT_MAX_ACTION_RETRIES = int(os.getenv("MAX_ACTION_RETRIES", "4"))
 
 SYSTEM_PROMPT = """You are operating a workload-adaptive schema optimization environment.

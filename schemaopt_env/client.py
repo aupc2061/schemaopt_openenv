@@ -41,7 +41,7 @@ class SchemaOptEnv(EnvClient[SchemaOptAction, SchemaOptObservation, SchemaOptSta
             episode_id=payload.get("episode_id"),
             step_count=payload.get("step_count", 0),
             done=payload.get("done", False),
-            task_id=payload.get("task_id", "schemaopt_easy_lever"),
+            task_id=payload.get("task_id", "schemaopt_easy_hiring_pipeline"),
             difficulty=payload.get("difficulty", "easy"),
             derived_object_count=payload.get("derived_object_count", 0),
             checkpoint_count=payload.get("checkpoint_count", 0),

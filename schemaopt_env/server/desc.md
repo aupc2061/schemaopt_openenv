@@ -169,7 +169,7 @@ The current environment supports:
 ---
 
 ## Current Task Suite
-The current suite contains **12 tasks**, all seeded from `dacomp-de-impl` domains and packaged as real task manifests.
+The current suite contains **6 curated tasks** designed as a compact benchmark set for workload-aware schema optimization.
 
 ### Easy Tasks
 Easy tasks have:
@@ -180,10 +180,8 @@ Easy tasks have:
 - max 18 steps
 
 Tasks:
-- `schemaopt_easy_customer360`
-- `schemaopt_easy_lever`
-- `schemaopt_easy_pendo`
-- `schemaopt_easy_salesforce`
+- `schemaopt_easy_hiring_pipeline`
+- `schemaopt_easy_product_adoption`
 
 Task description:
 - optimize a small workload over one business domain
@@ -201,10 +199,8 @@ Medium tasks have:
 - max 24 steps
 
 Tasks:
-- `schemaopt_medium_ad_reporting`
-- `schemaopt_medium_app_reporting`
-- `schemaopt_medium_asana`
-- `schemaopt_medium_google_ads`
+- `schemaopt_medium_campaign_performance`
+- `schemaopt_medium_delivery_operations`
 
 Task description:
 - optimize a broader workload with more clusters and more query families
@@ -222,10 +218,8 @@ Hard tasks have:
 - max 30 steps
 
 Tasks:
-- `schemaopt_hard_google_play`
-- `schemaopt_hard_hubspot`
-- `schemaopt_hard_jira`
-- `schemaopt_hard_marketo`
+- `schemaopt_hard_mobile_revenue_ops`
+- `schemaopt_hard_lifecycle_engagement`
 
 Task description:
 - optimize larger workloads with multiple hotspot clusters and more cross-query variation

@@ -81,7 +81,7 @@ try:
 
         step_count: int = 0
         done: bool = False
-        task_id: str = "schemaopt_easy_lever"
+        task_id: str = "schemaopt_easy_hiring_pipeline"
         difficulty: str = "easy"
         derived_object_count: int = 0
         checkpoint_count: int = 0
@@ -155,7 +155,7 @@ except ImportError:
     class SchemaOptState(State):
         step_count: int = 0
         done: bool = False
-        task_id: str = "schemaopt_easy_lever"
+        task_id: str = "schemaopt_easy_hiring_pipeline"
         difficulty: str = "easy"
         derived_object_count: int = 0
         checkpoint_count: int = 0
