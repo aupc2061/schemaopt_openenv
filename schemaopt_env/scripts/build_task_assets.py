@@ -1,4 +1,11 @@
-"""Build the curated SchemaOpt task assets from the local benchmark datasets."""
+"""Build base SchemaOpt task assets from the local benchmark datasets.
+
+Note:
+This script produces seed manifests only. The checked-in curated task assets may
+include hand-authored metadata, adjusted visible/holdout mixes, and count tuning
+that are applied after generation. Do not rerun this script on the curated suite
+unless you intend to refresh those manual edits as well.
+"""
 
 from __future__ import annotations
 

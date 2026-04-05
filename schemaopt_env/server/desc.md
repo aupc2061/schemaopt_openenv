@@ -172,21 +172,18 @@ The current environment supports:
 The current suite contains **6 curated tasks** designed as a compact benchmark set for workload-aware schema optimization.
 
 ### Easy Tasks
-Easy tasks have:
-- 12 visible queries
-- 6 holdout queries
-- 3 clusters
-- max 3 new derived objects
-- max 18 steps
+Easy tasks are calibrated as follows:
+- `schemaopt_easy_hiring_pipeline`: 15 visible / 6 holdout / 3 clusters / 3 objects / 20 steps
+- `schemaopt_easy_product_adoption`: 12 visible / 6 holdout / 3 clusters / 3 objects / 18 steps
 
 Tasks:
 - `schemaopt_easy_hiring_pipeline`
 - `schemaopt_easy_product_adoption`
 
 Task description:
-- optimize a small workload over one business domain
-- clusters are relatively compact and usually centered around a small number of base tables
-- intended to test whether an agent can identify obvious aggregation/materialization opportunities
+- compact, business-facing workloads where one or two reusable objects should be discoverable quickly
+- intended to test whether an agent can identify grounded materialization opportunities without overfitting the visible slices
+- hiring pipeline is slightly deeper than product adoption because it now includes one additional visible variant per cluster
 
 ---
 
@@ -203,9 +200,9 @@ Tasks:
 - `schemaopt_medium_delivery_operations`
 
 Task description:
-- optimize a broader workload with more clusters and more query families
-- tests whether the agent can choose derived objects that help multiple related queries instead of one-off rewrites
-- introduces stronger tradeoffs around object budgets and cluster prioritization
+- broader workloads with enough cluster overlap to make reuse a real design decision
+- campaign performance emphasizes hierarchy-aware reuse across reporting levels
+- delivery operations emphasizes the tradeoff between broad capacity rollups and narrow operational wins
 
 ---
 
@@ -222,16 +219,11 @@ Tasks:
 - `schemaopt_hard_lifecycle_engagement`
 
 Task description:
-- optimize larger workloads with multiple hotspot clusters and more cross-query variation
-- intended to test multi-step planning, query retrieval strategy, object selection under budget, and final submission discipline
-- holdout workloads test whether created objects generalize beyond only the visible queries
+- larger workloads with mixed freshness, multiple hotspot clusters, and tighter planning pressure
+- mobile revenue ops stresses reuse across release/device/platform reporting under executive monetization pressure
+- lifecycle engagement stresses reusable program reporting versus fragmented visible-only lifecycle objects
 
 ---
-
-## Current Task Objective Template
-All current tasks use the same objective pattern:
-
-> Optimize the `<domain>` workload over the real DuckDB source database by materializing derived objects that reduce measured execution cost while preserving exact query results.
 
 ---
 

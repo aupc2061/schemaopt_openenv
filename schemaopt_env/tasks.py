@@ -181,6 +181,11 @@ class QuerySpec:
     limit: int | None
     plan_features: tuple[str, ...]
     description: str
+    consumer_surface: Optional[str] = None
+    latency_tier: Optional[str] = None
+    freshness_tier: Optional[str] = None
+    reuse_group: Optional[str] = None
+    report_variant_type: Optional[str] = None
 
     @property
     def weighted_cost(self) -> float:
@@ -217,6 +222,11 @@ class QuerySpec:
             "limit": self.limit,
             "plan_features": list(self.plan_features),
             "description": self.description,
+            "consumer_surface": self.consumer_surface,
+            "latency_tier": self.latency_tier,
+            "freshness_tier": self.freshness_tier,
+            "reuse_group": self.reuse_group,
+            "report_variant_type": self.report_variant_type,
             "rewrite_template_hint": self.rewrite_template_hint,
         }
 
@@ -262,6 +272,11 @@ class ClusterSpec:
     cluster_grain_emphasis: tuple[str, ...] = ()
     suggested_exact_derived_shape: Dict[str, Any] | None = None
     reference_rewrite_feasible: bool = True
+    sla_tier: Optional[str] = None
+    business_owner: Optional[str] = None
+    dashboard_family: Optional[str] = None
+    refresh_mode: Optional[str] = None
+    reuse_pressure: Optional[str] = None
 
     def to_summary(self) -> Dict[str, Any]:
         return {
@@ -281,6 +296,11 @@ class ClusterSpec:
             "cluster_grain_emphasis": list(self.cluster_grain_emphasis),
             "suggested_exact_derived_shape": dict(self.suggested_exact_derived_shape or {}),
             "reference_rewrite_feasible": self.reference_rewrite_feasible,
+            "sla_tier": self.sla_tier,
+            "business_owner": self.business_owner,
+            "dashboard_family": self.dashboard_family,
+            "refresh_mode": self.refresh_mode,
+            "reuse_pressure": self.reuse_pressure,
         }
 
 
@@ -302,6 +322,10 @@ class TaskSpec:
     budgets: Dict[str, Any]
     allowed_object_kinds: tuple[str, ...]
     engine_capabilities: Dict[str, Any]
+    task_story: Optional[str] = None
+    primary_user: Optional[str] = None
+    decision_cycle: Optional[str] = None
+    freshness_profile: Optional[str] = None
 
     @property
     def total_visible_weighted_cost(self) -> float:
@@ -322,6 +346,10 @@ class TaskSpec:
             "budgets": self.budgets,
             "allowed_object_kinds": list(self.allowed_object_kinds),
             "engine_capabilities": dict(self.engine_capabilities),
+            "task_story": self.task_story,
+            "primary_user": self.primary_user,
+            "decision_cycle": self.decision_cycle,
+            "freshness_profile": self.freshness_profile,
         }
 
     def reset_payload(self) -> Dict[str, Any]:
@@ -340,6 +368,10 @@ class TaskSpec:
                 },
                 "seed_source": self.seed_source,
                 "engine_capabilities": dict(self.engine_capabilities),
+                "task_story": self.task_story,
+                "primary_user": self.primary_user,
+                "decision_cycle": self.decision_cycle,
+                "freshness_profile": self.freshness_profile,
             },
             "catalog_summary": {
                 "schemas": ["raw", "derived"],
@@ -416,6 +448,11 @@ def _load_query(payload: Dict[str, Any]) -> QuerySpec:
         limit=limit,
         plan_features=tuple(feature.lower() for feature in payload.get("plan_features", [])),
         description=payload.get("description", payload["query_id"]),
+        consumer_surface=payload.get("consumer_surface"),
+        latency_tier=payload.get("latency_tier"),
+        freshness_tier=payload.get("freshness_tier"),
+        reuse_group=payload.get("reuse_group"),
+        report_variant_type=payload.get("report_variant_type"),
     )
 
 
@@ -438,6 +475,11 @@ def _load_cluster(payload: Dict[str, Any]) -> ClusterSpec:
         cluster_grain_emphasis=tuple(column.lower() for column in payload.get("cluster_grain_emphasis", [])),
         suggested_exact_derived_shape=dict(payload.get("suggested_exact_derived_shape", {})) if payload.get("suggested_exact_derived_shape") else None,
         reference_rewrite_feasible=bool(payload.get("reference_rewrite_feasible", True)),
+        sla_tier=payload.get("sla_tier"),
+        business_owner=payload.get("business_owner"),
+        dashboard_family=payload.get("dashboard_family"),
+        refresh_mode=payload.get("refresh_mode"),
+        reuse_pressure=payload.get("reuse_pressure"),
     )
 
 
@@ -468,6 +510,11 @@ def _enrich_clusters(clusters: Sequence[ClusterSpec], visible_queries: Sequence[
                 cluster_grain_emphasis=cluster.cluster_grain_emphasis or (representative_query.group_by if representative_query else ()),
                 suggested_exact_derived_shape=suggested_shape,
                 reference_rewrite_feasible=cluster.reference_rewrite_feasible,
+                sla_tier=cluster.sla_tier,
+                business_owner=cluster.business_owner,
+                dashboard_family=cluster.dashboard_family,
+                refresh_mode=cluster.refresh_mode,
+                reuse_pressure=cluster.reuse_pressure,
             )
         )
     return tuple(enriched)
@@ -497,6 +544,10 @@ def load_task_manifest(task_manifest_path: str | Path) -> TaskSpec:
         budgets=dict(payload.get("budgets", {})),
         allowed_object_kinds=tuple(payload.get("allowed_object_kinds", [])),
         engine_capabilities=dict(payload.get("engine_capabilities", {})),
+        task_story=payload.get("task_story"),
+        primary_user=payload.get("primary_user"),
+        decision_cycle=payload.get("decision_cycle"),
+        freshness_profile=payload.get("freshness_profile"),
     )
 
 

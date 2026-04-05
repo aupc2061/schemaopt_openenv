@@ -359,7 +359,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "execution backlog reporting report slice 1 (visible)"
+      "description": "execution backlog reporting | delivery_standup_dashboard | segment_breakout (visible)",
+      "consumer_surface": "delivery_standup_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c01_02",
@@ -398,7 +403,12 @@
         "filter",
         "time_bucket"
       ],
-      "description": "execution backlog reporting report slice 2 (visible)"
+      "description": "execution backlog reporting | delivery_standup_dashboard | rollup (visible)",
+      "consumer_surface": "delivery_standup_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c01_03",
@@ -440,7 +450,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "execution backlog reporting report slice 3 (visible)"
+      "description": "execution backlog reporting | delivery_standup_dashboard | segment_breakout (visible)",
+      "consumer_surface": "delivery_standup_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c01_04",
@@ -479,7 +494,12 @@
         "filter",
         "time_bucket"
       ],
-      "description": "execution backlog reporting report slice 4 (visible)"
+      "description": "execution backlog reporting | delivery_standup_dashboard | rollup (visible)",
+      "consumer_surface": "delivery_standup_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c01_05",
@@ -521,7 +541,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "execution backlog reporting report slice 5 (visible)"
+      "description": "execution backlog reporting | delivery_standup_dashboard | segment_breakout (visible)",
+      "consumer_surface": "delivery_standup_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c01_06",
@@ -560,7 +585,12 @@
         "filter",
         "time_bucket"
       ],
-      "description": "execution backlog reporting report slice 6 (visible)"
+      "description": "execution backlog reporting | delivery_standup_dashboard | rollup (visible)",
+      "consumer_surface": "delivery_standup_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c02_01",
@@ -606,7 +636,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "portfolio delivery analysis report slice 1 (visible)"
+      "description": "portfolio delivery analysis | portfolio_review_deck | segment_breakout (visible)",
+      "consumer_surface": "portfolio_review_deck",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c02_02",
@@ -649,7 +684,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "portfolio delivery analysis report slice 2 (visible)"
+      "description": "portfolio delivery analysis | portfolio_review_deck | rollup (visible)",
+      "consumer_surface": "portfolio_review_deck",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c02_03",
@@ -695,7 +735,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "portfolio delivery analysis report slice 3 (visible)"
+      "description": "portfolio delivery analysis | portfolio_review_deck | segment_breakout (visible)",
+      "consumer_surface": "portfolio_review_deck",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c02_04",
@@ -738,7 +783,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "portfolio delivery analysis report slice 4 (visible)"
+      "description": "portfolio delivery analysis | portfolio_review_deck | rollup (visible)",
+      "consumer_surface": "portfolio_review_deck",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c02_05",
@@ -784,7 +834,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "portfolio delivery analysis report slice 5 (visible)"
+      "description": "portfolio delivery analysis | portfolio_review_deck | segment_breakout (visible)",
+      "consumer_surface": "portfolio_review_deck",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c02_06",
@@ -827,7 +882,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "portfolio delivery analysis report slice 6 (visible)"
+      "description": "portfolio delivery analysis | portfolio_review_deck | rollup (visible)",
+      "consumer_surface": "portfolio_review_deck",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c03_01",
@@ -869,7 +929,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "collaboration activity analytics report slice 1 (visible)"
+      "description": "collaboration activity analytics | workload_diagnostics | segment_breakout (visible)",
+      "consumer_surface": "workload_diagnostics",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "collaboration_signal_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c03_02",
@@ -908,7 +973,12 @@
         "filter",
         "time_bucket"
       ],
-      "description": "collaboration activity analytics report slice 2 (visible)"
+      "description": "collaboration activity analytics | workload_diagnostics | rollup (visible)",
+      "consumer_surface": "workload_diagnostics",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "collaboration_signal_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c03_03",
@@ -950,7 +1020,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "collaboration activity analytics report slice 3 (visible)"
+      "description": "collaboration activity analytics | workload_diagnostics | segment_breakout (visible)",
+      "consumer_surface": "workload_diagnostics",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "collaboration_signal_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c03_04",
@@ -989,7 +1064,12 @@
         "filter",
         "time_bucket"
       ],
-      "description": "collaboration activity analytics report slice 4 (visible)"
+      "description": "collaboration activity analytics | workload_diagnostics | rollup (visible)",
+      "consumer_surface": "workload_diagnostics",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "collaboration_signal_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c03_05",
@@ -1031,7 +1111,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "collaboration activity analytics report slice 5 (visible)"
+      "description": "collaboration activity analytics | workload_diagnostics | segment_breakout (visible)",
+      "consumer_surface": "workload_diagnostics",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "collaboration_signal_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c03_06",
@@ -1070,7 +1155,12 @@
         "filter",
         "time_bucket"
       ],
-      "description": "collaboration activity analytics report slice 6 (visible)"
+      "description": "collaboration activity analytics | workload_diagnostics | rollup (visible)",
+      "consumer_surface": "workload_diagnostics",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "collaboration_signal_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c04_01",
@@ -1116,7 +1206,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "taxonomy usage reporting report slice 1 (visible)"
+      "description": "taxonomy usage reporting | taxonomy_audit_report | segment_breakout (visible)",
+      "consumer_surface": "taxonomy_audit_report",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workflow_governance_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c04_02",
@@ -1159,7 +1254,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "taxonomy usage reporting report slice 2 (visible)"
+      "description": "taxonomy usage reporting | taxonomy_audit_report | rollup (visible)",
+      "consumer_surface": "taxonomy_audit_report",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workflow_governance_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c04_03",
@@ -1205,7 +1305,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "taxonomy usage reporting report slice 3 (visible)"
+      "description": "taxonomy usage reporting | taxonomy_audit_report | segment_breakout (visible)",
+      "consumer_surface": "taxonomy_audit_report",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workflow_governance_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c04_04",
@@ -1248,7 +1353,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "taxonomy usage reporting report slice 4 (visible)"
+      "description": "taxonomy usage reporting | taxonomy_audit_report | rollup (visible)",
+      "consumer_surface": "taxonomy_audit_report",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workflow_governance_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c04_05",
@@ -1294,7 +1404,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "taxonomy usage reporting report slice 5 (visible)"
+      "description": "taxonomy usage reporting | taxonomy_audit_report | segment_breakout (visible)",
+      "consumer_surface": "taxonomy_audit_report",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workflow_governance_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_vq_c04_06",
@@ -1337,7 +1452,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "taxonomy usage reporting report slice 6 (visible)"
+      "description": "taxonomy usage reporting | taxonomy_audit_report | rollup (visible)",
+      "consumer_surface": "taxonomy_audit_report",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workflow_governance_rollup",
+      "report_variant_type": "rollup"
     }
   ],
   "holdout_queries": [
@@ -1378,7 +1498,12 @@
         "filter",
         "time_bucket"
       ],
-      "description": "execution backlog reporting report slice 1 (holdout)"
+      "description": "execution backlog reporting | delivery_standup_dashboard | rollup (holdout)",
+      "consumer_surface": "delivery_standup_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_hq_c01_02",
@@ -1420,7 +1545,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "execution backlog reporting report slice 2 (holdout)"
+      "description": "execution backlog reporting | delivery_standup_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "delivery_standup_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_hq_c01_03",
@@ -1459,7 +1589,12 @@
         "filter",
         "time_bucket"
       ],
-      "description": "execution backlog reporting report slice 3 (holdout)"
+      "description": "execution backlog reporting | delivery_standup_dashboard | rollup (holdout)",
+      "consumer_surface": "delivery_standup_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_hq_c02_01",
@@ -1502,7 +1637,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "portfolio delivery analysis report slice 1 (holdout)"
+      "description": "portfolio delivery analysis | portfolio_review_deck | rollup (holdout)",
+      "consumer_surface": "portfolio_review_deck",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_hq_c02_02",
@@ -1548,7 +1688,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "portfolio delivery analysis report slice 2 (holdout)"
+      "description": "portfolio delivery analysis | portfolio_review_deck | segment_breakout (holdout)",
+      "consumer_surface": "portfolio_review_deck",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_hq_c02_03",
@@ -1591,7 +1736,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "portfolio delivery analysis report slice 3 (holdout)"
+      "description": "portfolio delivery analysis | portfolio_review_deck | rollup (holdout)",
+      "consumer_surface": "portfolio_review_deck",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "delivery_capacity_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_hq_c03_01",
@@ -1630,7 +1780,12 @@
         "filter",
         "time_bucket"
       ],
-      "description": "collaboration activity analytics report slice 1 (holdout)"
+      "description": "collaboration activity analytics | workload_diagnostics | rollup (holdout)",
+      "consumer_surface": "workload_diagnostics",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "collaboration_signal_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_hq_c03_02",
@@ -1672,7 +1827,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "collaboration activity analytics report slice 2 (holdout)"
+      "description": "collaboration activity analytics | workload_diagnostics | segment_breakout (holdout)",
+      "consumer_surface": "workload_diagnostics",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "collaboration_signal_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_hq_c03_03",
@@ -1711,7 +1871,12 @@
         "filter",
         "time_bucket"
       ],
-      "description": "collaboration activity analytics report slice 3 (holdout)"
+      "description": "collaboration activity analytics | workload_diagnostics | rollup (holdout)",
+      "consumer_surface": "workload_diagnostics",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "collaboration_signal_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_hq_c04_01",
@@ -1754,7 +1919,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "taxonomy usage reporting report slice 1 (holdout)"
+      "description": "taxonomy usage reporting | taxonomy_audit_report | rollup (holdout)",
+      "consumer_surface": "taxonomy_audit_report",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workflow_governance_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_hq_c04_02",
@@ -1800,7 +1970,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "taxonomy usage reporting report slice 2 (holdout)"
+      "description": "taxonomy usage reporting | taxonomy_audit_report | segment_breakout (holdout)",
+      "consumer_surface": "taxonomy_audit_report",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workflow_governance_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_delivery_operations_hq_c04_03",
@@ -1843,7 +2018,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "taxonomy usage reporting report slice 3 (holdout)"
+      "description": "taxonomy usage reporting | taxonomy_audit_report | rollup (holdout)",
+      "consumer_surface": "taxonomy_audit_report",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workflow_governance_rollup",
+      "report_variant_type": "rollup"
     }
   ],
   "clusters": [
@@ -1881,7 +2061,12 @@
         "sum_color"
       ],
       "hotspot_rank": 1,
-      "preferred_object_kind": "join_matview"
+      "preferred_object_kind": "join_matview",
+      "sla_tier": "standard",
+      "business_owner": "workflow_governance",
+      "dashboard_family": "taxonomy_usage",
+      "refresh_mode": "weekly",
+      "reuse_pressure": "medium"
     },
     {
       "cluster_id": "schemaopt_medium_delivery_operations_cluster_03",
@@ -1915,7 +2100,12 @@
         "row_count"
       ],
       "hotspot_rank": 2,
-      "preferred_object_kind": "agg_matview"
+      "preferred_object_kind": "agg_matview",
+      "sla_tier": "standard",
+      "business_owner": "collaboration_ops",
+      "dashboard_family": "collaboration_activity",
+      "refresh_mode": "weekly",
+      "reuse_pressure": "low"
     },
     {
       "cluster_id": "schemaopt_medium_delivery_operations_cluster_02",
@@ -1951,7 +2141,12 @@
         "sum_public"
       ],
       "hotspot_rank": 3,
-      "preferred_object_kind": "denorm_table"
+      "preferred_object_kind": "denorm_table",
+      "sla_tier": "high",
+      "business_owner": "pmo",
+      "dashboard_family": "portfolio_delivery",
+      "refresh_mode": "daily",
+      "reuse_pressure": "high"
     },
     {
       "cluster_id": "schemaopt_medium_delivery_operations_cluster_01",
@@ -1985,7 +2180,12 @@
         "row_count"
       ],
       "hotspot_rank": 4,
-      "preferred_object_kind": "agg_matview"
+      "preferred_object_kind": "agg_matview",
+      "sla_tier": "high",
+      "business_owner": "engineering_operations",
+      "dashboard_family": "execution_backlog",
+      "refresh_mode": "daily",
+      "reuse_pressure": "high"
     }
   ],
   "budgets": {
@@ -2006,5 +2206,9 @@
     "uses_real_query_execution": true,
     "uses_explain_plan_metrics": true,
     "rewrite_model": "explicit_rewritten_sql"
-  }
+  },
+  "task_story": "A delivery operations team uses warehouse reporting to understand execution backlog, portfolio health, collaboration load, and taxonomy coverage across project delivery workflows.",
+  "primary_user": "delivery operations manager",
+  "decision_cycle": "daily_delivery_standup_plus_weekly_portfolio_review",
+  "freshness_profile": "daily_execution_with_weekly_governance_rollups"
 }

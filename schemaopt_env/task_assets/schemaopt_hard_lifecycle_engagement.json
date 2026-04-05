@@ -939,7 +939,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "campaign influence reporting report slice 1 (visible)"
+      "description": "campaign influence reporting | campaign_influence_dashboard | diagnostic_breakout (visible)",
+      "consumer_surface": "campaign_influence_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c01_02",
@@ -989,7 +994,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "campaign influence reporting report slice 2 (visible)"
+      "description": "campaign influence reporting | campaign_influence_dashboard | segment_breakout (visible)",
+      "consumer_surface": "campaign_influence_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c01_03",
@@ -1036,7 +1046,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "campaign influence reporting report slice 3 (visible)"
+      "description": "campaign influence reporting | campaign_influence_dashboard | rollup (visible)",
+      "consumer_surface": "campaign_influence_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c01_04",
@@ -1088,7 +1103,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "campaign influence reporting report slice 4 (visible)"
+      "description": "campaign influence reporting | campaign_influence_dashboard | diagnostic_breakout (visible)",
+      "consumer_surface": "campaign_influence_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c01_05",
@@ -1138,7 +1158,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "campaign influence reporting report slice 5 (visible)"
+      "description": "campaign influence reporting | campaign_influence_dashboard | segment_breakout (visible)",
+      "consumer_surface": "campaign_influence_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c01_06",
@@ -1185,7 +1210,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "campaign influence reporting report slice 6 (visible)"
+      "description": "campaign influence reporting | campaign_influence_dashboard | rollup (visible)",
+      "consumer_surface": "campaign_influence_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c01_07",
@@ -1237,7 +1267,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "campaign influence reporting report slice 7 (visible)"
+      "description": "campaign influence reporting | campaign_influence_dashboard | diagnostic_breakout (visible)",
+      "consumer_surface": "campaign_influence_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c02_01",
@@ -1289,7 +1324,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "template performance analytics report slice 1 (visible)"
+      "description": "template performance analytics | template_quality_review | diagnostic_breakout (visible)",
+      "consumer_surface": "template_quality_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c02_02",
@@ -1339,7 +1379,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "template performance analytics report slice 2 (visible)"
+      "description": "template performance analytics | template_quality_review | segment_breakout (visible)",
+      "consumer_surface": "template_quality_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c02_03",
@@ -1386,7 +1431,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "template performance analytics report slice 3 (visible)"
+      "description": "template performance analytics | template_quality_review | rollup (visible)",
+      "consumer_surface": "template_quality_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c02_04",
@@ -1438,7 +1488,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "template performance analytics report slice 4 (visible)"
+      "description": "template performance analytics | template_quality_review | diagnostic_breakout (visible)",
+      "consumer_surface": "template_quality_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c02_05",
@@ -1488,7 +1543,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "template performance analytics report slice 5 (visible)"
+      "description": "template performance analytics | template_quality_review | segment_breakout (visible)",
+      "consumer_surface": "template_quality_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c02_06",
@@ -1535,7 +1595,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "template performance analytics report slice 6 (visible)"
+      "description": "template performance analytics | template_quality_review | rollup (visible)",
+      "consumer_surface": "template_quality_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c02_07",
@@ -1587,7 +1652,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "template performance analytics report slice 7 (visible)"
+      "description": "template performance analytics | template_quality_review | diagnostic_breakout (visible)",
+      "consumer_surface": "template_quality_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c03_01",
@@ -1639,7 +1709,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "engagement lift reporting report slice 1 (visible)"
+      "description": "engagement lift reporting | engagement_lift_dashboard | diagnostic_breakout (visible)",
+      "consumer_surface": "engagement_lift_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c03_02",
@@ -1689,7 +1764,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "engagement lift reporting report slice 2 (visible)"
+      "description": "engagement lift reporting | engagement_lift_dashboard | segment_breakout (visible)",
+      "consumer_surface": "engagement_lift_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c03_03",
@@ -1736,7 +1816,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "engagement lift reporting report slice 3 (visible)"
+      "description": "engagement lift reporting | engagement_lift_dashboard | rollup (visible)",
+      "consumer_surface": "engagement_lift_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c03_04",
@@ -1788,7 +1873,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "engagement lift reporting report slice 4 (visible)"
+      "description": "engagement lift reporting | engagement_lift_dashboard | diagnostic_breakout (visible)",
+      "consumer_surface": "engagement_lift_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c03_05",
@@ -1838,7 +1928,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "engagement lift reporting report slice 5 (visible)"
+      "description": "engagement lift reporting | engagement_lift_dashboard | segment_breakout (visible)",
+      "consumer_surface": "engagement_lift_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c03_06",
@@ -1885,7 +1980,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "engagement lift reporting report slice 6 (visible)"
+      "description": "engagement lift reporting | engagement_lift_dashboard | rollup (visible)",
+      "consumer_surface": "engagement_lift_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c03_07",
@@ -1937,7 +2037,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "engagement lift reporting report slice 7 (visible)"
+      "description": "engagement lift reporting | engagement_lift_dashboard | diagnostic_breakout (visible)",
+      "consumer_surface": "engagement_lift_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c04_01",
@@ -1985,7 +2090,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "churn signals reporting report slice 1 (visible)"
+      "description": "churn signals reporting | retention_risk_console | diagnostic_breakout (visible)",
+      "consumer_surface": "retention_risk_console",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c04_02",
@@ -2031,7 +2141,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "churn signals reporting report slice 2 (visible)"
+      "description": "churn signals reporting | retention_risk_console | segment_breakout (visible)",
+      "consumer_surface": "retention_risk_console",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c04_03",
@@ -2074,7 +2189,12 @@
         "join",
         "time_bucket"
       ],
-      "description": "churn signals reporting report slice 3 (visible)"
+      "description": "churn signals reporting | retention_risk_console | rollup (visible)",
+      "consumer_surface": "retention_risk_console",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c04_04",
@@ -2122,7 +2242,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "churn signals reporting report slice 4 (visible)"
+      "description": "churn signals reporting | retention_risk_console | diagnostic_breakout (visible)",
+      "consumer_surface": "retention_risk_console",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c04_05",
@@ -2168,7 +2293,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "churn signals reporting report slice 5 (visible)"
+      "description": "churn signals reporting | retention_risk_console | segment_breakout (visible)",
+      "consumer_surface": "retention_risk_console",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c04_06",
@@ -2211,7 +2341,12 @@
         "join",
         "time_bucket"
       ],
-      "description": "churn signals reporting report slice 6 (visible)"
+      "description": "churn signals reporting | retention_risk_console | rollup (visible)",
+      "consumer_surface": "retention_risk_console",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c04_07",
@@ -2259,7 +2394,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "churn signals reporting report slice 7 (visible)"
+      "description": "churn signals reporting | retention_risk_console | diagnostic_breakout (visible)",
+      "consumer_surface": "retention_risk_console",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c05_01",
@@ -2311,7 +2451,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "deliverability risk analytics report slice 1 (visible)"
+      "description": "deliverability risk analytics | deliverability_war_room | diagnostic_breakout (visible)",
+      "consumer_surface": "deliverability_war_room",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c05_02",
@@ -2361,7 +2506,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "deliverability risk analytics report slice 2 (visible)"
+      "description": "deliverability risk analytics | deliverability_war_room | segment_breakout (visible)",
+      "consumer_surface": "deliverability_war_room",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c05_03",
@@ -2408,7 +2558,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "deliverability risk analytics report slice 3 (visible)"
+      "description": "deliverability risk analytics | deliverability_war_room | rollup (visible)",
+      "consumer_surface": "deliverability_war_room",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c05_04",
@@ -2460,7 +2615,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "deliverability risk analytics report slice 4 (visible)"
+      "description": "deliverability risk analytics | deliverability_war_room | diagnostic_breakout (visible)",
+      "consumer_surface": "deliverability_war_room",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c05_05",
@@ -2510,7 +2670,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "deliverability risk analytics report slice 5 (visible)"
+      "description": "deliverability risk analytics | deliverability_war_room | segment_breakout (visible)",
+      "consumer_surface": "deliverability_war_room",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c05_06",
@@ -2557,7 +2722,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "deliverability risk analytics report slice 6 (visible)"
+      "description": "deliverability risk analytics | deliverability_war_room | rollup (visible)",
+      "consumer_surface": "deliverability_war_room",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_vq_c05_07",
@@ -2609,7 +2779,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "deliverability risk analytics report slice 7 (visible)"
+      "description": "deliverability risk analytics | deliverability_war_room | diagnostic_breakout (visible)",
+      "consumer_surface": "deliverability_war_room",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "diagnostic_breakout"
     }
   ],
   "holdout_queries": [
@@ -2661,7 +2836,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "campaign influence reporting report slice 1 (holdout)"
+      "description": "campaign influence reporting | campaign_influence_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "campaign_influence_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c01_02",
@@ -2708,7 +2888,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "campaign influence reporting report slice 2 (holdout)"
+      "description": "campaign influence reporting | campaign_influence_dashboard | rollup (holdout)",
+      "consumer_surface": "campaign_influence_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c01_03",
@@ -2760,7 +2945,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "campaign influence reporting report slice 3 (holdout)"
+      "description": "campaign influence reporting | campaign_influence_dashboard | diagnostic_breakout (holdout)",
+      "consumer_surface": "campaign_influence_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c01_04",
@@ -2810,7 +3000,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "campaign influence reporting report slice 4 (holdout)"
+      "description": "campaign influence reporting | campaign_influence_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "campaign_influence_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c02_01",
@@ -2860,7 +3055,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "template performance analytics report slice 1 (holdout)"
+      "description": "template performance analytics | template_quality_review | segment_breakout (holdout)",
+      "consumer_surface": "template_quality_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c02_02",
@@ -2907,7 +3107,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "template performance analytics report slice 2 (holdout)"
+      "description": "template performance analytics | template_quality_review | rollup (holdout)",
+      "consumer_surface": "template_quality_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c02_03",
@@ -2959,7 +3164,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "template performance analytics report slice 3 (holdout)"
+      "description": "template performance analytics | template_quality_review | diagnostic_breakout (holdout)",
+      "consumer_surface": "template_quality_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c02_04",
@@ -3009,7 +3219,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "template performance analytics report slice 4 (holdout)"
+      "description": "template performance analytics | template_quality_review | segment_breakout (holdout)",
+      "consumer_surface": "template_quality_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c03_01",
@@ -3059,7 +3274,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "engagement lift reporting report slice 1 (holdout)"
+      "description": "engagement lift reporting | engagement_lift_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "engagement_lift_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c03_02",
@@ -3106,7 +3326,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "engagement lift reporting report slice 2 (holdout)"
+      "description": "engagement lift reporting | engagement_lift_dashboard | rollup (holdout)",
+      "consumer_surface": "engagement_lift_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c03_03",
@@ -3158,7 +3383,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "engagement lift reporting report slice 3 (holdout)"
+      "description": "engagement lift reporting | engagement_lift_dashboard | diagnostic_breakout (holdout)",
+      "consumer_surface": "engagement_lift_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c03_04",
@@ -3208,7 +3438,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "engagement lift reporting report slice 4 (holdout)"
+      "description": "engagement lift reporting | engagement_lift_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "engagement_lift_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "lifecycle_program_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c04_01",
@@ -3254,7 +3489,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "churn signals reporting report slice 1 (holdout)"
+      "description": "churn signals reporting | retention_risk_console | segment_breakout (holdout)",
+      "consumer_surface": "retention_risk_console",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c04_02",
@@ -3297,7 +3537,12 @@
         "join",
         "time_bucket"
       ],
-      "description": "churn signals reporting report slice 2 (holdout)"
+      "description": "churn signals reporting | retention_risk_console | rollup (holdout)",
+      "consumer_surface": "retention_risk_console",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c04_03",
@@ -3345,7 +3590,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "churn signals reporting report slice 3 (holdout)"
+      "description": "churn signals reporting | retention_risk_console | diagnostic_breakout (holdout)",
+      "consumer_surface": "retention_risk_console",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c04_04",
@@ -3391,7 +3641,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "churn signals reporting report slice 4 (holdout)"
+      "description": "churn signals reporting | retention_risk_console | segment_breakout (holdout)",
+      "consumer_surface": "retention_risk_console",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c05_01",
@@ -3441,7 +3696,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "deliverability risk analytics report slice 1 (holdout)"
+      "description": "deliverability risk analytics | deliverability_war_room | segment_breakout (holdout)",
+      "consumer_surface": "deliverability_war_room",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c05_02",
@@ -3488,7 +3748,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "deliverability risk analytics report slice 2 (holdout)"
+      "description": "deliverability risk analytics | deliverability_war_room | rollup (holdout)",
+      "consumer_surface": "deliverability_war_room",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c05_03",
@@ -3540,7 +3805,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "deliverability risk analytics report slice 3 (holdout)"
+      "description": "deliverability risk analytics | deliverability_war_room | diagnostic_breakout (holdout)",
+      "consumer_surface": "deliverability_war_room",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "diagnostic_breakout"
     },
     {
       "query_id": "schemaopt_hard_lifecycle_engagement_hq_c05_04",
@@ -3590,7 +3860,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "deliverability risk analytics report slice 4 (holdout)"
+      "description": "deliverability risk analytics | deliverability_war_room | segment_breakout (holdout)",
+      "consumer_surface": "deliverability_war_room",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "risk_monitoring_rollup",
+      "report_variant_type": "segment_breakout"
     }
   ],
   "clusters": [
@@ -3632,7 +3907,12 @@
         "sum_category"
       ],
       "hotspot_rank": 1,
-      "preferred_object_kind": "agg_matview"
+      "preferred_object_kind": "agg_matview",
+      "sla_tier": "critical",
+      "business_owner": "deliverability_ops",
+      "dashboard_family": "deliverability_risk",
+      "refresh_mode": "daily",
+      "reuse_pressure": "medium"
     },
     {
       "cluster_id": "schemaopt_hard_lifecycle_engagement_cluster_04",
@@ -3670,7 +3950,12 @@
         "row_count"
       ],
       "hotspot_rank": 2,
-      "preferred_object_kind": "join_matview"
+      "preferred_object_kind": "join_matview",
+      "sla_tier": "critical",
+      "business_owner": "retention_ops",
+      "dashboard_family": "churn_signals",
+      "refresh_mode": "daily",
+      "reuse_pressure": "medium"
     },
     {
       "cluster_id": "schemaopt_hard_lifecycle_engagement_cluster_03",
@@ -3710,7 +3995,12 @@
         "sum_choice_number"
       ],
       "hotspot_rank": 3,
-      "preferred_object_kind": "agg_matview"
+      "preferred_object_kind": "agg_matview",
+      "sla_tier": "high",
+      "business_owner": "engagement_analytics",
+      "dashboard_family": "engagement_lift",
+      "refresh_mode": "daily",
+      "reuse_pressure": "high"
     },
     {
       "cluster_id": "schemaopt_hard_lifecycle_engagement_cluster_02",
@@ -3750,7 +4040,12 @@
         "sum_folder_value"
       ],
       "hotspot_rank": 4,
-      "preferred_object_kind": "denorm_table"
+      "preferred_object_kind": "denorm_table",
+      "sla_tier": "standard",
+      "business_owner": "email_operations",
+      "dashboard_family": "template_performance",
+      "refresh_mode": "weekly",
+      "reuse_pressure": "medium"
     },
     {
       "cluster_id": "schemaopt_hard_lifecycle_engagement_cluster_01",
@@ -3790,7 +4085,12 @@
         "sum_max_members"
       ],
       "hotspot_rank": 5,
-      "preferred_object_kind": "agg_matview"
+      "preferred_object_kind": "agg_matview",
+      "sla_tier": "high",
+      "business_owner": "lifecycle_marketing",
+      "dashboard_family": "campaign_influence",
+      "refresh_mode": "weekly",
+      "reuse_pressure": "high"
     }
   ],
   "budgets": {
@@ -3811,5 +4111,9 @@
     "uses_real_query_execution": true,
     "uses_explain_plan_metrics": true,
     "rewrite_model": "explicit_rewritten_sql"
-  }
+  },
+  "task_story": "A lifecycle marketing and deliverability team relies on warehouse reporting to understand campaign influence, template health, engagement lift, churn signals, and deliverability risk.",
+  "primary_user": "lifecycle marketing operations lead",
+  "decision_cycle": "daily_risk_monitoring_plus_weekly_lifecycle_review",
+  "freshness_profile": "daily_risk_signals_with_weekly_program_performance_rollups"
 }

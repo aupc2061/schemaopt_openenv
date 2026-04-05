@@ -735,7 +735,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "keyword efficiency reporting report slice 1 (visible)"
+      "description": "keyword efficiency reporting | keyword_tuning_workspace | segment_breakout (visible)",
+      "consumer_surface": "keyword_tuning_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c01_02",
@@ -778,7 +783,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "keyword efficiency reporting report slice 2 (visible)"
+      "description": "keyword efficiency reporting | keyword_tuning_workspace | rollup (visible)",
+      "consumer_surface": "keyword_tuning_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c01_03",
@@ -824,7 +834,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "keyword efficiency reporting report slice 3 (visible)"
+      "description": "keyword efficiency reporting | keyword_tuning_workspace | segment_breakout (visible)",
+      "consumer_surface": "keyword_tuning_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c01_04",
@@ -867,7 +882,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "keyword efficiency reporting report slice 4 (visible)"
+      "description": "keyword efficiency reporting | keyword_tuning_workspace | rollup (visible)",
+      "consumer_surface": "keyword_tuning_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c01_05",
@@ -913,7 +933,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "keyword efficiency reporting report slice 5 (visible)"
+      "description": "keyword efficiency reporting | keyword_tuning_workspace | segment_breakout (visible)",
+      "consumer_surface": "keyword_tuning_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c01_06",
@@ -956,7 +981,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "keyword efficiency reporting report slice 6 (visible)"
+      "description": "keyword efficiency reporting | keyword_tuning_workspace | rollup (visible)",
+      "consumer_surface": "keyword_tuning_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c02_01",
@@ -1002,7 +1032,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "ad group mix analysis report slice 1 (visible)"
+      "description": "ad group mix analysis | optimization_workbench | segment_breakout (visible)",
+      "consumer_surface": "optimization_workbench",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c02_02",
@@ -1045,7 +1080,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "ad group mix analysis report slice 2 (visible)"
+      "description": "ad group mix analysis | optimization_workbench | rollup (visible)",
+      "consumer_surface": "optimization_workbench",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c02_03",
@@ -1091,7 +1131,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "ad group mix analysis report slice 3 (visible)"
+      "description": "ad group mix analysis | optimization_workbench | segment_breakout (visible)",
+      "consumer_surface": "optimization_workbench",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c02_04",
@@ -1134,7 +1179,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "ad group mix analysis report slice 4 (visible)"
+      "description": "ad group mix analysis | optimization_workbench | rollup (visible)",
+      "consumer_surface": "optimization_workbench",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c02_05",
@@ -1180,7 +1230,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "ad group mix analysis report slice 5 (visible)"
+      "description": "ad group mix analysis | optimization_workbench | segment_breakout (visible)",
+      "consumer_surface": "optimization_workbench",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c02_06",
@@ -1223,7 +1278,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "ad group mix analysis report slice 6 (visible)"
+      "description": "ad group mix analysis | optimization_workbench | rollup (visible)",
+      "consumer_surface": "optimization_workbench",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c03_01",
@@ -1269,7 +1329,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "campaign performance reporting report slice 1 (visible)"
+      "description": "campaign performance reporting | campaign_pacing_console | segment_breakout (visible)",
+      "consumer_surface": "campaign_pacing_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c03_02",
@@ -1312,7 +1377,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "campaign performance reporting report slice 2 (visible)"
+      "description": "campaign performance reporting | campaign_pacing_console | rollup (visible)",
+      "consumer_surface": "campaign_pacing_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c03_03",
@@ -1358,7 +1428,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "campaign performance reporting report slice 3 (visible)"
+      "description": "campaign performance reporting | campaign_pacing_console | segment_breakout (visible)",
+      "consumer_surface": "campaign_pacing_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c03_04",
@@ -1401,7 +1476,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "campaign performance reporting report slice 4 (visible)"
+      "description": "campaign performance reporting | campaign_pacing_console | rollup (visible)",
+      "consumer_surface": "campaign_pacing_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c03_05",
@@ -1447,7 +1527,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "campaign performance reporting report slice 5 (visible)"
+      "description": "campaign performance reporting | campaign_pacing_console | segment_breakout (visible)",
+      "consumer_surface": "campaign_pacing_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c03_06",
@@ -1490,7 +1575,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "campaign performance reporting report slice 6 (visible)"
+      "description": "campaign performance reporting | campaign_pacing_console | rollup (visible)",
+      "consumer_surface": "campaign_pacing_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c04_01",
@@ -1536,7 +1626,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "portfolio health reporting report slice 1 (visible)"
+      "description": "portfolio health reporting | exec_dashboard | segment_breakout (visible)",
+      "consumer_surface": "exec_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c04_02",
@@ -1579,7 +1674,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "portfolio health reporting report slice 2 (visible)"
+      "description": "portfolio health reporting | exec_dashboard | rollup (visible)",
+      "consumer_surface": "exec_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c04_03",
@@ -1625,7 +1725,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "portfolio health reporting report slice 3 (visible)"
+      "description": "portfolio health reporting | exec_dashboard | segment_breakout (visible)",
+      "consumer_surface": "exec_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c04_04",
@@ -1668,7 +1773,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "portfolio health reporting report slice 4 (visible)"
+      "description": "portfolio health reporting | exec_dashboard | rollup (visible)",
+      "consumer_surface": "exec_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c04_05",
@@ -1714,7 +1824,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "portfolio health reporting report slice 5 (visible)"
+      "description": "portfolio health reporting | exec_dashboard | segment_breakout (visible)",
+      "consumer_surface": "exec_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c04_06",
@@ -1757,7 +1872,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "portfolio health reporting report slice 6 (visible)"
+      "description": "portfolio health reporting | exec_dashboard | rollup (visible)",
+      "consumer_surface": "exec_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     }
   ],
   "holdout_queries": [
@@ -1802,7 +1922,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "keyword efficiency reporting report slice 1 (holdout)"
+      "description": "keyword efficiency reporting | keyword_tuning_workspace | rollup (holdout)",
+      "consumer_surface": "keyword_tuning_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c01_02",
@@ -1848,7 +1973,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "keyword efficiency reporting report slice 2 (holdout)"
+      "description": "keyword efficiency reporting | keyword_tuning_workspace | segment_breakout (holdout)",
+      "consumer_surface": "keyword_tuning_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c01_03",
@@ -1891,7 +2021,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "keyword efficiency reporting report slice 3 (holdout)"
+      "description": "keyword efficiency reporting | keyword_tuning_workspace | rollup (holdout)",
+      "consumer_surface": "keyword_tuning_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c02_01",
@@ -1934,7 +2069,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "ad group mix analysis report slice 1 (holdout)"
+      "description": "ad group mix analysis | optimization_workbench | rollup (holdout)",
+      "consumer_surface": "optimization_workbench",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c02_02",
@@ -1980,7 +2120,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "ad group mix analysis report slice 2 (holdout)"
+      "description": "ad group mix analysis | optimization_workbench | segment_breakout (holdout)",
+      "consumer_surface": "optimization_workbench",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c02_03",
@@ -2023,7 +2168,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "ad group mix analysis report slice 3 (holdout)"
+      "description": "ad group mix analysis | optimization_workbench | rollup (holdout)",
+      "consumer_surface": "optimization_workbench",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c03_01",
@@ -2066,7 +2216,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "campaign performance reporting report slice 1 (holdout)"
+      "description": "campaign performance reporting | campaign_pacing_console | rollup (holdout)",
+      "consumer_surface": "campaign_pacing_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c03_02",
@@ -2112,7 +2267,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "campaign performance reporting report slice 2 (holdout)"
+      "description": "campaign performance reporting | campaign_pacing_console | segment_breakout (holdout)",
+      "consumer_surface": "campaign_pacing_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c03_03",
@@ -2155,7 +2315,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "campaign performance reporting report slice 3 (holdout)"
+      "description": "campaign performance reporting | campaign_pacing_console | rollup (holdout)",
+      "consumer_surface": "campaign_pacing_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c04_01",
@@ -2198,7 +2363,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "portfolio health reporting report slice 1 (holdout)"
+      "description": "portfolio health reporting | exec_dashboard | rollup (holdout)",
+      "consumer_surface": "exec_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c04_02",
@@ -2244,7 +2414,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "portfolio health reporting report slice 2 (holdout)"
+      "description": "portfolio health reporting | exec_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "exec_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c04_03",
@@ -2287,7 +2462,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "portfolio health reporting report slice 3 (holdout)"
+      "description": "portfolio health reporting | exec_dashboard | rollup (holdout)",
+      "consumer_surface": "exec_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "campaign_hierarchy_rollup",
+      "report_variant_type": "rollup"
     }
   ],
   "clusters": [
@@ -2325,7 +2505,12 @@
         "sum_active_view_impressions"
       ],
       "hotspot_rank": 1,
-      "preferred_object_kind": "join_matview"
+      "preferred_object_kind": "join_matview",
+      "sla_tier": "critical",
+      "business_owner": "growth_finance",
+      "dashboard_family": "portfolio_health",
+      "refresh_mode": "daily",
+      "reuse_pressure": "high"
     },
     {
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
@@ -2361,7 +2546,12 @@
         "sum_active_view_impressions"
       ],
       "hotspot_rank": 2,
-      "preferred_object_kind": "agg_matview"
+      "preferred_object_kind": "agg_matview",
+      "sla_tier": "high",
+      "business_owner": "paid_media",
+      "dashboard_family": "campaign_performance",
+      "refresh_mode": "daily",
+      "reuse_pressure": "high"
     },
     {
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
@@ -2397,7 +2587,12 @@
         "sum_active_view_impressions"
       ],
       "hotspot_rank": 3,
-      "preferred_object_kind": "denorm_table"
+      "preferred_object_kind": "denorm_table",
+      "sla_tier": "standard",
+      "business_owner": "channel_optimization",
+      "dashboard_family": "ad_group_mix",
+      "refresh_mode": "daily",
+      "reuse_pressure": "medium"
     },
     {
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
@@ -2433,7 +2628,12 @@
         "sum_active_view_impressions"
       ],
       "hotspot_rank": 4,
-      "preferred_object_kind": "agg_matview"
+      "preferred_object_kind": "agg_matview",
+      "sla_tier": "standard",
+      "business_owner": "search_optimization",
+      "dashboard_family": "keyword_efficiency",
+      "refresh_mode": "daily",
+      "reuse_pressure": "medium"
     }
   ],
   "budgets": {
@@ -2454,5 +2654,9 @@
     "uses_real_query_execution": true,
     "uses_explain_plan_metrics": true,
     "rewrite_model": "explicit_rewritten_sql"
-  }
+  },
+  "task_story": "A paid acquisition team monitors portfolio pacing, campaign performance, ad-group mix, and keyword efficiency across a single reporting hierarchy that rewards reusable rollups.",
+  "primary_user": "paid media analytics lead",
+  "decision_cycle": "daily_pacing_review_plus_weekly_channel_readout",
+  "freshness_profile": "daily_performance_with_exec_rollups"
 }

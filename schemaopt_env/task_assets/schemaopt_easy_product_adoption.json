@@ -1143,7 +1143,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "workspace adoption reporting report slice 1 (visible)"
+      "description": "workspace adoption reporting | adoption_dashboard | segment_breakout (visible)",
+      "consumer_surface": "adoption_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "workspace_adoption_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_vq_c01_02",
@@ -1186,7 +1191,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "workspace adoption reporting report slice 2 (visible)"
+      "description": "workspace adoption reporting | adoption_dashboard | rollup (visible)",
+      "consumer_surface": "adoption_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "workspace_adoption_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_vq_c01_03",
@@ -1232,7 +1242,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "workspace adoption reporting report slice 3 (visible)"
+      "description": "workspace adoption reporting | adoption_dashboard | segment_breakout (visible)",
+      "consumer_surface": "adoption_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "workspace_adoption_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_vq_c01_04",
@@ -1275,7 +1290,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "workspace adoption reporting report slice 4 (visible)"
+      "description": "workspace adoption reporting | adoption_dashboard | rollup (visible)",
+      "consumer_surface": "adoption_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "workspace_adoption_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_vq_c02_01",
@@ -1321,7 +1341,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "in-app guidance analytics report slice 1 (visible)"
+      "description": "in-app guidance analytics | onboarding_guidance_review | segment_breakout (visible)",
+      "consumer_surface": "onboarding_guidance_review",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "guidance_engagement_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_vq_c02_02",
@@ -1364,7 +1389,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "in-app guidance analytics report slice 2 (visible)"
+      "description": "in-app guidance analytics | onboarding_guidance_review | rollup (visible)",
+      "consumer_surface": "onboarding_guidance_review",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "guidance_engagement_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_vq_c02_03",
@@ -1410,7 +1440,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "in-app guidance analytics report slice 3 (visible)"
+      "description": "in-app guidance analytics | onboarding_guidance_review | segment_breakout (visible)",
+      "consumer_surface": "onboarding_guidance_review",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "guidance_engagement_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_vq_c02_04",
@@ -1453,7 +1488,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "in-app guidance analytics report slice 4 (visible)"
+      "description": "in-app guidance analytics | onboarding_guidance_review | rollup (visible)",
+      "consumer_surface": "onboarding_guidance_review",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "guidance_engagement_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_vq_c03_01",
@@ -1499,7 +1539,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "user journey analytics report slice 1 (visible)"
+      "description": "user journey analytics | journey_analysis_workspace | segment_breakout (visible)",
+      "consumer_surface": "journey_analysis_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workspace_adoption_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_vq_c03_02",
@@ -1542,7 +1587,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "user journey analytics report slice 2 (visible)"
+      "description": "user journey analytics | journey_analysis_workspace | rollup (visible)",
+      "consumer_surface": "journey_analysis_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workspace_adoption_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_vq_c03_03",
@@ -1588,7 +1638,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "user journey analytics report slice 3 (visible)"
+      "description": "user journey analytics | journey_analysis_workspace | segment_breakout (visible)",
+      "consumer_surface": "journey_analysis_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workspace_adoption_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_vq_c03_04",
@@ -1631,7 +1686,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "user journey analytics report slice 4 (visible)"
+      "description": "user journey analytics | journey_analysis_workspace | rollup (visible)",
+      "consumer_surface": "journey_analysis_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workspace_adoption_rollup",
+      "report_variant_type": "rollup"
     }
   ],
   "holdout_queries": [
@@ -1676,7 +1736,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "workspace adoption reporting report slice 1 (holdout)"
+      "description": "workspace adoption reporting | adoption_dashboard | rollup (holdout)",
+      "consumer_surface": "adoption_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "workspace_adoption_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_hq_c01_02",
@@ -1722,7 +1787,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "workspace adoption reporting report slice 2 (holdout)"
+      "description": "workspace adoption reporting | adoption_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "adoption_dashboard",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "workspace_adoption_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_hq_c02_01",
@@ -1765,7 +1835,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "in-app guidance analytics report slice 1 (holdout)"
+      "description": "in-app guidance analytics | onboarding_guidance_review | rollup (holdout)",
+      "consumer_surface": "onboarding_guidance_review",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "guidance_engagement_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_hq_c02_02",
@@ -1811,7 +1886,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "in-app guidance analytics report slice 2 (holdout)"
+      "description": "in-app guidance analytics | onboarding_guidance_review | segment_breakout (holdout)",
+      "consumer_surface": "onboarding_guidance_review",
+      "latency_tier": "standard",
+      "freshness_tier": "daily",
+      "reuse_group": "guidance_engagement_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_hq_c03_01",
@@ -1854,7 +1934,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "user journey analytics report slice 1 (holdout)"
+      "description": "user journey analytics | journey_analysis_workspace | rollup (holdout)",
+      "consumer_surface": "journey_analysis_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workspace_adoption_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_easy_product_adoption_hq_c03_02",
@@ -1900,7 +1985,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "user journey analytics report slice 2 (holdout)"
+      "description": "user journey analytics | journey_analysis_workspace | segment_breakout (holdout)",
+      "consumer_surface": "journey_analysis_workspace",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "workspace_adoption_rollup",
+      "report_variant_type": "segment_breakout"
     }
   ],
   "clusters": [
@@ -1936,7 +2026,12 @@
         "sum_agent_group_role"
       ],
       "hotspot_rank": 1,
-      "preferred_object_kind": "agg_matview"
+      "preferred_object_kind": "agg_matview",
+      "sla_tier": "standard",
+      "business_owner": "product_analytics",
+      "dashboard_family": "user_journey",
+      "refresh_mode": "weekly",
+      "reuse_pressure": "high"
     },
     {
       "cluster_id": "schemaopt_easy_product_adoption_cluster_02",
@@ -1970,7 +2065,12 @@
         "sum_attribute_badge_can_change_badge_color"
       ],
       "hotspot_rank": 2,
-      "preferred_object_kind": "denorm_table"
+      "preferred_object_kind": "denorm_table",
+      "sla_tier": "standard",
+      "business_owner": "growth_product",
+      "dashboard_family": "in_app_guidance",
+      "refresh_mode": "daily",
+      "reuse_pressure": "medium"
     },
     {
       "cluster_id": "schemaopt_easy_product_adoption_cluster_01",
@@ -2004,7 +2104,12 @@
         "sum_description"
       ],
       "hotspot_rank": 3,
-      "preferred_object_kind": "agg_matview"
+      "preferred_object_kind": "agg_matview",
+      "sla_tier": "high",
+      "business_owner": "product_ops",
+      "dashboard_family": "workspace_adoption",
+      "refresh_mode": "daily",
+      "reuse_pressure": "high"
     }
   ],
   "budgets": {
@@ -2025,5 +2130,9 @@
     "uses_real_query_execution": true,
     "uses_explain_plan_metrics": true,
     "rewrite_model": "explicit_rewritten_sql"
-  }
+  },
+  "task_story": "A product operations team reviews workspace adoption, in-app guidance engagement, and user journey activity to prioritize onboarding and feature rollout decisions.",
+  "primary_user": "product operations analyst",
+  "decision_cycle": "daily_dashboard_review_plus_weekly_adoption_readout",
+  "freshness_profile": "daily_adoption_with_weekly_behavior_rollups"
 }

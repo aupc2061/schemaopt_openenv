@@ -1047,7 +1047,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "monetization yield reporting report slice 1 (visible)"
+      "description": "monetization yield reporting | exec_revenue_dashboard | segment_breakout (visible)",
+      "consumer_surface": "exec_revenue_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "revenue_yield_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_02",
@@ -1090,7 +1095,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "monetization yield reporting report slice 2 (visible)"
+      "description": "monetization yield reporting | exec_revenue_dashboard | rollup (visible)",
+      "consumer_surface": "exec_revenue_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "revenue_yield_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_03",
@@ -1136,7 +1146,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "monetization yield reporting report slice 3 (visible)"
+      "description": "monetization yield reporting | exec_revenue_dashboard | segment_breakout (visible)",
+      "consumer_surface": "exec_revenue_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "revenue_yield_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_04",
@@ -1179,7 +1194,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "monetization yield reporting report slice 4 (visible)"
+      "description": "monetization yield reporting | exec_revenue_dashboard | rollup (visible)",
+      "consumer_surface": "exec_revenue_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "revenue_yield_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_05",
@@ -1225,7 +1245,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "monetization yield reporting report slice 5 (visible)"
+      "description": "monetization yield reporting | exec_revenue_dashboard | segment_breakout (visible)",
+      "consumer_surface": "exec_revenue_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "revenue_yield_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_06",
@@ -1268,7 +1293,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "monetization yield reporting report slice 6 (visible)"
+      "description": "monetization yield reporting | exec_revenue_dashboard | rollup (visible)",
+      "consumer_surface": "exec_revenue_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "revenue_yield_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c01_07",
@@ -1314,7 +1344,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "monetization yield reporting report slice 7 (visible)"
+      "description": "monetization yield reporting | exec_revenue_dashboard | segment_breakout (visible)",
+      "consumer_surface": "exec_revenue_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "revenue_yield_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_01",
@@ -1360,7 +1395,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "release performance analytics report slice 1 (visible)"
+      "description": "release performance analytics | release_monitoring_console | segment_breakout (visible)",
+      "consumer_surface": "release_monitoring_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_02",
@@ -1403,7 +1443,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "release performance analytics report slice 2 (visible)"
+      "description": "release performance analytics | release_monitoring_console | rollup (visible)",
+      "consumer_surface": "release_monitoring_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_03",
@@ -1449,7 +1494,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "release performance analytics report slice 3 (visible)"
+      "description": "release performance analytics | release_monitoring_console | segment_breakout (visible)",
+      "consumer_surface": "release_monitoring_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_04",
@@ -1492,7 +1542,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "release performance analytics report slice 4 (visible)"
+      "description": "release performance analytics | release_monitoring_console | rollup (visible)",
+      "consumer_surface": "release_monitoring_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_05",
@@ -1538,7 +1593,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "release performance analytics report slice 5 (visible)"
+      "description": "release performance analytics | release_monitoring_console | segment_breakout (visible)",
+      "consumer_surface": "release_monitoring_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_06",
@@ -1581,7 +1641,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "release performance analytics report slice 6 (visible)"
+      "description": "release performance analytics | release_monitoring_console | rollup (visible)",
+      "consumer_surface": "release_monitoring_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c02_07",
@@ -1627,7 +1692,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "release performance analytics report slice 7 (visible)"
+      "description": "release performance analytics | release_monitoring_console | segment_breakout (visible)",
+      "consumer_surface": "release_monitoring_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_01",
@@ -1673,7 +1743,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "geo growth analytics report slice 1 (visible)"
+      "description": "geo growth analytics | regional_growth_review | segment_breakout (visible)",
+      "consumer_surface": "regional_growth_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "geo_growth_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_02",
@@ -1716,7 +1791,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "geo growth analytics report slice 2 (visible)"
+      "description": "geo growth analytics | regional_growth_review | rollup (visible)",
+      "consumer_surface": "regional_growth_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "geo_growth_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_03",
@@ -1762,7 +1842,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "geo growth analytics report slice 3 (visible)"
+      "description": "geo growth analytics | regional_growth_review | segment_breakout (visible)",
+      "consumer_surface": "regional_growth_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "geo_growth_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_04",
@@ -1805,7 +1890,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "geo growth analytics report slice 4 (visible)"
+      "description": "geo growth analytics | regional_growth_review | rollup (visible)",
+      "consumer_surface": "regional_growth_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "geo_growth_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_05",
@@ -1851,7 +1941,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "geo growth analytics report slice 5 (visible)"
+      "description": "geo growth analytics | regional_growth_review | segment_breakout (visible)",
+      "consumer_surface": "regional_growth_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "geo_growth_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_06",
@@ -1894,7 +1989,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "geo growth analytics report slice 6 (visible)"
+      "description": "geo growth analytics | regional_growth_review | rollup (visible)",
+      "consumer_surface": "regional_growth_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "geo_growth_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c03_07",
@@ -1940,7 +2040,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "geo growth analytics report slice 7 (visible)"
+      "description": "geo growth analytics | regional_growth_review | segment_breakout (visible)",
+      "consumer_surface": "regional_growth_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "geo_growth_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_01",
@@ -1986,7 +2091,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "device mix reporting report slice 1 (visible)"
+      "description": "device mix reporting | device_mix_dashboard | segment_breakout (visible)",
+      "consumer_surface": "device_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_02",
@@ -2029,7 +2139,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "device mix reporting report slice 2 (visible)"
+      "description": "device mix reporting | device_mix_dashboard | rollup (visible)",
+      "consumer_surface": "device_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_03",
@@ -2075,7 +2190,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "device mix reporting report slice 3 (visible)"
+      "description": "device mix reporting | device_mix_dashboard | segment_breakout (visible)",
+      "consumer_surface": "device_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_04",
@@ -2118,7 +2238,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "device mix reporting report slice 4 (visible)"
+      "description": "device mix reporting | device_mix_dashboard | rollup (visible)",
+      "consumer_surface": "device_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_05",
@@ -2164,7 +2289,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "device mix reporting report slice 5 (visible)"
+      "description": "device mix reporting | device_mix_dashboard | segment_breakout (visible)",
+      "consumer_surface": "device_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_06",
@@ -2207,7 +2337,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "device mix reporting report slice 6 (visible)"
+      "description": "device mix reporting | device_mix_dashboard | rollup (visible)",
+      "consumer_surface": "device_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c04_07",
@@ -2253,7 +2388,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "device mix reporting report slice 7 (visible)"
+      "description": "device mix reporting | device_mix_dashboard | segment_breakout (visible)",
+      "consumer_surface": "device_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_01",
@@ -2299,7 +2439,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "platform mix reporting report slice 1 (visible)"
+      "description": "platform mix reporting | platform_mix_dashboard | segment_breakout (visible)",
+      "consumer_surface": "platform_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_02",
@@ -2342,7 +2487,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "platform mix reporting report slice 2 (visible)"
+      "description": "platform mix reporting | platform_mix_dashboard | rollup (visible)",
+      "consumer_surface": "platform_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_03",
@@ -2388,7 +2538,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "platform mix reporting report slice 3 (visible)"
+      "description": "platform mix reporting | platform_mix_dashboard | segment_breakout (visible)",
+      "consumer_surface": "platform_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_04",
@@ -2431,7 +2586,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "platform mix reporting report slice 4 (visible)"
+      "description": "platform mix reporting | platform_mix_dashboard | rollup (visible)",
+      "consumer_surface": "platform_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_05",
@@ -2477,7 +2637,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "platform mix reporting report slice 5 (visible)"
+      "description": "platform mix reporting | platform_mix_dashboard | segment_breakout (visible)",
+      "consumer_surface": "platform_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_06",
@@ -2520,7 +2685,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "platform mix reporting report slice 6 (visible)"
+      "description": "platform mix reporting | platform_mix_dashboard | rollup (visible)",
+      "consumer_surface": "platform_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_vq_c05_07",
@@ -2566,7 +2736,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "platform mix reporting report slice 7 (visible)"
+      "description": "platform mix reporting | platform_mix_dashboard | segment_breakout (visible)",
+      "consumer_surface": "platform_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     }
   ],
   "holdout_queries": [
@@ -2611,7 +2786,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "monetization yield reporting report slice 1 (holdout)"
+      "description": "monetization yield reporting | exec_revenue_dashboard | rollup (holdout)",
+      "consumer_surface": "exec_revenue_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "revenue_yield_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c01_02",
@@ -2657,7 +2837,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "monetization yield reporting report slice 2 (holdout)"
+      "description": "monetization yield reporting | exec_revenue_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "exec_revenue_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "revenue_yield_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c01_03",
@@ -2700,7 +2885,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "monetization yield reporting report slice 3 (holdout)"
+      "description": "monetization yield reporting | exec_revenue_dashboard | rollup (holdout)",
+      "consumer_surface": "exec_revenue_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "revenue_yield_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c01_04",
@@ -2746,7 +2936,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "monetization yield reporting report slice 4 (holdout)"
+      "description": "monetization yield reporting | exec_revenue_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "exec_revenue_dashboard",
+      "latency_tier": "critical",
+      "freshness_tier": "daily",
+      "reuse_group": "revenue_yield_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c02_01",
@@ -2789,7 +2984,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "release performance analytics report slice 1 (holdout)"
+      "description": "release performance analytics | release_monitoring_console | rollup (holdout)",
+      "consumer_surface": "release_monitoring_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c02_02",
@@ -2835,7 +3035,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "release performance analytics report slice 2 (holdout)"
+      "description": "release performance analytics | release_monitoring_console | segment_breakout (holdout)",
+      "consumer_surface": "release_monitoring_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c02_03",
@@ -2878,7 +3083,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "release performance analytics report slice 3 (holdout)"
+      "description": "release performance analytics | release_monitoring_console | rollup (holdout)",
+      "consumer_surface": "release_monitoring_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c02_04",
@@ -2924,7 +3134,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "release performance analytics report slice 4 (holdout)"
+      "description": "release performance analytics | release_monitoring_console | segment_breakout (holdout)",
+      "consumer_surface": "release_monitoring_console",
+      "latency_tier": "high",
+      "freshness_tier": "daily",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c03_01",
@@ -2967,7 +3182,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "geo growth analytics report slice 1 (holdout)"
+      "description": "geo growth analytics | regional_growth_review | rollup (holdout)",
+      "consumer_surface": "regional_growth_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "geo_growth_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c03_02",
@@ -3013,7 +3233,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "geo growth analytics report slice 2 (holdout)"
+      "description": "geo growth analytics | regional_growth_review | segment_breakout (holdout)",
+      "consumer_surface": "regional_growth_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "geo_growth_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c03_03",
@@ -3056,7 +3281,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "geo growth analytics report slice 3 (holdout)"
+      "description": "geo growth analytics | regional_growth_review | rollup (holdout)",
+      "consumer_surface": "regional_growth_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "geo_growth_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c03_04",
@@ -3102,7 +3332,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "geo growth analytics report slice 4 (holdout)"
+      "description": "geo growth analytics | regional_growth_review | segment_breakout (holdout)",
+      "consumer_surface": "regional_growth_review",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "geo_growth_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c04_01",
@@ -3145,7 +3380,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "device mix reporting report slice 1 (holdout)"
+      "description": "device mix reporting | device_mix_dashboard | rollup (holdout)",
+      "consumer_surface": "device_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c04_02",
@@ -3191,7 +3431,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "device mix reporting report slice 2 (holdout)"
+      "description": "device mix reporting | device_mix_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "device_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c04_03",
@@ -3234,7 +3479,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "device mix reporting report slice 3 (holdout)"
+      "description": "device mix reporting | device_mix_dashboard | rollup (holdout)",
+      "consumer_surface": "device_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c04_04",
@@ -3280,7 +3530,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "device mix reporting report slice 4 (holdout)"
+      "description": "device mix reporting | device_mix_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "device_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c05_01",
@@ -3323,7 +3578,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "platform mix reporting report slice 1 (holdout)"
+      "description": "platform mix reporting | platform_mix_dashboard | rollup (holdout)",
+      "consumer_surface": "platform_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c05_02",
@@ -3369,7 +3629,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "platform mix reporting report slice 2 (holdout)"
+      "description": "platform mix reporting | platform_mix_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "platform_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c05_03",
@@ -3412,7 +3677,12 @@
         "numeric_aggregation",
         "time_bucket"
       ],
-      "description": "platform mix reporting report slice 3 (holdout)"
+      "description": "platform mix reporting | platform_mix_dashboard | rollup (holdout)",
+      "consumer_surface": "platform_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "rollup"
     },
     {
       "query_id": "schemaopt_hard_mobile_revenue_ops_hq_c05_04",
@@ -3458,7 +3728,12 @@
         "time_bucket",
         "wide_group"
       ],
-      "description": "platform mix reporting report slice 4 (holdout)"
+      "description": "platform mix reporting | platform_mix_dashboard | segment_breakout (holdout)",
+      "consumer_surface": "platform_mix_dashboard",
+      "latency_tier": "standard",
+      "freshness_tier": "weekly",
+      "reuse_group": "distribution_mix_rollup",
+      "report_variant_type": "segment_breakout"
     }
   ],
   "clusters": [
@@ -3497,7 +3772,12 @@
         "sum__line"
       ],
       "hotspot_rank": 1,
-      "preferred_object_kind": "agg_matview"
+      "preferred_object_kind": "agg_matview",
+      "sla_tier": "standard",
+      "business_owner": "platform_strategy",
+      "dashboard_family": "platform_mix",
+      "refresh_mode": "weekly",
+      "reuse_pressure": "high"
     },
     {
       "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_04",
@@ -3534,7 +3814,12 @@
         "sum__line"
       ],
       "hotspot_rank": 2,
-      "preferred_object_kind": "join_matview"
+      "preferred_object_kind": "join_matview",
+      "sla_tier": "standard",
+      "business_owner": "device_strategy",
+      "dashboard_family": "device_mix",
+      "refresh_mode": "weekly",
+      "reuse_pressure": "high"
     },
     {
       "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_03",
@@ -3571,7 +3856,12 @@
         "sum__line"
       ],
       "hotspot_rank": 3,
-      "preferred_object_kind": "agg_matview"
+      "preferred_object_kind": "agg_matview",
+      "sla_tier": "standard",
+      "business_owner": "growth_strategy",
+      "dashboard_family": "geo_growth",
+      "refresh_mode": "weekly",
+      "reuse_pressure": "medium"
     },
     {
       "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_02",
@@ -3608,7 +3898,12 @@
         "sum__line"
       ],
       "hotspot_rank": 4,
-      "preferred_object_kind": "denorm_table"
+      "preferred_object_kind": "denorm_table",
+      "sla_tier": "high",
+      "business_owner": "release_analytics",
+      "dashboard_family": "release_performance",
+      "refresh_mode": "daily",
+      "reuse_pressure": "high"
     },
     {
       "cluster_id": "schemaopt_hard_mobile_revenue_ops_cluster_01",
@@ -3645,7 +3940,12 @@
         "sum__line"
       ],
       "hotspot_rank": 5,
-      "preferred_object_kind": "agg_matview"
+      "preferred_object_kind": "agg_matview",
+      "sla_tier": "critical",
+      "business_owner": "revenue_ops",
+      "dashboard_family": "monetization_yield",
+      "refresh_mode": "daily",
+      "reuse_pressure": "medium"
     }
   ],
   "budgets": {
@@ -3666,5 +3966,9 @@
     "uses_real_query_execution": true,
     "uses_explain_plan_metrics": true,
     "rewrite_model": "explicit_rewritten_sql"
-  }
+  },
+  "task_story": "A mobile revenue operations team needs warehouse-accelerated reporting for monetization, release performance, geo growth, and platform mix without overfitting to one dashboard family.",
+  "primary_user": "mobile revenue operations lead",
+  "decision_cycle": "daily_exec_revenue_review_plus_release_monitoring",
+  "freshness_profile": "mixed_daily_revenue_and_weekly_distribution_reporting"
 }
