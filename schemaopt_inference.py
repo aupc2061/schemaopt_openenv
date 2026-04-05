@@ -5,7 +5,7 @@ Environment variables:
 - HF_TOKEN: optional fallback token if OPENAI_API_KEY is not set
 - MODEL_NAME: optional model id to call (default: gpt-5.4-mini)
 - API_BASE_URL: optional custom OpenAI-compatible base URL
-- MAX_STEPS: optional max steps per episode (default: 8)
+- MAX_STEPS: optional max steps per episode (defaults to the task budget when unset)
 - TASK_ID: optional benchmark task id (default: schemaopt_hard_mobile_revenue_ops)
 - MAX_ACTION_RETRIES: optional max model retries per environment step (default: 4)
 """
@@ -41,10 +41,10 @@ if str(PROJECT_ROOT) not in sys.path:
 from schemaopt_env.models import SchemaOptAction
 from schemaopt_env.server.schemaopt_environment import SchemaOptEnvironment
 
-DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.4")
+DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.4-mini")
 DEFAULT_API_BASE_URL = os.getenv("API_BASE_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
-DEFAULT_MAX_STEPS = int(os.getenv("MAX_STEPS", "25"))
+DEFAULT_MAX_STEPS = int(os.getenv("MAX_STEPS")) if os.getenv("MAX_STEPS") else 25
 DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
 DEFAULT_MAX_ACTION_RETRIES = int(os.getenv("MAX_ACTION_RETRIES", "4"))
 
@@ -199,7 +199,8 @@ def build_user_prompt(
     task = metadata.get("task", {})
     history_text = "\n".join(history[-6:]) if history else "(none)"
     budgets = task.get("budgets", {})
-    task_max_steps = int(budgets.get("max_steps") or max_steps)
+    task_budget = budgets.get("max_steps")
+    task_max_steps = int(task_budget) if task_budget is not None else max_steps
     derived_objects = (observation.catalog_summary or {}).get("derived_objects", [])
     repeated_context_requests = {key: value for key, value in query_context_requests.items() if value > 1}
     prompt_payload = {
@@ -216,7 +217,7 @@ def build_user_prompt(
         "derived_object_summaries": derived_objects,
         "repeated_query_context_requests": repeated_context_requests,
         "remaining_budget_summary": {
-            "steps_remaining": max(0, min(max_steps, task_max_steps) - step + 1),
+            "steps_remaining": max(0, task_max_steps - step + 1),
             "max_steps": task_max_steps,
             "max_new_derived_objects": budgets.get("max_new_derived_objects"),
             "max_storage_bytes": budgets.get("max_storage_bytes"),
@@ -304,12 +305,15 @@ def run_episode(
     task_id: str,
     model_name: str,
     api_base_url: Optional[str],
-    max_steps: int,
+    max_steps: Optional[int],
     max_action_retries: int,
     output_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
     env = SchemaOptEnvironment()
     observation = env.reset(task_id=task_id)
+    budgets = (observation.metadata or {}).get("task", {}).get("budgets", {})
+    task_budget = budgets.get("max_steps")
+    effective_max_steps = min(max_steps, int(task_budget)) if max_steps is not None and task_budget is not None else int(task_budget or max_steps or 0)
     history: List[str] = []
     benchmark_history: List[Dict[str, Any]] = []
     cluster_attempts: Counter[str] = Counter()
@@ -320,7 +324,7 @@ def run_episode(
 
     terminated_due_to_max_steps = False
 
-    for step in range(1, max_steps + 1):
+    for step in range(1, effective_max_steps + 1):
         action = choose_action(
             observation,
             history,
@@ -330,7 +334,7 @@ def run_episode(
             dict(query_context_requests),
             model_name,
             api_base_url,
-            max_steps,
+            effective_max_steps,
             max_action_retries,
         )
         print(f"Step {step}: {json.dumps(action.model_dump(exclude_none=True), ensure_ascii=True)}")
@@ -369,7 +373,7 @@ def run_episode(
             break
     else:
         terminated_due_to_max_steps = True
-        print(f"Reached max steps ({max_steps}) without a model-issued submit action.")
+        print(f"Reached max steps ({effective_max_steps}) without a model-issued submit action.")
 
     final_feedback = observation.action_feedback or {}
     result = {
@@ -399,7 +403,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--task-id", default=DEFAULT_TASK_ID, help="Task id to run.")
     parser.add_argument("--model-name", default=DEFAULT_MODEL_NAME, help="Model id for the OpenAI-compatible API.")
     parser.add_argument("--api-base-url", default=DEFAULT_API_BASE_URL, help="Optional OpenAI-compatible API base URL.")
-    parser.add_argument("--max-steps", type=int, default=DEFAULT_MAX_STEPS, help="Maximum number of environment steps.")
+    parser.add_argument("--max-steps", type=int, default=DEFAULT_MAX_STEPS, help="Maximum number of environment steps. Defaults to the task budget when omitted.")
     parser.add_argument("--max-action-retries", type=int, default=DEFAULT_MAX_ACTION_RETRIES, help="Maximum model retries per step.")
     parser.add_argument("--output", type=Path, default=None, help="Optional path for the result JSON.")
     return parser.parse_args()

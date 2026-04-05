@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from numbers import Real
 import copy
 from dataclasses import dataclass, field
 import hashlib
@@ -19,9 +20,11 @@ from uuid import uuid4
 try:
     from ..models import SchemaOptAction, SchemaOptObservation, SchemaOptState
     from ..tasks import TASK_CATALOG, QuerySpec, TaskSpec, cluster_lookup, get_task, match_queries, query_lookup, similar_query_ids, visible_queries_for_cluster
+    from .rubrics import SchemaOptRubric
 except ImportError:
     from models import SchemaOptAction, SchemaOptObservation, SchemaOptState
     from tasks import TASK_CATALOG, QuerySpec, TaskSpec, cluster_lookup, get_task, match_queries, query_lookup, similar_query_ids, visible_queries_for_cluster
+    from rubrics import SchemaOptRubric
 
 try:
     from openenv.core.env_server.interfaces import Environment
@@ -35,7 +38,16 @@ except ImportError:
         _O = TypeVar("_O")
         _S = TypeVar("_S")
         class Environment(Generic[_A, _O, _S]):
-            pass
+            def __init__(self, transform: Any = None, rubric: Any = None):
+                self.transform = transform
+                self.rubric = rubric
+
+            def _apply_rubric(self, action: Any, observation: Any) -> float:
+                return self.rubric(action, observation) if self.rubric is not None else 0.0
+
+            def _reset_rubric(self) -> None:
+                if self.rubric is not None:
+                    self.rubric.reset()
         State = SchemaOptState
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
@@ -97,6 +109,14 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
     LAST_GRADER_REPORT: Dict[str, Any] = {"available": False, "reason": "No episode executed yet."}
 
     def __init__(self):
+        try:
+            super().__init__(rubric=SchemaOptRubric())
+        except TypeError:
+            try:
+                super().__init__()
+            except TypeError:
+                pass
+            self.rubric = SchemaOptRubric()
         first_task = next(iter(TASK_CATALOG.keys()), None)
         self._task: Optional[TaskSpec] = get_task(first_task) if first_task else None
         self._visible_query_lookup: Dict[str, QuerySpec] = {}
@@ -133,6 +153,7 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         self._baseline_cache = {}
         self._evaluation_cache = {}
         self._latest_visible_benchmark = {"gated_improvement": 0.0, "correctness_coverage": 1.0}
+        self._reset_rubric()
         self._bootstrap_episode_database()
         self._base_table_stats = {table.name: self._collect_table_stats(table.name) for table in self._task.tables}
         self._state = SchemaOptState(episode_id=str(uuid4()) if episode_id is None else episode_id, step_count=0, done=False, task_id=self._task.task_id, difficulty=self._task.difficulty, derived_object_count=0, checkpoint_count=0, retrieval_count=0, benchmark_runs=0, storage_used_multiplier=0.0, final_score=None, last_error=None)
@@ -195,9 +216,16 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
     def _build_observation(self, status: str, message: str, reward: float, done: bool, feedback: Dict[str, Any]) -> SchemaOptObservation:
         payload = self._task.reset_payload()
         return SchemaOptObservation(status=status, message=message, catalog_summary=self._catalog_summary(payload), workload_summary=payload["workload_summary"], retrieval_context=self._retrieval_context, benchmark_context=self._benchmark_context, router_summary=self._router_summary, action_feedback=feedback, reward=round(reward, 6), done=done, metadata={"task": payload["task"]})
-    def step(self, action: SchemaOptAction, timeout_s: Optional[float] = None, **kwargs: Any) -> SchemaOptObservation:
-        self._state.step_count += 1
-        reward = 0.0
+
+    def _reward_population_counts(self) -> Tuple[int, int]:
+        return len(self._task.visible_queries), len(self._task.clusters)
+
+    def _classify_error(self, exc: Exception) -> str:
+        module_name = exc.__class__.__module__.lower()
+        if "duckdb" in module_name:
+            return "sql_runtime_error"
+        return "internal_error"
+    def _execute_action(self, action: SchemaOptAction, timeout_s: Optional[float] = None, **kwargs: Any) -> Tuple[str, str, bool, Dict[str, Any]]:
         done = False
         status = "ok"
         message = ""
@@ -239,18 +267,36 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
                 message = f"Returned full context for {len(action.query_ids)} queries."
             elif action.operation == "create_derived_object":
                 feedback = self._upsert_derived_object(action, False)
-                reward += feedback.get("reward_delta", 0.0)
                 message = feedback.get("message", f"Created derived object {action.name}.")
             elif action.operation == "modify_derived_object":
                 feedback = self._upsert_derived_object(action, True)
-                reward += feedback.get("reward_delta", 0.0)
                 message = feedback.get("message", f"Modified derived object {action.name}.")
             elif action.operation == "drop_derived_object":
-                removed = self._derived_objects.pop(action.target_id or "")
+                target_name = action.target_id or ""
+                if target_name not in self._derived_objects:
+                    raise ValueError(f"Derived object '{target_name}' does not exist")
+                removed = self._derived_objects[target_name]
+                pre_resource_pressure = self._resource_pressure()
+                diagnostics = self._derived_object_diagnostics(removed, [])
+                duplicate_like = any(obj.name != removed.name and obj.signature == removed.signature for obj in self._derived_objects.values())
+                self._derived_objects.pop(target_name)
                 self._con.execute(f"DROP TABLE IF EXISTS derived.{removed.name}")
                 self._evaluation_cache = {}
-                feedback = {"event": "drop_derived_object", "removed": removed.summary()}
-                reward -= 0.002
+                post_resource_pressure = self._resource_pressure()
+                feedback = {
+                    "event": "drop_derived_object",
+                    "removed": removed.summary(),
+                    "reward_inputs": {
+                        "is_empty_object": diagnostics["is_empty_object"],
+                        "duplicate_like": duplicate_like,
+                        "eligible_visible_queries": diagnostics["eligible_visible_queries"],
+                        "eligible_visible_cluster_count": len(diagnostics["eligible_visible_clusters"]),
+                        "used_by_visible_queries_count": len(removed.used_by_visible_queries),
+                        "used_by_cluster_count": len(removed.used_by_clusters),
+                        "resource_pressure": post_resource_pressure,
+                        "resource_pressure_delta": round(post_resource_pressure - pre_resource_pressure, 6),
+                    },
+                }
                 message = f"Dropped derived object {action.target_id}."
             elif action.operation == "list_derived_objects":
                 feedback = {"event": "list_derived_objects", "derived_objects": [obj.summary() for obj in self._derived_objects.values()]}
@@ -275,26 +321,32 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
                 message = "Checkpoint restored."
             elif action.operation == "benchmark_subset":
                 feedback = self._benchmark_action([self._get_visible_query(query_id) for query_id in action.query_ids], None)
-                reward += feedback["reward_delta"]
                 message = f"Benchmarked {len(action.query_ids)} visible queries."
             elif action.operation == "benchmark_cluster":
                 feedback = self._benchmark_action(visible_queries_for_cluster(self._task, action.cluster_id or ""), action.cluster_id)
-                reward += feedback["reward_delta"]
                 message = f"Benchmarked cluster {action.cluster_id}."
             elif action.operation == "submit":
                 feedback = self._submit_episode()
-                reward += feedback["terminal_reward"]
                 status = "completed"
                 done = True
                 message = "Final benchmark submitted."
             else:
                 raise ValueError(f"Unsupported action: {action.operation}")
+        except ValueError as exc:
+            status = "error"
+            message = f"ERROR: {exc}"
+            feedback = {"event": action.operation, "error": str(exc), "error_type": "validation_error"}
+            self._state.last_error = str(exc)
         except Exception as exc:
             status = "error"
             message = f"ERROR: {exc}"
-            feedback = {"event": action.operation, "error": str(exc)}
-            reward -= 0.05
+            feedback = {"event": action.operation, "error": str(exc), "error_type": self._classify_error(exc)}
             self._state.last_error = str(exc)
+        return status, message, done, feedback
+
+    def step(self, action: SchemaOptAction, timeout_s: Optional[float] = None, **kwargs: Any) -> SchemaOptObservation:
+        self._state.step_count += 1
+        status, message, done, feedback = self._execute_action(action, timeout_s=timeout_s, **kwargs)
         self._last_feedback = feedback
         self._state.done = done
         self._state.derived_object_count = len(self._derived_objects)
@@ -302,8 +354,10 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         self._state.storage_used_multiplier = round(sum(obj.storage_bytes_estimate for obj in self._derived_objects.values()) / max(1.0, float(self._task.budgets.get("max_storage_bytes", 1.0))), 6)
         if done:
             self._state.final_score = feedback.get("final_score")
-        return self._build_observation(status, message, reward, done, feedback)
-    
+        observation = self._build_observation(status, message, 0.0, done, feedback)
+        observation.reward = round(self._apply_rubric(action, observation), 6)
+        return observation
+
     def _inspect_query_plan(self, query_id: str) -> Dict[str, Any]:
         query = self._get_visible_query(query_id)
         baseline = self._baseline_for_query(query)
@@ -343,6 +397,12 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
             raise ValueError(f"Derived object '{name}' does not exist")
         if not modify and name in self._derived_objects:
             raise ValueError(f"Derived object '{name}' already exists")
+
+        visible_query_count, visible_cluster_count = self._reward_population_counts()
+        previous_obj = self._derived_objects.get(name) if modify else None
+        previous_diagnostics = self._derived_object_diagnostics(previous_obj, action.intended_clusters) if previous_obj is not None else None
+        pre_resource_pressure = self._resource_pressure()
+
         parsed = self._parse_sql_metadata(action.sql_definition or "")
         source_objects = [self._canonicalize_table_name(source) for source in action.source_objects]
         if sorted(parsed.canonical_tables) != sorted(source_objects):
@@ -363,26 +423,53 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
                 "message": f"Skipped {name}: duplicate of existing derived object signature.",
                 "duplicate_signature": True,
                 "similar_existing_objects": similar_existing,
-                "reward_delta": -0.02,
+                "reward_inputs": {
+                    "duplicate_signature": True,
+                    "is_empty_object": False,
+                    "eligible_visible_queries": 0,
+                    "eligible_visible_cluster_count": 0,
+                    "eligible_visible_clusters": [],
+                    "visible_query_count": visible_query_count,
+                    "visible_cluster_count": visible_cluster_count,
+                    "resource_pressure": self._resource_pressure(),
+                    "resource_pressure_delta": 0.0,
+                    "previous_visible_query_count": visible_query_count,
+                    "previous_visible_cluster_count": visible_cluster_count,
+                    "previous_eligible_visible_queries": previous_diagnostics["eligible_visible_queries"] if previous_diagnostics else 0,
+                    "previous_eligible_visible_cluster_count": len(previous_diagnostics["eligible_visible_clusters"]) if previous_diagnostics else 0,
+                },
             }
-        if modify:
-            self._con.execute(f"DROP TABLE IF EXISTS derived.{name}")
-        start = time.perf_counter()
-        self._con.execute(f"CREATE TABLE derived.{name} AS ({action.sql_definition})")
-        build_runtime_ms = (time.perf_counter() - start) * 1000.0
+
+        start_time = time.perf_counter()
+        create_stmt = "CREATE OR REPLACE TABLE" if modify else "CREATE TABLE"
+        self._con.execute(f"{create_stmt} derived.{name} AS ({action.sql_definition})")
+        build_runtime_ms = (time.perf_counter() - start_time) * 1000.0
         describe_rows = self._con.execute(f"DESCRIBE derived.{name}").fetchall()
         column_types = {str(row[0]).lower(): str(row[1]) for row in describe_rows}
         physical_columns = list(column_types.keys())
         canonical_columns = [self._canonicalize_measure_name(column) for column in physical_columns]
         canonical_to_physical = {canonical: physical for physical, canonical in zip(physical_columns, canonical_columns)}
         row_count = int(self._con.execute(f"SELECT COUNT(*) FROM derived.{name}").fetchone()[0])
-        obj = DerivedObject(name=name, object_kind=action.object_kind or "agg_matview", sql_definition=action.sql_definition or "", source_objects=source_objects, grain_dims=grain_dims, available_columns=physical_columns, canonical_columns=canonical_columns, canonical_to_physical=canonical_to_physical, column_types=column_types, parsed_sql=parsed, row_count=row_count, storage_bytes_estimate=self._estimate_storage_bytes(row_count, column_types), build_runtime_ms=build_runtime_ms, signature=signature)
+        obj = DerivedObject(
+            name=name,
+            object_kind=action.object_kind or "agg_matview",
+            sql_definition=action.sql_definition or "",
+            source_objects=source_objects,
+            grain_dims=grain_dims,
+            available_columns=physical_columns,
+            canonical_columns=canonical_columns,
+            canonical_to_physical=canonical_to_physical,
+            column_types=column_types,
+            parsed_sql=parsed,
+            row_count=row_count,
+            storage_bytes_estimate=self._estimate_storage_bytes(row_count, column_types),
+            build_runtime_ms=build_runtime_ms,
+            signature=signature,
+        )
         self._derived_objects[name] = obj
         self._evaluation_cache = {}
         diagnostics = self._derived_object_diagnostics(obj, action.intended_clusters)
-        reward_delta = 0.01 if diagnostics["eligible_visible_queries"] else 0.0
-        if diagnostics["is_empty_object"]:
-            reward_delta = -0.02
+        post_resource_pressure = self._resource_pressure()
         self._router_summary = {
             "queries_routed": diagnostics["eligible_visible_queries"],
             "queries_unrouted": max(0, len(self._task.visible_queries) - diagnostics["eligible_visible_queries"]),
@@ -394,26 +481,58 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
             "event": "modify_derived_object" if modify else "create_derived_object",
             "message": (f"Modified derived object {name}." if modify else f"Created derived object {name}."),
             "derived_object": obj.summary(),
-            "reward_delta": reward_delta,
+            "reward_inputs": {
+                "duplicate_signature": False,
+                "is_empty_object": diagnostics["is_empty_object"],
+                "eligible_visible_queries": diagnostics["eligible_visible_queries"],
+                "eligible_visible_cluster_count": len(diagnostics["eligible_visible_clusters"]),
+                "eligible_visible_clusters": list(diagnostics["eligible_visible_clusters"]),
+                "visible_query_count": visible_query_count,
+                "visible_cluster_count": visible_cluster_count,
+                "resource_pressure": post_resource_pressure,
+                "resource_pressure_delta": round(post_resource_pressure - pre_resource_pressure, 6),
+                "previous_visible_query_count": visible_query_count,
+                "previous_visible_cluster_count": visible_cluster_count,
+                "previous_eligible_visible_queries": previous_diagnostics["eligible_visible_queries"] if previous_diagnostics else 0,
+                "previous_eligible_visible_cluster_count": len(previous_diagnostics["eligible_visible_clusters"]) if previous_diagnostics else 0,
+            },
             **diagnostics,
         }
 
     def _benchmark_action(self, queries: Sequence[QuerySpec], cluster_id: Optional[str]) -> Dict[str, Any]:
         summary = self._benchmark_queries(queries, True)
-        prev_imp = self._latest_visible_benchmark.get("gated_improvement", 0.0)
-        prev_corr = self._latest_visible_benchmark.get("correctness_coverage", 1.0)
-        improvement_delta = summary["gated_improvement"] - prev_imp
-        correctness_delta = summary["correctness_coverage"] - prev_corr
-        reward_delta = improvement_delta + 0.05 * correctness_delta - summary["budget_penalty"]
-        if abs(improvement_delta) < 1e-9 and summary["incorrect_query_count"] == 0 and summary["budget_penalty"] == 0:
-            reward_delta = 0.0
-        reward_delta = max(-0.25, min(0.25, reward_delta))
         self._latest_visible_benchmark = {"gated_improvement": summary["gated_improvement"], "correctness_coverage": summary["correctness_coverage"]}
         self._benchmark_context = {"baseline_weighted_cost": summary["baseline_weighted_cost"], "current_weighted_cost": summary["actual_current_weighted_cost"], "raw_improvement": summary["raw_improvement"], "gated_improvement": summary["gated_improvement"], "correctness_coverage": summary["correctness_coverage"], "routed_query_count": summary["routed_query_count"], "incorrect_query_count": summary["incorrect_query_count"], "last_benchmarked_query_ids": [query.query_id for query in queries], "last_benchmarked_cluster_id": cluster_id, "latest_plan_deltas": summary["plan_deltas"]}
-        self._router_summary = self._summarize_routes(summary["per_query"], f"cluster:{cluster_id}" if cluster_id else "subset")
+        scope_key = f"cluster:{cluster_id}" if cluster_id else f"subset:{hashlib.md5('|'.join(sorted(query.query_id for query in queries)).encode('utf-8')).hexdigest()}"
+        self._router_summary = self._summarize_routes(summary["per_query"], scope_key)
         self._state.benchmark_runs += 1
+        scope_query_count = max(1, len(queries))
+        routed_query_ratio = summary["routed_query_count"] / scope_query_count
+        incorrect_query_ratio = summary["incorrect_query_count"] / scope_query_count
         summary["event"] = "benchmark_cluster" if cluster_id else "benchmark_subset"
-        summary["reward_delta"] = round(reward_delta, 6)
+        summary["scope_key"] = scope_key
+        summary["scope_query_count"] = len(queries)
+        summary["reward_inputs"] = {
+            "derived_state_hash": self._derived_state_hash(),
+            "gated_improvement": summary["gated_improvement"],
+            "correctness_coverage": summary["correctness_coverage"],
+            "budget_penalty": summary["budget_penalty"],
+            "incorrect_query_count": summary["incorrect_query_count"],
+            "incorrect_query_ratio": round(incorrect_query_ratio, 6),
+            "routed_query_count": summary["routed_query_count"],
+            "routed_query_ratio": round(routed_query_ratio, 6),
+            "scope_query_count": len(queries),
+            "resource_pressure": self._resource_pressure(),
+            "resource_pressure_delta": 0.0,
+        }
+        summary["benchmark_score_inputs"] = {
+            "gated_improvement": summary["gated_improvement"],
+            "routed_query_ratio": round(routed_query_ratio, 6),
+            "correctness_coverage": summary["correctness_coverage"],
+            "budget_penalty": summary["budget_penalty"],
+            "resource_pressure": self._resource_pressure(),
+            "incorrect_query_ratio": round(incorrect_query_ratio, 6),
+        }
         return summary
 
     def _submit_episode(self) -> Dict[str, Any]:
@@ -429,7 +548,7 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         self._state.benchmark_runs += 1
         self._state.final_score = final_score
         SchemaOptEnvironment.LAST_GRADER_REPORT = {"available": True, "task_id": self._task.task_id, "episode_id": self._state.episode_id, "score": final_score, "visible_summary": visible, "holdout_summary": holdout, "migration_score": migration, "storage_score": storage}
-        return {"event": "submit", "final_score": final_score, "visible_summary": visible, "holdout_summary": holdout, "migration_score": migration, "storage_score": storage, "terminal_reward": final_score}
+        return {"event": "submit", "final_score": final_score, "visible_summary": visible, "holdout_summary": holdout, "migration_score": migration, "storage_score": storage, "reward_inputs": {"final_score": final_score, "visible_gated_improvement": visible["gated_improvement"], "holdout_gated_improvement": holdout["gated_improvement"], "correctness": correctness, "migration": migration, "storage": storage}, "final_score_inputs": {"visible_gated_improvement": visible["gated_improvement"], "holdout_gated_improvement": holdout["gated_improvement"], "correctness": correctness, "migration": migration, "storage": storage}}
 
     def _benchmark_queries(self, queries: Sequence[QuerySpec], mark_usage: bool) -> Dict[str, Any]:
         baseline_weighted_cost = actual_current_weighted_cost = gated_current_weighted_cost = weight_total = correctness_weight_total = 0.0
@@ -615,8 +734,8 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
     def _normalize_row(self, row: Tuple[Any, ...]) -> Tuple[Any, ...]:
         result: List[Any] = []
         for value in row:
-            if isinstance(value, float):
-                result.append(round(value, 9))
+            if isinstance(value, Real) and not isinstance(value, bool):
+                result.append(("number", round(float(value), 6)))
             else:
                 result.append(value)
         return tuple(result)
@@ -636,6 +755,15 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         storage_ratio = sum(obj.storage_bytes_estimate for obj in self._derived_objects.values()) / storage_limit
         refresh_ratio = sum(obj.build_runtime_ms for obj in self._derived_objects.values()) / refresh_limit
         return round(max(0.0, 1.0 - (0.50 * storage_ratio) - (0.50 * refresh_ratio)), 6)
+
+    def _resource_pressure(self) -> float:
+        storage_limit = max(float(self._task.budgets.get("max_storage_bytes", 1.0)), 1.0)
+        refresh_limit = max(float(self._task.budgets.get("max_refresh_runtime_ms", 1.0)), 1.0)
+        object_limit = max(int(self._task.budgets.get("max_new_derived_objects", 1)), 1)
+        storage_ratio = sum(obj.storage_bytes_estimate for obj in self._derived_objects.values()) / storage_limit
+        refresh_ratio = sum(obj.build_runtime_ms for obj in self._derived_objects.values()) / refresh_limit
+        object_ratio = len(self._derived_objects) / object_limit
+        return round(min(1.0, 0.4 * storage_ratio + 0.4 * refresh_ratio + 0.2 * object_ratio), 6)
 
     def _budget_penalty(self) -> float:
         storage_limit = max(float(self._task.budgets.get("max_storage_bytes", 1.0)), 1.0)

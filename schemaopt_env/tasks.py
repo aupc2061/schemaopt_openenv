@@ -79,7 +79,7 @@ def _split_sql_list(clause: str) -> List[str]:
 
 
 def _extract_alias(expression: str) -> str | None:
-    match = re.search(r'as\s+(?:"([^"]+)"|([A-Za-z_][A-Za-z0-9_]*))\s*$', expression, re.IGNORECASE)
+    match = re.search(r'\bas\s+(?:"([^"]+)"|([A-Za-z_][A-Za-z0-9_]*))\s*$', expression, re.IGNORECASE)
     if not match:
         return None
     return (match.group(1) or match.group(2) or '').lower()
@@ -414,8 +414,13 @@ def _load_query(payload: Dict[str, Any]) -> QuerySpec:
     group_by = tuple(column.lower() for column in payload.get("group_by", []))
     columns = tuple(column.lower() for column in payload.get("columns", []))
     sql_result_columns = _result_columns_from_sql(sql)
-    raw_result_columns = payload.get("result_columns") or [_default_result_label(column) for column in payload.get("columns", [])]
-    result_columns = sql_result_columns if len(sql_result_columns) == len(columns) else tuple(str(column).lower() for column in raw_result_columns)
+    raw_result_columns = payload.get("result_columns")
+    if raw_result_columns:
+        result_columns = tuple(str(column).lower() for column in raw_result_columns)
+    elif len(sql_result_columns) == len(columns):
+        result_columns = sql_result_columns
+    else:
+        result_columns = tuple(_default_result_label(column) for column in payload.get("columns", []))
     raw_canonical_outputs = payload.get("canonical_output_columns") or list(result_columns)
     canonical_output_columns = tuple(
         str(column).lower() if idx < len(group_by) else _canonicalize_measure_name(column)

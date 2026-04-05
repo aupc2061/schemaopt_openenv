@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
+import re
 from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -197,6 +198,113 @@ def _normalize_sql(sql: str) -> str:
     return " ".join(sql.strip().lower().split())
 
 
+def _canonicalize_measure_name(value: str) -> str:
+    normalized = value.strip().lower().replace('\"', '')
+    normalized = re.sub(r'\s+', ' ', normalized)
+    if normalized in {'count(*)', 'count_star()', 'count_star'}:
+        return 'count_star'
+    match = re.fullmatch(r'(count|sum|avg|min|max)\((.+)\)', normalized)
+    if match:
+        func = match.group(1)
+        target = match.group(2).strip()
+        if target == '*':
+            return 'count_star'
+        target = target.replace('.', '_')
+        target = re.sub(r'[^a-z0-9_]+', '_', target).strip('_')
+        return f'{func}_{target}' if target else func
+    normalized = normalized.replace('.', '_')
+    normalized = re.sub(r'[^a-z0-9_]+', '_', normalized).strip('_')
+    return normalized
+
+
+def _default_result_label(value: str) -> str:
+    normalized = value.strip().lower().replace('\"', '')
+    normalized = re.sub(r'\s+', ' ', normalized)
+    if normalized == 'count(*)':
+        return 'count_star()'
+    return normalized
+
+
+def _split_sql_list(clause: str) -> List[str]:
+    parts: List[str] = []
+    current: List[str] = []
+    depth = 0
+    for char in clause:
+        if char == '(':
+            depth += 1
+        elif char == ')':
+            depth = max(0, depth - 1)
+        if char == ',' and depth == 0:
+            parts.append(''.join(current).strip())
+            current = []
+        else:
+            current.append(char)
+    if current:
+        parts.append(''.join(current).strip())
+    return parts
+
+
+def _extract_alias(expression: str) -> str | None:
+    match = re.search(r'\bas\s+(?:"([^"]+)"|([A-Za-z_][A-Za-z0-9_]*))\s*$', expression, re.IGNORECASE)
+    if not match:
+        return None
+    return (match.group(1) or match.group(2) or '').lower()
+
+
+def _result_columns_from_sql(sql: str) -> tuple[str, ...]:
+    normalized = sql.strip().rstrip(';')
+    lowered = normalized.lower()
+    select_start = lowered.find('select ')
+    from_start = lowered.find(' from ')
+    if select_start == -1 or from_start == -1:
+        return ()
+    select_clause = normalized[select_start + 7:from_start]
+    result: List[str] = []
+    for part in _split_sql_list(select_clause):
+        alias = _extract_alias(part)
+        result.append(alias or _default_result_label(part))
+    return tuple(item.lower() for item in result)
+
+
+def _parse_query_tail(sql: str, canonical_outputs: Sequence[str], result_columns: Sequence[str]) -> tuple[list[Dict[str, Any]], int | None]:
+    lowered = sql.lower()
+    order_idx = lowered.find(' order by ')
+    limit_idx = lowered.find(' limit ')
+    order_by: list[Dict[str, Any]] = []
+    limit: int | None = None
+    if limit_idx != -1:
+        limit_text = sql[limit_idx + 7:].strip().rstrip(';')
+        match = re.match(r'(\d+)', limit_text)
+        if match:
+            limit = int(match.group(1))
+    if order_idx != -1:
+        end = limit_idx if limit_idx != -1 and limit_idx > order_idx else len(sql)
+        clause = sql[order_idx + 10:end].strip()
+        canonical_lookup = {item: result_columns[idx] for idx, item in enumerate(canonical_outputs)}
+        for item in _split_sql_list(clause):
+            match = re.match(r'(.+?)\s+(asc|desc)\s*$', item, re.IGNORECASE)
+            expr = match.group(1).strip() if match else item.strip()
+            direction = (match.group(2).lower() if match else 'asc')
+            if expr.isdigit():
+                idx = int(expr) - 1
+                canonical = canonical_outputs[idx] if 0 <= idx < len(canonical_outputs) else expr
+                result_label = result_columns[idx] if 0 <= idx < len(result_columns) else expr
+            else:
+                normalized_expr = _default_result_label(expr)
+                canonical = _canonicalize_measure_name(expr)
+                if normalized_expr not in result_columns and canonical in canonical_lookup:
+                    result_label = canonical_lookup[canonical]
+                else:
+                    result_label = normalized_expr
+            order_by.append({
+                'expression': expr.lower(),
+                'result_label': result_label,
+                'canonical_output': canonical,
+                'direction': direction,
+            })
+    return order_by, limit
+
+
 def _build_query_shapes(domain: str, difficulty: str, schema: Dict[str, Dict[str, str]]) -> List[QueryShape]:
     config = DIFFICULTY_CONFIG[difficulty]
     candidate_tables = sorted(
@@ -277,7 +385,7 @@ def _build_query_shapes(domain: str, difficulty: str, schema: Dict[str, Dict[str
             if filters:
                 sql += " WHERE " + " AND ".join(filters)
             if selected_dims:
-                sql += " GROUP BY " + ", ".join(alias for alias, _ in selected_dims)
+                sql += " GROUP BY " + ", ".join(str(index) for index in range(1, len(selected_dims) + 1))
             shape = QueryShape(
                 cluster_index=cluster_index,
                 label=label,
@@ -318,6 +426,12 @@ def _expand_cluster_queries(task_id: str, difficulty: str, shapes: Sequence[Quer
             query_id = f"{task_id}_vq_c{cluster_index:02d}_{i + 1:02d}"
             frequency_weight = round(1.0 + cluster_index * 0.45 + (i % 3) * 0.15, 2)
             priority_weight = round(1.0 + (i % 2) * 0.10, 2)
+            result_columns = list(_result_columns_from_sql(shape.sql))
+            canonical_output_columns = [
+                result_columns[idx] if idx < len(shape.group_by) else _canonicalize_measure_name(result_columns[idx])
+                for idx in range(len(result_columns))
+            ]
+            order_by, limit = _parse_query_tail(shape.sql, canonical_output_columns, result_columns)
             payload = {
                 "query_id": query_id,
                 "sql": shape.sql,
@@ -328,11 +442,15 @@ def _expand_cluster_queries(task_id: str, difficulty: str, shapes: Sequence[Quer
                 "priority_weight": priority_weight,
                 "tables": shape.tables,
                 "columns": shape.columns,
+                "result_columns": result_columns,
+                "canonical_output_columns": canonical_output_columns,
                 "group_by": shape.group_by,
                 "filter_tokens": [predicate.lower().replace(" ", "_") for predicate in shape.filter_predicates],
                 "filter_predicates": shape.filter_predicates,
                 "measure_columns": shape.measure_columns,
                 "aggregate_functions": shape.aggregate_functions,
+                "order_by": order_by,
+                "limit": limit,
                 "plan_features": shape.plan_features,
                 "description": f"{shape.description} visible {i + 1}",
             }
@@ -346,6 +464,12 @@ def _expand_cluster_queries(task_id: str, difficulty: str, shapes: Sequence[Quer
             query_id = f"{task_id}_hq_c{cluster_index:02d}_{i + 1:02d}"
             frequency_weight = round(0.8 + cluster_index * 0.30 + (i % 2) * 0.10, 2)
             priority_weight = round(1.0 + ((i + 1) % 2) * 0.05, 2)
+            result_columns = list(_result_columns_from_sql(shape.sql))
+            canonical_output_columns = [
+                result_columns[idx] if idx < len(shape.group_by) else _canonicalize_measure_name(result_columns[idx])
+                for idx in range(len(result_columns))
+            ]
+            order_by, limit = _parse_query_tail(shape.sql, canonical_output_columns, result_columns)
             holdout_queries.append(
                 {
                     "query_id": query_id,
@@ -357,11 +481,15 @@ def _expand_cluster_queries(task_id: str, difficulty: str, shapes: Sequence[Quer
                     "priority_weight": priority_weight,
                     "tables": shape.tables,
                     "columns": shape.columns,
+                    "result_columns": result_columns,
+                    "canonical_output_columns": canonical_output_columns,
                     "group_by": shape.group_by,
                     "filter_tokens": [predicate.lower().replace(" ", "_") for predicate in shape.filter_predicates],
                     "filter_predicates": shape.filter_predicates,
                     "measure_columns": shape.measure_columns,
                     "aggregate_functions": shape.aggregate_functions,
+                    "order_by": order_by,
+                    "limit": limit,
                     "plan_features": shape.plan_features,
                     "description": f"{shape.description} holdout {i + 1}",
                 }
@@ -449,3 +577,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

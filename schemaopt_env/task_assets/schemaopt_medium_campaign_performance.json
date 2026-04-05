@@ -693,8 +693,8 @@
   "visible_queries": [
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c01_01",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period, ad_group_base_ad_group",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period, ad_group_base_ad_group",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
       "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.45,
@@ -740,12 +740,26 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_group_base_ad_group",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_group_base_ad_group",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c01_02",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
       "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.6,
@@ -788,12 +802,24 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c01_03",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period, ad_group_base_ad_group",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period, ad_group_base_ad_group",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
       "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.75,
@@ -839,12 +865,26 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_group_base_ad_group",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_group_base_ad_group",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c01_04",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
       "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.45,
@@ -887,12 +927,24 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c01_05",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period, ad_group_base_ad_group",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period, ad_group_base_ad_group",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
       "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.6,
@@ -938,12 +990,26 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_group_base_ad_group",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_group_base_ad_group",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c01_06",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
       "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.75,
@@ -986,12 +1052,24 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c02_01",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
       "business_tag": "ad group mix analysis",
       "frequency_weight": 1.9,
@@ -1037,12 +1115,26 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c02_02",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
       "business_tag": "ad group mix analysis",
       "frequency_weight": 2.05,
@@ -1085,12 +1177,24 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c02_03",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
       "business_tag": "ad group mix analysis",
       "frequency_weight": 2.2,
@@ -1136,12 +1240,26 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c02_04",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
       "business_tag": "ad group mix analysis",
       "frequency_weight": 1.9,
@@ -1184,12 +1302,24 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c02_05",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
       "business_tag": "ad group mix analysis",
       "frequency_weight": 2.05,
@@ -1235,12 +1365,26 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c02_06",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
       "business_tag": "ad group mix analysis",
       "frequency_weight": 2.2,
@@ -1283,12 +1427,24 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c03_01",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
       "business_tag": "campaign performance reporting",
       "frequency_weight": 2.35,
@@ -1334,12 +1490,26 @@
       "latency_tier": "high",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c03_02",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
       "business_tag": "campaign performance reporting",
       "frequency_weight": 2.5,
@@ -1382,12 +1552,24 @@
       "latency_tier": "high",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c03_03",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
       "business_tag": "campaign performance reporting",
       "frequency_weight": 2.65,
@@ -1433,12 +1615,26 @@
       "latency_tier": "high",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c03_04",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
       "business_tag": "campaign performance reporting",
       "frequency_weight": 2.35,
@@ -1481,12 +1677,24 @@
       "latency_tier": "high",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c03_05",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
       "business_tag": "campaign performance reporting",
       "frequency_weight": 2.5,
@@ -1532,12 +1740,26 @@
       "latency_tier": "high",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c03_06",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
       "business_tag": "campaign performance reporting",
       "frequency_weight": 2.65,
@@ -1580,12 +1802,24 @@
       "latency_tier": "high",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c04_01",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
       "business_tag": "portfolio health reporting",
       "frequency_weight": 2.8,
@@ -1631,12 +1865,26 @@
       "latency_tier": "critical",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c04_02",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
       "business_tag": "portfolio health reporting",
       "frequency_weight": 2.95,
@@ -1679,12 +1927,24 @@
       "latency_tier": "critical",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c04_03",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
       "business_tag": "portfolio health reporting",
       "frequency_weight": 3.1,
@@ -1730,12 +1990,26 @@
       "latency_tier": "critical",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c04_04",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
       "business_tag": "portfolio health reporting",
       "frequency_weight": 2.8,
@@ -1778,12 +2052,24 @@
       "latency_tier": "critical",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c04_05",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
       "business_tag": "portfolio health reporting",
       "frequency_weight": 2.95,
@@ -1829,12 +2115,26 @@
       "latency_tier": "critical",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_vq_c04_06",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
       "business_tag": "portfolio health reporting",
       "frequency_weight": 3.1,
@@ -1877,14 +2177,26 @@
       "latency_tier": "critical",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     }
   ],
   "holdout_queries": [
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c01_01",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
       "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.1,
@@ -1927,12 +2239,24 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c01_02",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period, ad_group_base_ad_group",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period, ad_group_base_ad_group",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_group_base_ad_group\" AS ad_group_base_ad_group, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_group_base_ad_group\" as ad_group_base_ad_group, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
       "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.2,
@@ -1978,12 +2302,26 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_group_base_ad_group",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_group_base_ad_group",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c01_03",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.keyword_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_group_base_ad_group\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.keyword_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_group_base_ad_group\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_01",
       "business_tag": "keyword efficiency reporting",
       "frequency_weight": 1.1,
@@ -2026,12 +2364,24 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c02_01",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
       "business_tag": "ad group mix analysis",
       "frequency_weight": 1.4,
@@ -2074,12 +2424,24 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c02_02",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
       "business_tag": "ad group mix analysis",
       "frequency_weight": 1.5,
@@ -2125,12 +2487,26 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c02_03",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.ad_group_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.ad_group_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_02",
       "business_tag": "ad group mix analysis",
       "frequency_weight": 1.4,
@@ -2173,12 +2549,24 @@
       "latency_tier": "standard",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c03_01",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
       "business_tag": "campaign performance reporting",
       "frequency_weight": 1.7,
@@ -2221,12 +2609,24 @@
       "latency_tier": "high",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c03_02",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
       "business_tag": "campaign performance reporting",
       "frequency_weight": 1.8,
@@ -2272,12 +2672,26 @@
       "latency_tier": "high",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c03_03",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.campaign_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.campaign_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_03",
       "business_tag": "campaign performance reporting",
       "frequency_weight": 1.7,
@@ -2320,12 +2734,24 @@
       "latency_tier": "high",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c04_01",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
       "business_tag": "portfolio health reporting",
       "frequency_weight": 2.0,
@@ -2368,12 +2794,24 @@
       "latency_tier": "critical",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c04_02",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period, ad_network_type",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period, ad_network_type",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, b.\"ad_network_type\" AS ad_network_type, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1, 2",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, b.\"ad_network_type\" as ad_network_type, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1, 2",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
       "business_tag": "portfolio health reporting",
       "frequency_weight": 2.1,
@@ -2419,12 +2857,26 @@
       "latency_tier": "critical",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "segment_breakout"
+      "report_variant_type": "segment_breakout",
+      "result_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "ad_network_type",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     },
     {
       "query_id": "schemaopt_medium_campaign_performance_hq_c04_03",
-      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL GROUP BY metric_period",
-      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by metric_period",
+      "sql": "SELECT date_trunc('month', coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP))) AS metric_period, COUNT(*) AS row_count, SUM(b.\"active_view_impressions\") AS sum_active_view_impressions FROM raw.account_stats_data b WHERE coalesce(try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S %z'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S.%f'), try_strptime(b.\"date\", '%Y-%m-%d %H:%M:%S'), try_cast(b.\"date\" AS TIMESTAMP)) IS NOT NULL AND b.\"ad_network_type\" IS NOT NULL  GROUP BY 1",
+      "normalized_sql": "select date_trunc('month', coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp))) as metric_period, count(*) as row_count, sum(b.\"active_view_impressions\") as sum_active_view_impressions from raw.account_stats_data b where coalesce(try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s %z'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s.%f'), try_strptime(b.\"date\", '%y-%m-%d %h:%m:%s'), try_cast(b.\"date\" as timestamp)) is not null and b.\"ad_network_type\" is not null group by 1",
       "cluster_id": "schemaopt_medium_campaign_performance_cluster_04",
       "business_tag": "portfolio health reporting",
       "frequency_weight": 2.0,
@@ -2467,7 +2919,19 @@
       "latency_tier": "critical",
       "freshness_tier": "daily",
       "reuse_group": "campaign_hierarchy_rollup",
-      "report_variant_type": "rollup"
+      "report_variant_type": "rollup",
+      "result_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "canonical_output_columns": [
+        "metric_period",
+        "row_count",
+        "sum_active_view_impressions"
+      ],
+      "order_by": [],
+      "limit": null
     }
   ],
   "clusters": [
