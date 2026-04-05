@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DATASET_ROOT = REPO_ROOT / "datasets" / "dacomp-de"
+DATASET_ROOT = REPO_ROOT / "datasets" / "schemaopt_sources"
 ASSET_ROOT = REPO_ROOT / "schemaopt_env" / "task_assets"
 
 SELECTED_TASKS = [
@@ -406,7 +406,7 @@ def _tables_payload(schema: Dict[str, Dict[str, str]]) -> List[Dict[str, Any]]:
 
 
 def build_manifest(task_id: str, difficulty: str, domain: str, dataset_index: int) -> Dict[str, Any]:
-    dataset_dir = DATASET_ROOT / f"dacomp-de-impl-{dataset_index:03d}"
+    dataset_dir = DATASET_ROOT / f"source-{dataset_index:03d}"
     start_yaml = next(dataset_dir.glob("*_start.yaml"))
     db_file = next(dataset_dir.glob("*_start.duckdb"))
     schema = _parse_simple_schema_yaml(start_yaml)

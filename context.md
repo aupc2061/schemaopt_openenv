@@ -49,16 +49,16 @@ The original synthetic task generation was replaced with manifest-backed task as
 - `schemaopt_env/task_assets`
 
 Current task suite:
-- 12 tasks total
-- 4 easy
-- 4 medium
-- 4 hard
+- 6 curated benchmark tasks
+- 2 easy
+- 2 medium
+- 2 hard
 
 Example tasks:
-- `schemaopt_easy_customer360`
-- `schemaopt_hard_google_play`
+- `schemaopt_easy_hiring_pipeline`
+- `schemaopt_hard_mobile_revenue_ops`
 
-Seed provenance uses `dacomp-de-impl` dataset assets.
+Seed provenance uses local benchmark source assets.
 
 ## Major Fidelity Refactor Completed
 We refactored the env away from the earlier synthetic benchmark behavior toward a more DuckDB-grounded setup.
@@ -149,7 +149,7 @@ This established that:
 - the router and benchmark loop are working at least on easy tasks
 
 ## Important Hard-Task Diagnosis
-The later `schemaopt_hard_google_play` run still showed zero improvement.
+The later mobile revenue hard-task run still showed zero improvement.
 
 At first this looked like a model-policy failure, but deeper inspection showed a task-quality issue.
 
@@ -161,8 +161,8 @@ In the hard-task result:
 
 ### What was inspected
 We inspected:
-- `schemaopt_env/task_assets/schemaopt_hard_google_play.json`
-- `datasets/dacomp-de/dacomp-de-impl-009/google_play_start.duckdb`
+- `schemaopt_env/task_assets/schemaopt_hard_mobile_revenue_ops.json`
+- the local source DuckDB backing the curated mobile revenue task
 
 Cluster 05 representative query was:
 ```sql
@@ -182,7 +182,7 @@ Direct DB checks showed:
 - rows satisfying `try_cast(date AS TIMESTAMP) IS NOT NULL AND _file IS NOT NULL`: `0`
 - exact cluster-05 aggregate result rows: `0`
 
-We also checked analogous Google Play clusters:
+We also checked analogous mobile revenue clusters:
 - cluster 04 (`stats_installs_device`): exact query rows `0`
 - cluster 03 (`stats_installs_country`): exact query rows `0`
 

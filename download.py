@@ -1,7 +1,9 @@
-from huggingface_hub import hf_hub_download, login, list_repo_files
+from huggingface_hub import hf_hub_download, list_repo_files
 import os
 
-repo_id = "DAComp/dacomp-de"
+repo_id = os.getenv("SCHEMAOPT_SOURCE_DATASET_REPO")
+if not repo_id:
+    raise RuntimeError("Set SCHEMAOPT_SOURCE_DATASET_REPO before running download.py")
 
 # Local download directory
 download_dir = "datasets"

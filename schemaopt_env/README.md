@@ -4,7 +4,7 @@ SchemaOpt is a standalone OpenEnv benchmark for workload-adaptive warehouse opti
 
 ## Current Fidelity Model
 
-- Task definitions are manifest-backed and resolved from real `dacomp-de-impl` dataset assets.
+- Task definitions are manifest-backed and resolved from local benchmark source assets.
 - Each task points to a real DuckDB database file and a precomputed workload manifest.
 - Episode reset copies the task database into an isolated workspace and creates only the `derived` schema dynamically.
 - Query benchmarking uses real DuckDB execution plus `EXPLAIN`-derived structural metrics.
