@@ -123,7 +123,6 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         self._all_query_lookup: Dict[str, QuerySpec] = {}
         self._cluster_lookup: Dict[str, Any] = {}
         self._derived_objects: Dict[str, DerivedObject] = {}
-        self._checkpoints: List[Dict[str, Any]] = []
         self._retrieval_context: Dict[str, Any] = {}
         self._benchmark_context: Dict[str, Any] = {}
         self._router_summary: Dict[str, Any] = {}
@@ -132,6 +131,7 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         self._baseline_cache: Dict[str, QueryExecution] = {}
         self._evaluation_cache: Dict[Tuple[str, str], Dict[str, Any]] = {}
         self._latest_visible_benchmark: Dict[str, float] = {"gated_improvement": 0.0, "correctness_coverage": 1.0}
+        self._current_focus_cluster_id: Optional[str] = None
         self._state = SchemaOptState(episode_id=str(uuid4()), step_count=0)
         self._episode_root: Optional[Path] = None
         self._episode_db_path: Optional[Path] = None
@@ -145,7 +145,6 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         self._all_query_lookup = query_lookup(self._task)
         self._cluster_lookup = cluster_lookup(self._task)
         self._derived_objects = {}
-        self._checkpoints = []
         self._retrieval_context = {"last_request": None, "matched_queries": [], "matched_clusters": [], "retrieval_count": 0}
         self._benchmark_context = {"baseline_weighted_cost": None, "current_weighted_cost": None, "raw_improvement": 0.0, "gated_improvement": 0.0, "correctness_coverage": 1.0, "routed_query_count": 0, "incorrect_query_count": 0, "last_benchmarked_query_ids": [], "last_benchmarked_cluster_id": None, "latest_plan_deltas": {}}
         self._router_summary = {"queries_routed": 0, "queries_unrouted": len(self._task.visible_queries), "dominant_rejection_reason": None, "candidate_object_coverage": {}, "last_scope": "reset"}
@@ -153,12 +152,14 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         self._baseline_cache = {}
         self._evaluation_cache = {}
         self._latest_visible_benchmark = {"gated_improvement": 0.0, "correctness_coverage": 1.0}
+        self._current_focus_cluster_id = None
         self._reset_rubric()
         self._bootstrap_episode_database()
         self._base_table_stats = {table.name: self._collect_table_stats(table.name) for table in self._task.tables}
         self._state = SchemaOptState(episode_id=str(uuid4()) if episode_id is None else episode_id, step_count=0, done=False, task_id=self._task.task_id, difficulty=self._task.difficulty, derived_object_count=0, checkpoint_count=0, retrieval_count=0, benchmark_runs=0, storage_used_multiplier=0.0, final_score=None, last_error=None)
+        self._refresh_public_state(None, "ok", {"event": "reset"}, False)
         payload = self._task.reset_payload()
-        return SchemaOptObservation(status="ok", message=f"Initialized task {self._task.task_id}", catalog_summary=self._catalog_summary(payload), workload_summary=payload["workload_summary"], retrieval_context=self._retrieval_context, benchmark_context=self._benchmark_context, router_summary=self._router_summary, action_feedback=self._last_feedback, reward=0.0, done=False, metadata={"task": payload["task"]})
+        return SchemaOptObservation(status="ok", message=f"Initialized task {self._task.task_id}", decision_state=self._build_decision_state("ok", {"event": "reset"}, 0.0, False), catalog_summary=self._catalog_summary(payload), workload_summary=payload["workload_summary"], retrieval_context=self._retrieval_context, benchmark_context=self._benchmark_context, router_summary=self._router_summary, action_feedback=self._last_feedback, reward=0.0, done=False, metadata={"task": payload["task"]})
 
     @property
     def state(self) -> State:
@@ -215,10 +216,288 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
 
     def _build_observation(self, status: str, message: str, reward: float, done: bool, feedback: Dict[str, Any]) -> SchemaOptObservation:
         payload = self._task.reset_payload()
-        return SchemaOptObservation(status=status, message=message, catalog_summary=self._catalog_summary(payload), workload_summary=payload["workload_summary"], retrieval_context=self._retrieval_context, benchmark_context=self._benchmark_context, router_summary=self._router_summary, action_feedback=feedback, reward=round(reward, 6), done=done, metadata={"task": payload["task"]})
+        return SchemaOptObservation(status=status, message=message, decision_state=self._build_decision_state(status, feedback, reward, done), catalog_summary=self._catalog_summary(payload), workload_summary=payload["workload_summary"], retrieval_context=self._retrieval_context, benchmark_context=self._benchmark_context, router_summary=self._router_summary, action_feedback=feedback, reward=round(reward, 6), done=done, metadata={"task": payload["task"]})
 
     def _reward_population_counts(self) -> Tuple[int, int]:
         return len(self._task.visible_queries), len(self._task.clusters)
+
+    def _cluster_scope_key(self, cluster_id: str) -> str:
+        return f"cluster:{cluster_id}"
+
+    def _benchmark_score_snapshot(self, reward_inputs: Dict[str, Any]) -> float:
+        return round(
+            0.75 * float(reward_inputs.get("gated_improvement", 0.0))
+            + 0.15 * float(reward_inputs.get("routed_query_ratio", 0.0))
+            + 0.10 * float(reward_inputs.get("correctness_coverage", 1.0))
+            - 0.50 * float(reward_inputs.get("budget_penalty", 0.0))
+            - 0.10 * float(reward_inputs.get("resource_pressure", 0.0))
+            - 0.05 * float(reward_inputs.get("incorrect_query_ratio", 0.0)),
+            6,
+        )
+
+    def _cluster_for_query_ids(self, query_ids: Sequence[str]) -> Optional[str]:
+        cluster_ids = {self._get_visible_query(query_id).cluster_id for query_id in query_ids}
+        if len(cluster_ids) == 1:
+            return next(iter(cluster_ids))
+        return None
+
+    def _focus_cluster_from_action(self, action: Optional[SchemaOptAction]) -> Optional[str]:
+        if action is None:
+            return self._current_focus_cluster_id
+        if action.operation == "get_cluster_context" and action.cluster_id:
+            return action.cluster_id
+        if action.operation == "benchmark_cluster" and action.cluster_id:
+            return action.cluster_id
+        if action.operation == "benchmark_subset" and action.query_ids:
+            return self._cluster_for_query_ids(action.query_ids)
+        if action.operation in {"create_derived_object", "modify_derived_object"} and len(action.intended_clusters) == 1:
+            return action.intended_clusters[0]
+        if action.operation == "inspect_rewrite_status":
+            if action.cluster_id:
+                return action.cluster_id
+            if action.target_id:
+                query = self._visible_query_lookup.get(action.target_id)
+                if query is not None:
+                    return query.cluster_id
+                return self._current_focus_cluster_id
+            if action.query_ids:
+                return self._cluster_for_query_ids(action.query_ids)
+        return self._current_focus_cluster_id
+
+    def _cluster_object_names(self, cluster_id: str) -> List[str]:
+        names: List[str] = []
+        for obj in self._derived_objects.values():
+            if cluster_id in obj.used_by_clusters:
+                names.append(obj.name)
+                continue
+            diagnostics = self._derived_object_diagnostics(obj, [cluster_id])
+            if cluster_id in diagnostics.get("eligible_visible_clusters", []):
+                names.append(obj.name)
+        return sorted(set(names))
+
+    def _refresh_public_state(self, action: Optional[SchemaOptAction], status: str, feedback: Dict[str, Any], done: bool) -> None:
+        focus_cluster_id = self._focus_cluster_from_action(action)
+        if focus_cluster_id is not None:
+            self._current_focus_cluster_id = focus_cluster_id
+        self._state.done = done
+        self._state.derived_object_count = len(self._derived_objects)
+        self._state.checkpoint_count = 0
+        self._state.storage_used_multiplier = round(
+            sum(obj.storage_bytes_estimate for obj in self._derived_objects.values())
+            / max(1.0, float(self._task.budgets.get("max_storage_bytes", 1.0))),
+            6,
+        )
+        self._state.last_action_operation = action.operation if action is not None else feedback.get("event")
+        self._state.last_action_status = status
+        self._state.current_focus_cluster_id = self._current_focus_cluster_id
+        self._state.last_scope_key = feedback.get("scope_key") or self._router_summary.get("last_scope")
+        self._state.last_scope_benchmark_score = (
+            self._benchmark_score_snapshot(feedback.get("reward_inputs", {}))
+            if feedback.get("scope_key") and feedback.get("reward_inputs")
+            else None
+        )
+        if done:
+            self._state.final_score = feedback.get("final_score")
+        self._state.last_error = feedback.get("error") if status == "error" else None
+        self._state.derived_object_names = sorted(self._derived_objects.keys())
+        self._state.useful_derived_object_names = sorted(
+            name for name, obj in self._derived_objects.items() if obj.used_by_visible_queries
+        )
+        self._state.unused_derived_object_names = sorted(
+            name for name, obj in self._derived_objects.items() if not obj.used_by_visible_queries
+        )
+        max_steps = int(self._task.budgets.get("max_steps", 0))
+        self._state.remaining_steps = max(0, max_steps - self._state.step_count)
+        self._state.remaining_object_budget = max(
+            0,
+            int(self._task.budgets.get("max_new_derived_objects", 0)) - len(self._derived_objects),
+        )
+        self._state.remaining_storage_bytes = max(
+            0,
+            int(float(self._task.budgets.get("max_storage_bytes", 0)) - sum(obj.storage_bytes_estimate for obj in self._derived_objects.values())),
+        )
+        self._state.remaining_refresh_runtime_ms = max(
+            0.0,
+            round(
+                float(self._task.budgets.get("max_refresh_runtime_ms", 0.0)) - sum(obj.build_runtime_ms for obj in self._derived_objects.values()),
+                6,
+            ),
+        )
+        self._state.resource_pressure = self._resource_pressure()
+
+        previous_best = dict(getattr(self._state, "cluster_best_gated_improvement", {}))
+        previous_routed = dict(getattr(self._state, "cluster_last_routed_query_count", {}))
+        previous_incorrect = dict(getattr(self._state, "cluster_last_incorrect_query_count", {}))
+        previous_score = dict(getattr(self._state, "cluster_last_benchmark_score", {}))
+        previous_reason = dict(getattr(self._state, "cluster_dominant_rejection_reason", {}))
+        previous_status = dict(getattr(self._state, "cluster_status_by_id", {}))
+        previous_attempts = dict(getattr(self._state, "cluster_attempt_counts", {}))
+
+        cluster_status_by_id: Dict[str, str] = {}
+        cluster_attempt_counts: Dict[str, int] = {}
+        cluster_best_gated_improvement: Dict[str, float] = {}
+        cluster_last_routed_query_count: Dict[str, int] = {}
+        cluster_last_incorrect_query_count: Dict[str, int] = {}
+        cluster_last_benchmark_score: Dict[str, float] = {}
+        cluster_dominant_rejection_reason: Dict[str, Optional[str]] = {}
+
+        scoped_cluster_id: Optional[str] = None
+        if feedback.get("scope_key", "").startswith("cluster:"):
+            scoped_cluster_id = str(feedback["scope_key"]).split(":", 1)[1]
+        elif self._current_focus_cluster_id is not None:
+            scoped_cluster_id = self._current_focus_cluster_id
+
+        for cluster in self._task.clusters:
+            cluster_id = cluster.cluster_id
+            object_names = self._cluster_object_names(cluster_id)
+            prior_attempts = previous_attempts.get(cluster_id, 0)
+            if action is not None and action.operation in {"create_derived_object", "modify_derived_object"} and cluster_id in action.intended_clusters:
+                cluster_attempt_counts[cluster_id] = prior_attempts + 1
+            else:
+                cluster_attempt_counts[cluster_id] = prior_attempts
+
+            cluster_best_gated_improvement[cluster_id] = previous_best.get(cluster_id, 0.0)
+            cluster_last_routed_query_count[cluster_id] = previous_routed.get(cluster_id, 0)
+            cluster_last_incorrect_query_count[cluster_id] = previous_incorrect.get(cluster_id, 0)
+            cluster_last_benchmark_score[cluster_id] = previous_score.get(cluster_id, 0.0)
+            cluster_dominant_rejection_reason[cluster_id] = previous_reason.get(cluster_id)
+            status_label = previous_status.get(cluster_id, "untouched")
+
+            if object_names and status_label == "untouched":
+                status_label = "candidate_built"
+
+            if status == "ok" and self._state.last_action_operation == "get_cluster_context" and self._current_focus_cluster_id == cluster_id:
+                status_label = "analyzing"
+
+            if feedback.get("scope_key") == self._cluster_scope_key(cluster_id):
+                current_gated = float(feedback.get("gated_improvement") or self._benchmark_context.get("gated_improvement") or 0.0)
+                current_routed = int(feedback.get("routed_query_count") or self._benchmark_context.get("routed_query_count") or 0)
+                current_incorrect = int(feedback.get("incorrect_query_count") or self._benchmark_context.get("incorrect_query_count") or 0)
+                current_score = self._benchmark_score_snapshot(feedback.get("reward_inputs", {})) if feedback.get("reward_inputs") else 0.0
+                cluster_best_gated_improvement[cluster_id] = max(previous_best.get(cluster_id, 0.0), current_gated)
+                cluster_last_routed_query_count[cluster_id] = current_routed
+                cluster_last_incorrect_query_count[cluster_id] = current_incorrect
+                cluster_last_benchmark_score[cluster_id] = current_score
+                cluster_dominant_rejection_reason[cluster_id] = self._router_summary.get("dominant_rejection_reason")
+                if current_gated > 0 and current_routed > 0 and current_incorrect == 0:
+                    status_label = "verified_positive"
+                else:
+                    status_label = "verified_negative"
+            elif (
+                status == "ok"
+                and scoped_cluster_id == cluster_id
+                and self._state.last_action_operation in {"create_derived_object", "modify_derived_object", "drop_derived_object", "inspect_rewrite_status"}
+            ):
+                status_label = "candidate_built" if object_names else "analyzing"
+                if self._router_summary.get("dominant_rejection_reason"):
+                    cluster_dominant_rejection_reason[cluster_id] = self._router_summary.get("dominant_rejection_reason")
+            elif self._current_focus_cluster_id == cluster_id and status_label == "untouched":
+                status_label = "analyzing"
+
+            if status == "error" and scoped_cluster_id == cluster_id:
+                status_label = "blocked_error"
+                cluster_dominant_rejection_reason[cluster_id] = feedback.get("error_type")
+
+            cluster_status_by_id[cluster_id] = status_label
+
+        self._state.cluster_status_by_id = cluster_status_by_id
+        self._state.cluster_attempt_counts = cluster_attempt_counts
+        self._state.cluster_best_gated_improvement = cluster_best_gated_improvement
+        self._state.cluster_last_routed_query_count = cluster_last_routed_query_count
+        self._state.cluster_last_incorrect_query_count = cluster_last_incorrect_query_count
+        self._state.cluster_last_benchmark_score = cluster_last_benchmark_score
+        self._state.cluster_dominant_rejection_reason = cluster_dominant_rejection_reason
+
+    def _build_decision_state(self, status: str, feedback: Dict[str, Any], reward: float, done: bool) -> Dict[str, Any]:
+        cluster_entries: List[Dict[str, Any]] = []
+        verified_positive_clusters: List[str] = []
+        unsolved_clusters: List[str] = []
+        for cluster in self._task.clusters:
+            cluster_id = cluster.cluster_id
+            state_label = self._state.cluster_status_by_id.get(cluster_id, "untouched")
+            if state_label == "verified_positive":
+                verified_positive_clusters.append(cluster_id)
+            elif state_label not in {"verified_positive", "verified_negative"}:
+                unsolved_clusters.append(cluster_id)
+            cluster_entries.append(
+                {
+                    "cluster_id": cluster_id,
+                    "status": state_label,
+                    "hotspot_rank": cluster.hotspot_rank,
+                    "attempt_count": self._state.cluster_attempt_counts.get(cluster_id, 0),
+                    "derived_object_names": self._cluster_object_names(cluster_id),
+                    "best_gated_improvement": round(self._state.cluster_best_gated_improvement.get(cluster_id, 0.0), 6),
+                    "last_routed_query_count": self._state.cluster_last_routed_query_count.get(cluster_id, 0),
+                    "last_incorrect_query_count": self._state.cluster_last_incorrect_query_count.get(cluster_id, 0),
+                    "last_benchmark_score": round(self._state.cluster_last_benchmark_score.get(cluster_id, 0.0), 6),
+                    "dominant_rejection_reason": self._state.cluster_dominant_rejection_reason.get(cluster_id),
+                }
+            )
+
+        focus_status = self._state.cluster_status_by_id.get(self._current_focus_cluster_id or "", "untouched")
+        focus_has_objects = bool(self._current_focus_cluster_id and self._cluster_object_names(self._current_focus_cluster_id))
+        all_resolved = all(
+            self._state.cluster_status_by_id.get(cluster.cluster_id, "untouched") in {"verified_positive", "verified_negative"}
+            for cluster in self._task.clusters
+        )
+        if done or (verified_positive_clusters and self._state.remaining_steps <= 3) or all_resolved:
+            phase = "submit"
+        elif self._state.last_action_operation in {"create_derived_object", "modify_derived_object", "drop_derived_object"}:
+            phase = "validate"
+        elif self._state.last_action_operation == "inspect_rewrite_status":
+            phase = "validate"
+        elif self._current_focus_cluster_id and not focus_has_objects:
+            phase = "analyze"
+        elif self._current_focus_cluster_id and focus_status in {"analyzing", "candidate_built", "blocked_error"}:
+            phase = "build"
+        else:
+            phase = "analyze"
+
+        affected_object_names: List[str] = []
+        if "derived_object" in feedback:
+            affected_object_names.append(feedback["derived_object"].get("name", ""))
+        if "removed" in feedback:
+            affected_object_names.append(feedback["removed"].get("name", ""))
+        affected_object_names = [name for name in affected_object_names if name]
+
+        last_rejection = None
+        if status == "ok":
+            last_rejection = self._router_summary.get("dominant_rejection_reason")
+        else:
+            last_rejection = feedback.get("error_type")
+
+        return {
+            "phase": phase,
+            "current_focus_cluster_id": self._current_focus_cluster_id,
+            "verified_positive_clusters": verified_positive_clusters,
+            "unsolved_clusters": unsolved_clusters,
+            "best_visible_gated_improvement": round(max(self._state.cluster_best_gated_improvement.values(), default=0.0), 6),
+            "derived_objects": {
+                "total_count": len(self._state.derived_object_names),
+                "useful_count": len(self._state.useful_derived_object_names),
+                "unused_count": len(self._state.unused_derived_object_names),
+                "names": list(self._state.derived_object_names),
+            },
+            "clusters": cluster_entries,
+            "remaining_budget_summary": {
+                "steps_remaining": self._state.remaining_steps,
+                "remaining_object_budget": self._state.remaining_object_budget,
+                "remaining_storage_bytes": self._state.remaining_storage_bytes,
+                "remaining_refresh_runtime_ms": self._state.remaining_refresh_runtime_ms,
+                "resource_pressure": self._state.resource_pressure,
+            },
+            "last_action_effect": {
+                "operation": self._state.last_action_operation,
+                "status": status,
+                "scoped_cluster_id": self._current_focus_cluster_id,
+                "reward": reward,
+                "routed_query_count": int(feedback.get("routed_query_count") or self._benchmark_context.get("routed_query_count") or 0),
+                "gated_improvement": round(float(feedback.get("gated_improvement") or self._benchmark_context.get("gated_improvement") or 0.0), 6),
+                "incorrect_query_count": int(feedback.get("incorrect_query_count") or self._benchmark_context.get("incorrect_query_count") or 0),
+                "dominant_rejection_reason": last_rejection,
+                "affected_object_names": affected_object_names,
+            },
+        }
 
     def _classify_error(self, exc: Exception) -> str:
         module_name = exc.__class__.__module__.lower()
@@ -237,34 +516,13 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
             elif action.operation == "inspect_table_stats":
                 feedback = {"event": "inspect_table_stats", "table": self._collect_table_stats(action.target_id or "")}
                 message = f"Table stats returned for {action.target_id}."
-            elif action.operation == "inspect_cluster":
-                cluster = self._cluster_lookup[action.target_id or ""]
-                feedback = {"event": "inspect_cluster", "cluster": cluster.to_summary(), "example_query_ids": list(cluster.query_ids[:3])}
-                message = f"Cluster summary returned for {action.target_id}."
-            elif action.operation == "inspect_query":
-                query = self._get_visible_query(action.target_id or "")
-                feedback = {"event": "inspect_query", "query": query.summary()}
-                message = f"Query summary returned for {action.target_id}."
-            elif action.operation == "inspect_query_plan":
-                feedback = self._inspect_query_plan(action.target_id or "")
-                message = f"Plan summary returned for {action.target_id}."
-            elif action.operation == "inspect_router_status":
-                if action.query_ids:
-                    query_ids = list(action.query_ids)
-                elif action.cluster_id:
-                    query_ids = [query.query_id for query in visible_queries_for_cluster(self._task, action.cluster_id)]
-                else:
-                    query_ids = list(self._visible_query_lookup.keys())
-                feedback = self._inspect_router_status(query_ids, action.cluster_id)
-                message = "Router status returned."
-            elif action.operation == "retrieve_queries":
-                feedback = self._retrieve_queries(action)
+            elif action.operation == "get_cluster_context":
+                feedback = self._get_cluster_context(action.cluster_id or "", action.query_ids, action.top_k)
                 self._state.retrieval_count += 1
-                message = f"Retrieved {len(feedback['matched_queries'])} query summaries."
-            elif action.operation == "get_query_context":
-                feedback = self._get_query_context(action.query_ids)
-                self._state.retrieval_count += 1
-                message = f"Returned full context for {len(action.query_ids)} queries."
+                message = f"Cluster context returned for {action.cluster_id}."
+            elif action.operation == "inspect_rewrite_status":
+                feedback = self._inspect_rewrite_status(action)
+                message = "Rewrite status returned."
             elif action.operation == "create_derived_object":
                 feedback = self._upsert_derived_object(action, False)
                 message = feedback.get("message", f"Created derived object {action.name}.")
@@ -298,27 +556,6 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
                     },
                 }
                 message = f"Dropped derived object {action.target_id}."
-            elif action.operation == "list_derived_objects":
-                feedback = {"event": "list_derived_objects", "derived_objects": [obj.summary() for obj in self._derived_objects.values()]}
-                message = "Derived object list returned."
-            elif action.operation == "checkpoint":
-                label = action.name or f"checkpoint_{len(self._checkpoints)+1}"
-                self._checkpoints.append({"label": label, "derived_objects": copy.deepcopy(self._derived_objects)})
-                feedback = {"event": "checkpoint", "label": label, "checkpoint_count": len(self._checkpoints)}
-                message = "Checkpoint created."
-            elif action.operation == "revert_checkpoint":
-                snapshot = next((item for item in reversed(self._checkpoints) if action.target_id is None or item["label"] == action.target_id), None)
-                if snapshot is None:
-                    raise ValueError("Unknown checkpoint label")
-                for name in list(self._derived_objects.keys()):
-                    self._con.execute(f"DROP TABLE IF EXISTS derived.{name}")
-                self._derived_objects = {}
-                for obj in copy.deepcopy(snapshot["derived_objects"]).values():
-                    self._con.execute(f"CREATE TABLE derived.{obj.name} AS ({obj.sql_definition})")
-                    self._derived_objects[obj.name] = obj
-                self._evaluation_cache = {}
-                feedback = {"event": "revert_checkpoint", "label": snapshot["label"], "restored_objects": [obj.summary() for obj in self._derived_objects.values()]}
-                message = "Checkpoint restored."
             elif action.operation == "benchmark_subset":
                 feedback = self._benchmark_action([self._get_visible_query(query_id) for query_id in action.query_ids], None)
                 message = f"Benchmarked {len(action.query_ids)} visible queries."
@@ -348,14 +585,11 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         self._state.step_count += 1
         status, message, done, feedback = self._execute_action(action, timeout_s=timeout_s, **kwargs)
         self._last_feedback = feedback
-        self._state.done = done
-        self._state.derived_object_count = len(self._derived_objects)
-        self._state.checkpoint_count = len(self._checkpoints)
-        self._state.storage_used_multiplier = round(sum(obj.storage_bytes_estimate for obj in self._derived_objects.values()) / max(1.0, float(self._task.budgets.get("max_storage_bytes", 1.0))), 6)
-        if done:
-            self._state.final_score = feedback.get("final_score")
+        self._refresh_public_state(action, status, feedback, done)
         observation = self._build_observation(status, message, 0.0, done, feedback)
         observation.reward = round(self._apply_rubric(action, observation), 6)
+        if observation.decision_state.get("last_action_effect"):
+            observation.decision_state["last_action_effect"]["reward"] = observation.reward
         return observation
 
     def _inspect_query_plan(self, query_id: str) -> Dict[str, Any]:
@@ -365,7 +599,7 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         route_summary = self._route_summary(query_id, decision)
         self._router_summary = self._summarize_routes([route_summary], f"query:{query_id}")
         return {
-            "event": "inspect_query_plan",
+            "event": "inspect_rewrite_status",
             "query_id": query_id,
             "baseline_plan": baseline.plan.summary(),
             "current_plan": route_summary,
@@ -376,18 +610,58 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
     def _inspect_router_status(self, query_ids: Sequence[str], cluster_id: Optional[str]) -> Dict[str, Any]:
         routes = [self._route_summary(query_id, self._evaluate_query(self._get_visible_query(query_id), False)) for query_id in query_ids]
         self._router_summary = self._summarize_routes(routes, f"cluster:{cluster_id}" if cluster_id else "explicit_query_set")
-        return {"event": "inspect_router_status", "routes": routes, "router_summary": self._router_summary}
-
-    def _retrieve_queries(self, action: SchemaOptAction) -> Dict[str, Any]:
-        mode = self._resolve_retrieval_mode(action)
-        matches = match_queries(self._task, mode=mode, pattern=action.pattern, cluster_id=action.cluster_id, tables=action.tables, columns=action.columns, plan_features=action.plan_features, top_k=action.top_k)
-        self._retrieval_context = {"last_request": {"mode": mode, "pattern": action.pattern, "cluster_id": action.cluster_id, "tables": list(action.tables), "columns": list(action.columns), "plan_features": list(action.plan_features), "top_k": action.top_k}, "matched_queries": [query.summary() for query in matches], "matched_clusters": sorted({query.cluster_id for query in matches}), "retrieval_count": self._state.retrieval_count + 1}
-        return {"event": "retrieve_queries", **self._retrieval_context}
+        return {"event": "inspect_rewrite_status", "routes": routes, "router_summary": self._router_summary}
 
     def _get_query_context(self, query_ids: Sequence[str]) -> Dict[str, Any]:
         contexts = [self._get_visible_query(query_id).context(similar_query_ids(self._task, query_id)) for query_id in query_ids]
-        self._retrieval_context = {"last_request": {"mode": "get_query_context", "query_ids": list(query_ids)}, "matched_queries": [ctx["query_id"] for ctx in contexts], "matched_clusters": sorted({ctx["cluster_id"] for ctx in contexts}), "retrieval_count": self._state.retrieval_count + 1}
-        return {"event": "get_query_context", "query_context": contexts}
+        self._retrieval_context = {"last_request": {"mode": "get_cluster_context", "query_ids": list(query_ids)}, "matched_queries": [ctx["query_id"] for ctx in contexts], "matched_clusters": sorted({ctx["cluster_id"] for ctx in contexts}), "retrieval_count": self._state.retrieval_count + 1}
+        return {"event": "get_cluster_context", "query_context": contexts}
+
+    def _get_cluster_context(self, cluster_id: str, query_ids: Sequence[str], top_k: Optional[int]) -> Dict[str, Any]:
+        if cluster_id not in self._cluster_lookup:
+            raise ValueError(f"Unknown cluster_id: {cluster_id}")
+        cluster = self._cluster_lookup[cluster_id]
+        visible_cluster_queries = visible_queries_for_cluster(self._task, cluster_id)
+        if query_ids:
+            selected_queries = [self._get_visible_query(query_id) for query_id in query_ids]
+            if any(query.cluster_id != cluster_id for query in selected_queries):
+                raise ValueError("query_ids must belong to the requested cluster")
+        else:
+            selected_queries = list(visible_cluster_queries[: max(1, top_k or 2)])
+        query_context = self._get_query_context([query.query_id for query in selected_queries])
+        rewrite_status = self._inspect_router_status([query.query_id for query in selected_queries], cluster_id)
+        relevant_objects = [
+            obj.summary()
+            for obj in self._derived_objects.values()
+            if cluster_id in obj.used_by_clusters
+            or cluster_id in self._derived_object_diagnostics(obj, [cluster_id]).get("eligible_visible_clusters", [])
+        ]
+        benchmark_snapshot = self._benchmark_context if self._benchmark_context.get("last_benchmarked_cluster_id") == cluster_id else {}
+        self._current_focus_cluster_id = cluster_id
+        self._retrieval_context = {
+            "last_request": {"mode": "get_cluster_context", "cluster_id": cluster_id, "query_ids": [query.query_id for query in selected_queries], "top_k": top_k or 2},
+            "matched_queries": [query.query_id for query in selected_queries],
+            "matched_clusters": [cluster_id],
+            "retrieval_count": self._state.retrieval_count + 1,
+        }
+        return {
+            "event": "get_cluster_context",
+            "cluster": cluster.to_summary(),
+            "representative_queries": [query.summary() for query in selected_queries],
+            "query_context": query_context["query_context"],
+            "router_summary": rewrite_status["router_summary"],
+            "routes": rewrite_status["routes"],
+            "benchmark_snapshot": benchmark_snapshot,
+            "relevant_derived_objects": relevant_objects,
+        }
+
+    def _inspect_rewrite_status(self, action: SchemaOptAction) -> Dict[str, Any]:
+        if action.target_id:
+            return self._inspect_query_plan(action.target_id)
+        if action.cluster_id:
+            query_ids = [query.query_id for query in visible_queries_for_cluster(self._task, action.cluster_id)]
+            return self._inspect_router_status(query_ids, action.cluster_id)
+        return self._inspect_router_status(list(action.query_ids), None)
 
     def _upsert_derived_object(self, action: SchemaOptAction, modify: bool) -> Dict[str, Any]:
         name = (action.name or "").strip()

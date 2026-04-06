@@ -12,18 +12,11 @@ from typing import Any, Dict, List, Literal, Optional
 SchemaOptOperation = Literal[
     "inspect_catalog",
     "inspect_table_stats",
-    "inspect_cluster",
-    "inspect_query",
-    "inspect_query_plan",
-    "inspect_router_status",
-    "retrieve_queries",
-    "get_query_context",
+    "get_cluster_context",
+    "inspect_rewrite_status",
     "create_derived_object",
     "modify_derived_object",
     "drop_derived_object",
-    "list_derived_objects",
-    "checkpoint",
-    "revert_checkpoint",
     "benchmark_subset",
     "benchmark_cluster",
     "submit",
@@ -69,6 +62,7 @@ try:
 
         status: ObservationStatus = "ok"
         message: str = ""
+        decision_state: Dict[str, Any] = Field(default_factory=dict)
         catalog_summary: Dict[str, Any] = Field(default_factory=dict)
         workload_summary: Dict[str, Any] = Field(default_factory=dict)
         retrieval_context: Dict[str, Any] = Field(default_factory=dict)
@@ -90,6 +84,26 @@ try:
         storage_used_multiplier: float = 0.0
         final_score: Optional[float] = None
         last_error: Optional[str] = None
+        current_focus_cluster_id: Optional[str] = None
+        last_action_operation: Optional[str] = None
+        last_action_status: Optional[str] = None
+        last_scope_key: Optional[str] = None
+        last_scope_benchmark_score: Optional[float] = None
+        cluster_status_by_id: Dict[str, str] = Field(default_factory=dict)
+        cluster_attempt_counts: Dict[str, int] = Field(default_factory=dict)
+        cluster_best_gated_improvement: Dict[str, float] = Field(default_factory=dict)
+        cluster_last_routed_query_count: Dict[str, int] = Field(default_factory=dict)
+        cluster_last_incorrect_query_count: Dict[str, int] = Field(default_factory=dict)
+        cluster_last_benchmark_score: Dict[str, float] = Field(default_factory=dict)
+        cluster_dominant_rejection_reason: Dict[str, Optional[str]] = Field(default_factory=dict)
+        derived_object_names: List[str] = Field(default_factory=list)
+        useful_derived_object_names: List[str] = Field(default_factory=list)
+        unused_derived_object_names: List[str] = Field(default_factory=list)
+        remaining_steps: int = 0
+        remaining_object_budget: int = 0
+        remaining_storage_bytes: int = 0
+        remaining_refresh_runtime_ms: float = 0.0
+        resource_pressure: float = 0.0
 
 except ImportError:
     @dataclass
@@ -144,6 +158,7 @@ except ImportError:
     class SchemaOptObservation(Observation):
         status: ObservationStatus = "ok"
         message: str = ""
+        decision_state: Dict[str, Any] = field(default_factory=dict)
         catalog_summary: Dict[str, Any] = field(default_factory=dict)
         workload_summary: Dict[str, Any] = field(default_factory=dict)
         retrieval_context: Dict[str, Any] = field(default_factory=dict)
@@ -164,23 +179,38 @@ except ImportError:
         storage_used_multiplier: float = 0.0
         final_score: Optional[float] = None
         last_error: Optional[str] = None
+        current_focus_cluster_id: Optional[str] = None
+        last_action_operation: Optional[str] = None
+        last_action_status: Optional[str] = None
+        last_scope_key: Optional[str] = None
+        last_scope_benchmark_score: Optional[float] = None
+        cluster_status_by_id: Dict[str, str] = field(default_factory=dict)
+        cluster_attempt_counts: Dict[str, int] = field(default_factory=dict)
+        cluster_best_gated_improvement: Dict[str, float] = field(default_factory=dict)
+        cluster_last_routed_query_count: Dict[str, int] = field(default_factory=dict)
+        cluster_last_incorrect_query_count: Dict[str, int] = field(default_factory=dict)
+        cluster_last_benchmark_score: Dict[str, float] = field(default_factory=dict)
+        cluster_dominant_rejection_reason: Dict[str, Optional[str]] = field(default_factory=dict)
+        derived_object_names: List[str] = field(default_factory=list)
+        useful_derived_object_names: List[str] = field(default_factory=list)
+        unused_derived_object_names: List[str] = field(default_factory=list)
+        remaining_steps: int = 0
+        remaining_object_budget: int = 0
+        remaining_storage_bytes: int = 0
+        remaining_refresh_runtime_ms: float = 0.0
+        resource_pressure: float = 0.0
 
 
 def _validate_action_payload(action: Any) -> None:
     op = action.operation
-    if op in {"inspect_table_stats", "inspect_cluster", "inspect_query", "inspect_query_plan"} and not action.target_id:
-        raise ValueError("target_id is required for the selected inspection action")
-    if op == "retrieve_queries" and not any([
-        action.pattern,
-        action.cluster_id,
-        action.tables,
-        action.columns,
-        action.plan_features,
-        action.top_k,
-    ]):
-        raise ValueError("retrieve_queries requires at least one filter argument")
-    if op == "get_query_context" and not action.query_ids:
-        raise ValueError("query_ids is required for get_query_context")
+    if op == "inspect_table_stats" and not action.target_id:
+        raise ValueError("target_id is required for inspect_table_stats")
+    if op == "get_cluster_context" and not action.cluster_id:
+        raise ValueError("cluster_id is required for get_cluster_context")
+    if op == "inspect_rewrite_status":
+        scope_count = int(bool(action.target_id)) + int(bool(action.cluster_id)) + int(bool(action.query_ids))
+        if scope_count != 1:
+            raise ValueError("inspect_rewrite_status requires exactly one of target_id, cluster_id, or query_ids")
     if op in {"create_derived_object", "modify_derived_object"}:
         if not action.object_kind:
             raise ValueError("object_kind is required for create/modify")

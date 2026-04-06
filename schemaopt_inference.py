@@ -41,67 +41,72 @@ if str(PROJECT_ROOT) not in sys.path:
 from schemaopt_env.models import SchemaOptAction
 from schemaopt_env.server.schemaopt_environment import SchemaOptEnvironment
 
-DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.4-mini"), 
+DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.4-mini")
 DEFAULT_API_BASE_URL = os.getenv("API_BASE_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
-DEFAULT_MAX_STEPS = os.getenv("MAX_STEPS", "25")
+DEFAULT_MAX_STEPS = os.getenv("MAX_STEPS")
 DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
 DEFAULT_MAX_ACTION_RETRIES = int(os.getenv("MAX_ACTION_RETRIES", "4"))
 
 SYSTEM_PROMPT = """You are operating a workload-adaptive schema optimization environment.
 
-Your job is to improve weighted workload cost by creating derived logical objects while preserving semantics.
-You cannot rewrite workload queries. Query text is fixed. You must use environment actions only.
+Your job is to maximize final whole-workload score, not to stop after the first local win.
+The final objective depends on visible and holdout gated improvement, correctness coverage, migration quality, and storage efficiency.
+You cannot rewrite workload queries directly. Query text is fixed. You must use environment actions only.
 
-Important strategy:
-1. Inspect hotspot clusters first.
-2. Retrieve query summaries and full context for a small hotspot subset.
-3. Copy the target query's predicates, tables, dimensions, and measures exactly unless router diagnostics show a concrete mismatch to fix.
-4. Create or modify one focused derived object, then benchmark or inspect router status before making another schema change.
-5. Submit once routed improvement is positive, or when repeated router checks show no routeable progress, or when step budget is low.
+Optimization objective:
+- Prefer actions that improve the overall visible+holdout workload, not just one cluster in isolation.
+- A cluster benchmark is local evidence only. Do not assume a strong cluster-local gain means the whole workload is solved.
+- Favor multiple correct, reusable objects across high-hotspot clusters over one narrow object with early submit.
+- Correctness is mandatory. A wider but incorrect routing pattern is worse than a narrower correct one.
+
+Primary loop:
+1. Call get_cluster_context for a hotspot or currently unsolved cluster.
+2. Create or modify one focused derived object for that cluster.
+3. Immediately call inspect_rewrite_status or benchmark_cluster/benchmark_subset for the same scope.
+4. Use decision_state to decide whether to continue exploring other hotspots or submit.
+5. Submit only when overall progress is likely near-best for the remaining step budget.
 
 Operation guide:
-- inspect_cluster: inspect one cluster profile and representative query hints using target_id.
-- inspect_query: inspect one visible query summary using target_id.
-- inspect_query_plan: show baseline vs current routed plan summary for one visible query using target_id.
-- inspect_router_status: show route decision, top candidate, and rejection reasons for selected visible queries. Always pass cluster_id or query_ids; never call it unscoped.
-- retrieve_queries: retrieve visible query summaries by cluster/pattern/table/column/plan features.
-- get_query_context: return full context for specific query_ids, including SQL, exact predicates, canonical predicates, and rewrite template hints.
+- inspect_catalog: inspect base and derived objects.
+- inspect_table_stats: inspect one base table using target_id.
+- get_cluster_context: return one cluster summary, representative visible queries, query context, router summary, latest benchmark snapshot, and relevant derived objects. Always pass cluster_id.
+- inspect_rewrite_status: inspect plan and routing status for exactly one scope: target_id, cluster_id, or query_ids.
 - create_derived_object: create one derived object from SQL and metadata.
 - modify_derived_object: replace an existing derived object definition.
 - drop_derived_object: remove one derived object by target_id.
-- list_derived_objects: list all derived objects currently available.
-- checkpoint: save current derived object set.
-- revert_checkpoint: restore to a previous checkpoint.
 - benchmark_subset: benchmark specific visible query_ids.
 - benchmark_cluster: benchmark all visible queries in one cluster_id.
 - submit: run final visible+holdout evaluation and finish episode.
 
-Decision triggers:
-- Before the first create_derived_object for a cluster, call inspect_query_plan at least once for that cluster.
-- After create_derived_object or modify_derived_object, the next schema-related action must be inspect_router_status or benchmark_cluster/benchmark_subset, scoped to the same intended cluster or explicit query_ids.
-- If inspect_router_status shows only predicate_mismatch for the current object, the next schema-related action must be modify_derived_object or drop_derived_object.
-- If two consecutive benchmarks show routed_query_count == 0, either submit or explicitly switch clusters based on hotspot evidence.
-- If step budget remaining is <= 3, strongly prefer submit.
+Decision policy:
+- Before the first create_derived_object for a cluster, call get_cluster_context for that cluster.
+- After create_derived_object or modify_derived_object, the next schema-related action should be inspect_rewrite_status or benchmark_cluster/benchmark_subset for the same scope.
 - Prefer modify_derived_object over creating near-duplicate objects in the same cluster.
-- Do not request the same get_query_context for the same query_ids repeatedly unless new router evidence justifies it.
-- For inspect_router_status, always include cluster_id or query_ids. Unscoped router checks mix unrelated clusters and are low value.
+- Treat decision_state.best_visible_gated_improvement as the best local verified gain seen so far, not the final workload gain.
+- If only one cluster is verified_positive and several hotspot clusters remain untouched, prefer exploring the next unsolved hotspot instead of submitting.
+- On hard tasks, avoid immediate submit after a single verified-positive cluster unless remaining steps are very low or other top hotspots have already been checked and look unpromising.
+- Prefer covering additional top-hotspot clusters when the current object is narrow and decision_state.unsolved_clusters is still large.
+- Strongly prefer submit only when one of these is true:
+  - decision_state.phase == "submit" and there is evidence of more than one useful object or more than one resolved hotspot,
+  - remaining_budget_summary.steps_remaining <= 3 and there is at least one verified_positive cluster,
+  - most top-hotspot clusters have been attempted and further exploration is unlikely to beat the current solution.
+- Do not repeat get_cluster_context for the same cluster unless rewrite or benchmark evidence changed your plan.
+- Do not submit immediately after one positive benchmark if the task is hard and the remaining budget is still ample.
 
 Action schema:
 {
-  "operation": "inspect_catalog" | "inspect_table_stats" | "inspect_cluster" | "inspect_query" |
-               "inspect_query_plan" | "inspect_router_status" | "retrieve_queries" |
-               "get_query_context" | "create_derived_object" | "modify_derived_object" |
-               "drop_derived_object" | "list_derived_objects" | "checkpoint" |
-               "revert_checkpoint" | "benchmark_subset" | "benchmark_cluster" | "submit",
-  "target_id": "required for inspect_table_stats|inspect_cluster|inspect_query|inspect_query_plan",
-  "query_ids": ["optional query ids"],
-  "pattern": "optional regex or substring",
-  "cluster_id": "used by retrieve_queries and required by benchmark_cluster",
+  "operation": "inspect_catalog" | "inspect_table_stats" | "get_cluster_context" |
+               "inspect_rewrite_status" | "create_derived_object" |
+               "modify_derived_object" | "drop_derived_object" |
+               "benchmark_subset" | "benchmark_cluster" | "submit",
+  "target_id": "required for inspect_table_stats and optional single-query inspect_rewrite_status",
+  "query_ids": ["optional visible query ids"],
+  "cluster_id": "required for get_cluster_context and benchmark_cluster; optional for inspect_rewrite_status",
   "tables": ["optional tables"],
   "columns": ["optional columns"],
   "plan_features": ["optional plan features"],
-  "top_k": 1,
+  "top_k": 2,
   "object_kind": "optional join_matview|agg_matview|filtered_projection|denorm_table",
   "name": "optional object name",
   "sql_definition": "optional SQL definition",
@@ -114,8 +119,8 @@ Action schema:
 Rules:
 - Return ONLY a JSON object, with no markdown and no explanation.
 - Do not invent query ids or cluster ids; use only ids provided in the observation.
-- For inspect_cluster, pass the cluster identifier in target_id (not cluster_id).
-- Derived object names must be valid SQL identifiers matching ^[A-Za-z_][A-Za-z0-9_]*$.
+- inspect_rewrite_status must include exactly one scope: target_id, cluster_id, or query_ids.
+- Derived object names must match ^[A-Za-z_][A-Za-z0-9_]*$.
 - Never use dots, spaces, or schema prefixes in the name field.
 - For create_derived_object and modify_derived_object, always include source_objects and ensure they match tables used in sql_definition.
 - Never rely on any local heuristic policy. If earlier attempts were invalid, fix the output format and return a valid action.
@@ -157,16 +162,17 @@ def _normalize_action_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     normalized = dict(payload)
     op = normalized.get("operation")
 
-    inspect_ops = {"inspect_table_stats", "inspect_cluster", "inspect_query", "inspect_query_plan"}
-    if op in inspect_ops and not normalized.get("target_id"):
-        if normalized.get("cluster_id"):
-            normalized["target_id"] = normalized["cluster_id"]
-        elif normalized.get("query_id"):
-            normalized["target_id"] = normalized["query_id"]
-
+    if op == "get_cluster_context" and not normalized.get("cluster_id") and normalized.get("target_id"):
+        normalized["cluster_id"] = normalized["target_id"]
     if op == "benchmark_cluster" and not normalized.get("cluster_id") and normalized.get("target_id"):
         normalized["cluster_id"] = normalized["target_id"]
-
+    if op == "inspect_rewrite_status":
+        if normalized.get("query_id") and not normalized.get("query_ids"):
+            normalized["query_ids"] = [normalized["query_id"]]
+        if normalized.get("target_id") and normalized.get("cluster_id"):
+            normalized.pop("cluster_id", None)
+        if normalized.get("target_id") and normalized.get("query_ids"):
+            normalized.pop("query_ids", None)
     return normalized
 
 
@@ -191,40 +197,42 @@ def build_user_prompt(
     step: int,
     benchmark_history: List[Dict[str, Any]],
     cluster_attempts: Dict[str, int],
-    query_context_requests: Dict[str, int],
+    cluster_context_requests: Dict[str, int],
     max_steps: int,
     parse_errors: Optional[List[str]] = None,
 ) -> str:
     metadata = observation.metadata or {}
     task = metadata.get("task", {})
-    history_text = "\n".join(history[-6:]) if history else "(none)"
     budgets = task.get("budgets", {})
-    task_budget = budgets.get("max_steps")
-    task_max_steps = int(task_budget) if task_budget is not None else max_steps
-    derived_objects = (observation.catalog_summary or {}).get("derived_objects", [])
-    repeated_context_requests = {key: value for key, value in query_context_requests.items() if value > 1}
+    history_text = "\n".join(history[-6:]) if history else "(none)"
+    decision_state = getattr(observation, "decision_state", {}) or {}
+    repeated_cluster_context_requests = {
+        key: value for key, value in cluster_context_requests.items() if value > 1
+    }
+    derived_object_summaries = (observation.catalog_summary or {}).get("derived_objects", [])
     prompt_payload = {
-        "task": task,
-        "catalog_summary": observation.catalog_summary,
-        "workload_summary": observation.workload_summary,
-        "retrieval_context": observation.retrieval_context,
+        "task": {
+            "task_id": task.get("task_id"),
+            "difficulty": task.get("difficulty"),
+            "budgets": budgets,
+        },
+        "decision_state": decision_state,
         "benchmark_context": observation.benchmark_context,
         "router_summary": getattr(observation, "router_summary", {}) or {},
         "action_feedback": observation.action_feedback,
         "recent_history": history_text,
-        "recent_benchmark_history": benchmark_history[-2:],
+        "recent_benchmark_history": benchmark_history[-3:],
         "cluster_attempts": dict(cluster_attempts),
-        "derived_object_summaries": derived_objects,
-        "repeated_query_context_requests": repeated_context_requests,
-        "remaining_budget_summary": {
-            "steps_remaining": max(0, task_max_steps - step + 1),
-            "max_steps": task_max_steps,
-            "max_new_derived_objects": budgets.get("max_new_derived_objects"),
-            "max_storage_bytes": budgets.get("max_storage_bytes"),
-            "max_refresh_runtime_ms": budgets.get("max_refresh_runtime_ms"),
-            "current_derived_object_count": len(derived_objects),
-            "current_routed_query_count": (observation.benchmark_context or {}).get("routed_query_count"),
+        "repeated_cluster_context_requests": repeated_cluster_context_requests,
+        "derived_object_summaries": derived_object_summaries,
+        "compact_fallbacks": {
+            "task_budgets": budgets,
+            "workload_clusters": (observation.workload_summary or {}).get("clusters", []),
         },
+        "remaining_budget_summary": decision_state.get("remaining_budget_summary", {
+            "steps_remaining": max(0, max_steps - step + 1),
+            "max_steps": max_steps,
+        }),
         "step_reward": observation.reward,
         "done": observation.done,
     }
@@ -267,7 +275,7 @@ def choose_action(
     step: int,
     benchmark_history: List[Dict[str, Any]],
     cluster_attempts: Dict[str, int],
-    query_context_requests: Dict[str, int],
+    cluster_context_requests: Dict[str, int],
     model_name: str,
     api_base_url: Optional[str],
     max_steps: int,
@@ -281,7 +289,7 @@ def choose_action(
             step,
             benchmark_history,
             cluster_attempts,
-            query_context_requests,
+            cluster_context_requests,
             max_steps,
             parse_errors=errors,
         )
@@ -313,11 +321,16 @@ def run_episode(
     observation = env.reset(task_id=task_id)
     budgets = (observation.metadata or {}).get("task", {}).get("budgets", {})
     task_budget = budgets.get("max_steps")
-    effective_max_steps = min(max_steps, int(task_budget)) if max_steps is not None and task_budget is not None else int(task_budget or max_steps or 0)
+    if max_steps is None:
+        effective_max_steps = int(task_budget or 0)
+    elif task_budget is None:
+        effective_max_steps = max_steps
+    else:
+        effective_max_steps = min(max_steps, int(task_budget))
     history: List[str] = []
     benchmark_history: List[Dict[str, Any]] = []
     cluster_attempts: Counter[str] = Counter()
-    query_context_requests: Counter[str] = Counter()
+    cluster_context_requests: Counter[str] = Counter()
     total_reward = 0.0
 
     print(f"Starting schema optimization inference run for {task_id}")
@@ -331,7 +344,7 @@ def run_episode(
             step,
             benchmark_history,
             dict(cluster_attempts),
-            dict(query_context_requests),
+            dict(cluster_context_requests),
             model_name,
             api_base_url,
             effective_max_steps,
@@ -351,18 +364,19 @@ def run_episode(
                     "query_ids": list(action.query_ids),
                     "benchmark_context": observation.benchmark_context,
                     "router_summary": getattr(observation, "router_summary", {}) or {},
+                    "decision_state": getattr(observation, "decision_state", {}) or {},
                 }
             )
         if action.operation in {"create_derived_object", "modify_derived_object"}:
-            cluster_key = ",".join(action.intended_clusters) if action.intended_clusters else "(unscoped)"
-            cluster_attempts[cluster_key] += 1
-        if action.operation == "get_query_context":
-            query_context_requests["|".join(sorted(action.query_ids))] += 1
+            for cluster_id in action.intended_clusters:
+                cluster_attempts[cluster_id] += 1
+        if action.operation == "get_cluster_context" and action.cluster_id:
+            cluster_context_requests[action.cluster_id] += 1
 
         history_line = (
             f"Step {step}: {action.operation} -> reward {reward:+.3f}, "
             f"status={observation.status}, done={observation.done}, "
-            f"router={json.dumps(getattr(observation, 'router_summary', {}) or {}, ensure_ascii=True)}"
+            f"decision={json.dumps(getattr(observation, 'decision_state', {}) or {}, ensure_ascii=True)}"
         )
         history.append(history_line)
 
@@ -388,11 +402,12 @@ def run_episode(
         "done": observation.done,
         "benchmark_context": observation.benchmark_context,
         "router_summary": getattr(observation, "router_summary", {}) or {},
+        "decision_state": getattr(observation, "decision_state", {}) or {},
         "final_feedback": final_feedback,
     }
 
     print("\nFinal result:")
-    result_path = output_path or Path(f"inference_result_{task_id}_{model_name}.json")
+    result_path = output_path or Path(f"inference_result_{task_id}_{model_name}_v2.json")
     with result_path.open("w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
     return result
@@ -403,7 +418,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--task-id", default=DEFAULT_TASK_ID, help="Task id to run.")
     parser.add_argument("--model-name", default=DEFAULT_MODEL_NAME, help="Model id for the OpenAI-compatible API.")
     parser.add_argument("--api-base-url", default=DEFAULT_API_BASE_URL, help="Optional OpenAI-compatible API base URL.")
-    parser.add_argument("--max-steps", type=int, default=DEFAULT_MAX_STEPS, help="Maximum number of environment steps. Defaults to the task budget when omitted.")
+    parser.add_argument("--max-steps", type=int, default=int(DEFAULT_MAX_STEPS) if DEFAULT_MAX_STEPS else None, help="Maximum number of environment steps. Defaults to the task budget when omitted.")
     parser.add_argument("--max-action-retries", type=int, default=DEFAULT_MAX_ACTION_RETRIES, help="Maximum model retries per step.")
     parser.add_argument("--output", type=Path, default=None, help="Optional path for the result JSON.")
     return parser.parse_args()
