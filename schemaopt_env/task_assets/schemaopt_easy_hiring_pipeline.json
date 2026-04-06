@@ -3,9 +3,9 @@
   "difficulty": "easy",
   "domain": "hiring_pipeline",
   "objective": "Optimize a hiring pipeline analytics workload over a real DuckDB warehouse by designing reusable derived objects that accelerate recruiter funnel reporting while preserving exact query semantics.",
-  "seed_source": "schemaopt_env/task_assets/schemaopt_curated/hiring_pipeline",
-  "dataset_dir": "schemaopt_env/task_assets/schemaopt_curated/hiring_pipeline",
-  "database_path": "schemaopt_env/task_assets/schemaopt_curated/hiring_pipeline/hiring_pipeline_start.duckdb",
+  "seed_source": "schemaopt_env/task_assets/databases",
+  "dataset_dir": "schemaopt_env/task_assets/databases",
+  "database_path": "schemaopt_env/task_assets/databases/hiring_pipeline_start.duckdb",
   "tables": [
     {
       "name": "raw.application",

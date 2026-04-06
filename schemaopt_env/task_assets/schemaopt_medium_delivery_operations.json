@@ -3,9 +3,9 @@
   "difficulty": "medium",
   "domain": "delivery_operations",
   "objective": "Optimize a delivery operations analytics workload over a real DuckDB warehouse by building derived objects that support project, execution, and collaboration reporting with exact-result guarantees.",
-  "seed_source": "schemaopt_env/task_assets/schemaopt_curated/delivery_operations",
-  "dataset_dir": "schemaopt_env/task_assets/schemaopt_curated/delivery_operations",
-  "database_path": "schemaopt_env/task_assets/schemaopt_curated/delivery_operations/delivery_operations_start.duckdb",
+  "seed_source": "schemaopt_env/task_assets/databases",
+  "dataset_dir": "schemaopt_env/task_assets/databases",
+  "database_path": "schemaopt_env/task_assets/databases/delivery_operations_start.duckdb",
   "tables": [
     {
       "name": "raw.project_data",

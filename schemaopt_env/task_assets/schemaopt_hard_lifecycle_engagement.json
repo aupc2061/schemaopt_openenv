@@ -3,9 +3,9 @@
   "difficulty": "hard",
   "domain": "lifecycle_engagement",
   "objective": "Optimize a lifecycle engagement warehouse workload over a real DuckDB database by creating durable derived objects that improve campaign, template, click, unsubscribe, and deliverability reporting without semantic drift.",
-  "seed_source": "schemaopt_env/task_assets/schemaopt_curated/lifecycle_engagement",
-  "dataset_dir": "schemaopt_env/task_assets/schemaopt_curated/lifecycle_engagement",
-  "database_path": "schemaopt_env/task_assets/schemaopt_curated/lifecycle_engagement/lifecycle_engagement_start.duckdb",
+  "seed_source": "schemaopt_env/task_assets/databases",
+  "dataset_dir": "schemaopt_env/task_assets/databases",
+  "database_path": "schemaopt_env/task_assets/databases/lifecycle_engagement_start.duckdb",
   "tables": [
     {
       "name": "raw.marketo_activity_change_data_value",

@@ -3,9 +3,9 @@
   "difficulty": "easy",
   "domain": "product_adoption",
   "objective": "Optimize a product adoption analytics workload over a real DuckDB warehouse by materializing compact, reusable objects that speed up usage reporting without changing exact query outputs.",
-  "seed_source": "schemaopt_env/task_assets/schemaopt_curated/product_adoption",
-  "dataset_dir": "schemaopt_env/task_assets/schemaopt_curated/product_adoption",
-  "database_path": "schemaopt_env/task_assets/schemaopt_curated/product_adoption/product_adoption_start.duckdb",
+  "seed_source": "schemaopt_env/task_assets/databases",
+  "dataset_dir": "schemaopt_env/task_assets/databases",
+  "database_path": "schemaopt_env/task_assets/databases/product_adoption_start.duckdb",
   "tables": [
     {
       "name": "raw.account_history",

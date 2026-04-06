@@ -3,9 +3,9 @@
   "difficulty": "medium",
   "domain": "campaign_performance",
   "objective": "Optimize a digital campaign performance warehouse workload over a real DuckDB database by creating derived objects that improve reusable reporting paths across portfolio, campaign, ad-group, and keyword slices.",
-  "seed_source": "schemaopt_env/task_assets/schemaopt_curated/campaign_performance",
-  "dataset_dir": "schemaopt_env/task_assets/schemaopt_curated/campaign_performance",
-  "database_path": "schemaopt_env/task_assets/schemaopt_curated/campaign_performance/campaign_performance_start.duckdb",
+  "seed_source": "schemaopt_env/task_assets/databases",
+  "dataset_dir": "schemaopt_env/task_assets/databases",
+  "database_path": "schemaopt_env/task_assets/databases/campaign_performance_start.duckdb",
   "tables": [
     {
       "name": "raw.account_history_data",
