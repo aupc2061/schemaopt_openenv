@@ -28,3 +28,34 @@ SchemaOpt is a standalone OpenEnv benchmark for workload-adaptive warehouse opti
 - `GET /tasks`
 - `GET /grader`
 - `POST /baseline`
+
+## Inference Runner Notes
+
+The standalone runner in `../schemaopt_inference.py` uses a strict action validation path.
+
+- Normalization is intentionally minimal.
+- `inspect_rewrite_status` supports `query_id` as a compatibility alias and maps it to `query_ids`.
+- Other malformed scope payloads are not silently rewritten; they are rejected and retried so model-output bugs stay visible.
+
+Result files include a `run_summary` section with:
+
+- configured/effective step settings
+- retry settings
+- termination reason
+- warnings
+- recent action trace tail
+
+## UV Commands
+
+From the repository root:
+
+```powershell
+uv pip install --python e:/Project_Repos/metaenv/.venv/Scripts/python.exe pytest
+e:/Project_Repos/metaenv/.venv/Scripts/python.exe -m pytest .\tests\test_schemaopt_inference.py -q
+```
+
+Quick sanity inference (1 step):
+
+```powershell
+e:/Project_Repos/metaenv/.venv/Scripts/python.exe .\schemaopt_inference.py --model-name gpt-5.4-mini --task-id schemaopt_easy_hiring_pipeline --max-steps 1 --max-action-retries 2 --output .\inference_sanity.json
+```

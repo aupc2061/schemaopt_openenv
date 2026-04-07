@@ -41,12 +41,35 @@ if str(PROJECT_ROOT) not in sys.path:
 from schemaopt_env.models import SchemaOptAction
 from schemaopt_env.server.schemaopt_environment import SchemaOptEnvironment
 
+
+def _safe_int_from_env(name: str, default: Optional[int]) -> Optional[int]:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        return default
+    try:
+        return int(raw)
+    except ValueError as exc:
+        raise RuntimeError(f"Environment variable {name} must be an integer, got: {raw!r}") from exc
+
+
+def _sanitize_filename_component(value: str) -> str:
+    sanitized = re.sub(r"[^A-Za-z0-9_.-]", "_", value.strip())
+    return sanitized or "unknown"
+
+
+def _shorten_for_log(text: str, max_len: int = 280) -> str:
+    compact = " ".join(text.split())
+    if len(compact) <= max_len:
+        return compact
+    return f"{compact[: max_len - 3]}..."
+
+
 DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.4-mini")
 DEFAULT_API_BASE_URL = os.getenv("API_BASE_URL")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
-DEFAULT_MAX_STEPS = os.getenv("MAX_STEPS")
+DEFAULT_MAX_STEPS = _safe_int_from_env("MAX_STEPS", None)
 DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
-DEFAULT_MAX_ACTION_RETRIES = int(os.getenv("MAX_ACTION_RETRIES", "4"))
+DEFAULT_MAX_ACTION_RETRIES = _safe_int_from_env("MAX_ACTION_RETRIES", 4) or 4
 
 SYSTEM_PROMPT = """You are operating a workload-adaptive schema optimization environment.
 
@@ -162,33 +185,43 @@ def _normalize_action_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
     normalized = dict(payload)
     op = normalized.get("operation")
 
-    if op == "get_cluster_context" and not normalized.get("cluster_id") and normalized.get("target_id"):
-        normalized["cluster_id"] = normalized["target_id"]
-    if op == "benchmark_cluster" and not normalized.get("cluster_id") and normalized.get("target_id"):
-        normalized["cluster_id"] = normalized["target_id"]
     if op == "inspect_rewrite_status":
         if normalized.get("query_id") and not normalized.get("query_ids"):
             normalized["query_ids"] = [normalized["query_id"]]
-        if normalized.get("target_id") and normalized.get("cluster_id"):
-            normalized.pop("cluster_id", None)
-        if normalized.get("target_id") and normalized.get("query_ids"):
-            normalized.pop("query_ids", None)
+        normalized.pop("query_id", None)
     return normalized
 
 
-def parse_action(response_text: str) -> Optional[SchemaOptAction]:
+def parse_action(response_text: str) -> tuple[Optional[SchemaOptAction], List[str]]:
     candidates = _extract_json_object_candidates(response_text)
     if not candidates:
-        return None
+        return None, ["no JSON object candidate found"]
 
-    for payload in candidates:
+    parse_issues: List[str] = []
+
+    for idx, payload in enumerate(candidates, start=1):
         normalized = _normalize_action_payload(payload)
         try:
-            return SchemaOptAction(**normalized)
+            return SchemaOptAction(**normalized), parse_issues
         except Exception as exc:
+            issue = f"candidate {idx}: {exc}"
+            parse_issues.append(issue)
             print(f"Rejected candidate: {json.dumps(normalized, ensure_ascii=True)} | reason: {exc}")
 
-    return None
+    return None, parse_issues[-5:]
+
+
+def _cluster_attempts_from_decision_state(decision_state: Dict[str, Any]) -> Dict[str, int]:
+    attempts: Dict[str, int] = {}
+    for cluster_entry in decision_state.get("clusters", []):
+        cluster_id = cluster_entry.get("cluster_id")
+        if not cluster_id:
+            continue
+        try:
+            attempts[cluster_id] = int(cluster_entry.get("attempt_count", 0))
+        except (TypeError, ValueError):
+            attempts[cluster_id] = 0
+    return attempts
 
 
 def build_user_prompt(
@@ -196,7 +229,6 @@ def build_user_prompt(
     history: List[str],
     step: int,
     benchmark_history: List[Dict[str, Any]],
-    cluster_attempts: Dict[str, int],
     cluster_context_requests: Dict[str, int],
     max_steps: int,
     parse_errors: Optional[List[str]] = None,
@@ -210,6 +242,7 @@ def build_user_prompt(
         key: value for key, value in cluster_context_requests.items() if value > 1
     }
     derived_object_summaries = (observation.catalog_summary or {}).get("derived_objects", [])
+    cluster_attempts = _cluster_attempts_from_decision_state(decision_state)
     prompt_payload = {
         "task": {
             "task_id": task.get("task_id"),
@@ -225,10 +258,6 @@ def build_user_prompt(
         "cluster_attempts": dict(cluster_attempts),
         "repeated_cluster_context_requests": repeated_cluster_context_requests,
         "derived_object_summaries": derived_object_summaries,
-        "compact_fallbacks": {
-            "task_budgets": budgets,
-            "workload_clusters": (observation.workload_summary or {}).get("clusters", []),
-        },
         "remaining_budget_summary": decision_state.get("remaining_budget_summary", {
             "steps_remaining": max(0, max_steps - step + 1),
             "max_steps": max_steps,
@@ -253,10 +282,17 @@ def request_model_action(user_content: str, model_name: str, api_base_url: Optio
         raise RuntimeError("OPENAI_API_KEY or HF_TOKEN must be set for model-driven inference.")
 
     try:
-        client_kwargs: Dict[str, Any] = {"api_key": OPENAI_API_KEY}
-        if api_base_url:
-            client_kwargs["base_url"] = api_base_url
-        client = OpenAI(**client_kwargs)
+        client_key = f"{api_base_url or ''}|{OPENAI_API_KEY}"
+        if not hasattr(request_model_action, "_clients"):
+            request_model_action._clients = {}
+        client_cache: Dict[str, Any] = request_model_action._clients
+        client = client_cache.get(client_key)
+        if client is None:
+            client_kwargs: Dict[str, Any] = {"api_key": OPENAI_API_KEY}
+            if api_base_url:
+                client_kwargs["base_url"] = api_base_url
+            client = OpenAI(**client_kwargs)
+            client_cache[client_key] = client
         response = client.responses.create(
             model=model_name,
             input=[
@@ -274,21 +310,23 @@ def choose_action(
     history: List[str],
     step: int,
     benchmark_history: List[Dict[str, Any]],
-    cluster_attempts: Dict[str, int],
     cluster_context_requests: Dict[str, int],
     model_name: str,
     api_base_url: Optional[str],
     max_steps: int,
     max_action_retries: int,
 ) -> SchemaOptAction:
+    if max_action_retries < 1:
+        raise RuntimeError("max_action_retries must be at least 1")
+
     errors: List[str] = []
     for attempt in range(1, max_action_retries + 1):
+        print(f"Choosing action: step={step} attempt={attempt}/{max_action_retries}")
         user_content = build_user_prompt(
             observation,
             history,
             step,
             benchmark_history,
-            cluster_attempts,
             cluster_context_requests,
             max_steps,
             parse_errors=errors,
@@ -296,16 +334,22 @@ def choose_action(
         response_text = request_model_action(user_content, model_name, api_base_url)
         if not response_text.strip():
             errors.append("empty model response")
+            print(f"Attempt {attempt} produced an empty model response.")
             continue
-        action = parse_action(response_text)
+        action, parse_issues = parse_action(response_text)
         if action is not None:
             print(f"Model action parsed successfully on attempt {attempt}.")
             return action
         truncated = response_text.strip().replace("\n", " ")
         errors.append(f"unparseable action payload: {truncated[:300]}")
+        if parse_issues:
+            errors.extend(parse_issues[-2:])
+            print(f"Attempt {attempt} parse issues: {_shorten_for_log(' | '.join(parse_issues[-2:]))}")
 
+    tail = " | ".join(errors[-3:]) if errors else "unknown error"
     raise RuntimeError(
-        f"Model failed to produce a valid SchemaOptAction after {max_action_retries} attempts."
+        f"Model failed to produce a valid SchemaOptAction after {max_action_retries} attempts. "
+        f"Recent issues: {tail}"
     )
 
 
@@ -317,6 +361,11 @@ def run_episode(
     max_action_retries: int,
     output_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
+    if max_steps is not None and max_steps < 1:
+        raise RuntimeError("max_steps must be at least 1 when provided")
+    if max_action_retries < 1:
+        raise RuntimeError("max_action_retries must be at least 1")
+
     env = SchemaOptEnvironment()
     observation = env.reset(task_id=task_id)
     budgets = (observation.metadata or {}).get("task", {}).get("budgets", {})
@@ -327,10 +376,16 @@ def run_episode(
         effective_max_steps = max_steps
     else:
         effective_max_steps = min(max_steps, int(task_budget))
+
+    if effective_max_steps < 1:
+        raise RuntimeError(
+            "Effective max steps resolved to 0. Set --max-steps >= 1 or ensure task budget.max_steps is present."
+        )
+
     history: List[str] = []
     benchmark_history: List[Dict[str, Any]] = []
-    cluster_attempts: Counter[str] = Counter()
     cluster_context_requests: Counter[str] = Counter()
+    action_trace: List[Dict[str, Any]] = []
     total_reward = 0.0
 
     print(f"Starting schema optimization inference run for {task_id}")
@@ -343,7 +398,6 @@ def run_episode(
             history,
             step,
             benchmark_history,
-            dict(cluster_attempts),
             dict(cluster_context_requests),
             model_name,
             api_base_url,
@@ -367,9 +421,6 @@ def run_episode(
                     "decision_state": getattr(observation, "decision_state", {}) or {},
                 }
             )
-        if action.operation in {"create_derived_object", "modify_derived_object"}:
-            for cluster_id in action.intended_clusters:
-                cluster_attempts[cluster_id] += 1
         if action.operation == "get_cluster_context" and action.cluster_id:
             cluster_context_requests[action.cluster_id] += 1
 
@@ -379,6 +430,16 @@ def run_episode(
             f"decision={json.dumps(getattr(observation, 'decision_state', {}) or {}, ensure_ascii=True)}"
         )
         history.append(history_line)
+        action_trace.append(
+            {
+                "step": step,
+                "operation": action.operation,
+                "status": observation.status,
+                "reward": round(float(reward), 6),
+                "done": bool(observation.done),
+                "message": observation.message,
+            }
+        )
 
         print(f"  Reward: {reward:+.3f} | Done: {observation.done} | Message: {observation.message}")
 
@@ -390,6 +451,13 @@ def run_episode(
         print(f"Reached max steps ({effective_max_steps}) without a model-issued submit action.")
 
     final_feedback = observation.action_feedback or {}
+    warnings: List[str] = []
+    if not observation.done:
+        warnings.append("episode_not_completed")
+    if env.state.final_score is None:
+        warnings.append("final_score_unavailable")
+
+    termination_reason = "submitted" if observation.done else "max_steps_reached"
     result = {
         "task_id": task_id,
         "final_score": env.state.final_score,
@@ -404,10 +472,24 @@ def run_episode(
         "router_summary": getattr(observation, "router_summary", {}) or {},
         "decision_state": getattr(observation, "decision_state", {}) or {},
         "final_feedback": final_feedback,
+        "run_summary": {
+            "model_name": model_name,
+            "max_steps_config": max_steps,
+            "effective_max_steps": effective_max_steps,
+            "max_action_retries": max_action_retries,
+            "termination_reason": termination_reason,
+            "warnings": warnings,
+            "trace_tail": action_trace[-10:],
+        },
     }
 
     print("\nFinal result:")
-    result_path = output_path or Path(f"inference_result_{task_id}_{model_name}_v2.json")
+    if output_path is None:
+        safe_task_id = _sanitize_filename_component(task_id)
+        safe_model_name = _sanitize_filename_component(model_name)
+        result_path = Path(f"inference_result_{safe_task_id}_{safe_model_name}_v2.json")
+    else:
+        result_path = output_path
     with result_path.open("w", encoding="utf-8") as f:
         json.dump(result, f, indent=2)
     return result
@@ -418,7 +500,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--task-id", default=DEFAULT_TASK_ID, help="Task id to run.")
     parser.add_argument("--model-name", default=DEFAULT_MODEL_NAME, help="Model id for the OpenAI-compatible API.")
     parser.add_argument("--api-base-url", default=DEFAULT_API_BASE_URL, help="Optional OpenAI-compatible API base URL.")
-    parser.add_argument("--max-steps", type=int, default=int(DEFAULT_MAX_STEPS) if DEFAULT_MAX_STEPS else None, help="Maximum number of environment steps. Defaults to the task budget when omitted.")
+    parser.add_argument("--max-steps", type=int, default=DEFAULT_MAX_STEPS, help="Maximum number of environment steps. Defaults to the task budget when omitted.")
     parser.add_argument("--max-action-retries", type=int, default=DEFAULT_MAX_ACTION_RETRIES, help="Maximum model retries per step.")
     parser.add_argument("--output", type=Path, default=None, help="Optional path for the result JSON.")
     return parser.parse_args()
