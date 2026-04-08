@@ -29,7 +29,6 @@ app = create_app(
 )
 
 router = APIRouter()
-_ENABLE_DEBUG_ENDPOINTS = os.getenv("SCHEMAOPT_ENABLE_DEBUG_ENDPOINTS", "0").strip() == "1"
 
 
 @router.get("/tasks")
@@ -43,11 +42,9 @@ def list_tasks():
 def run_baseline():
     return SchemaOptEnvironment.run_baseline()
 
-
-if _ENABLE_DEBUG_ENDPOINTS:
-    @router.get("/grader")
-    def grader_result():
-        return SchemaOptEnvironment.latest_report()
+@router.get("/grader")
+def grader_result():
+    return SchemaOptEnvironment.latest_report()
 
 
 app.include_router(router)

@@ -194,7 +194,6 @@ Environment variables:
 - MAX_STEPS
 - TASK_ID
 - MAX_ACTION_RETRIES
-- SCHEMAOPT_ENABLE_DEBUG_ENDPOINTS (set to 1 to expose /grader and /baseline in dev/pipeline)
 - HF_SPACE_REPO_ID or SPACE_ID (for runtime task asset materialization when using Git LFS pointers)
 
 ## Project Layout

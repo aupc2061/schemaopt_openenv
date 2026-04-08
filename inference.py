@@ -74,9 +74,52 @@ def _clamp01(value: float) -> float:
     return max(0.0, min(1.0, value))
 
 
-def _print_json_line(tag: str, payload: Dict[str, Any]) -> None:
-    print(tag, flush=True)
-    print(json.dumps(payload, ensure_ascii=True), flush=True)
+def _bool_to_token(value: bool) -> str:
+    return "true" if value else "false"
+
+
+def _fmt_reward(value: float) -> str:
+    return f"{float(value):.2f}"
+
+
+def _fmt_error_token(observation: Any) -> str:
+    if getattr(observation, "status", "ok") != "error":
+        return "null"
+    feedback = getattr(observation, "action_feedback", {}) or {}
+    raw_error = feedback.get("error")
+    if raw_error is None:
+        return "null"
+    compact = " ".join(str(raw_error).split())
+    return json.dumps(compact, ensure_ascii=True)
+
+
+def _fmt_action_token(action: SchemaOptAction) -> str:
+    payload = action.model_dump(exclude_none=True)
+    payload.pop("episode_id", None)
+    compact = json.dumps(payload, ensure_ascii=True, separators=(",", ":"))
+    return compact.replace(" ", "_")
+
+
+def _print_start_line(task: str, env_name: str, model: str, max_steps: int) -> None:
+    print(
+        f"[START] task={task} env={env_name} model={model} max_steps={max_steps}",
+        flush=True,
+    )
+
+
+def _print_step_line(step: int, action: SchemaOptAction, reward: float, done: bool, error_token: str) -> None:
+    print(
+        f"[STEP] step={step} action={_fmt_action_token(action)} reward={_fmt_reward(reward)} done={_bool_to_token(done)} error={error_token}",
+        flush=True,
+    )
+
+
+def _print_end_line(success: bool, steps: int, score: float, rewards: List[float]) -> None:
+    reward_list = ",".join(_fmt_reward(item) for item in rewards)
+    print(
+        f"[END] success={_bool_to_token(success)} steps={steps} score={_fmt_reward(score)} rewards={reward_list}",
+        flush=True,
+    )
 
 
 def _task_list_from_arg(raw: str) -> List[str]:
@@ -355,6 +398,11 @@ def run_episode(
         raise RuntimeError("max_action_retries must be at least 1")
 
     env = SchemaOptEnvironment()
+    observation = None
+    budgets: Dict[str, Any] = {}
+    final_feedback: Dict[str, Any] = {}
+    termination_reason = "runner_exception"
+
     observation = env.reset(task_id=task_id)
     budgets = (observation.metadata or {}).get("task", {}).get("budgets", {})
     task_budget = budgets.get("max_steps")
@@ -377,103 +425,108 @@ def run_episode(
     total_reward = 0.0
     rewards: List[float] = []
 
-    _print_json_line(
-        "[START]",
-        {
-            "task": task_id,
-            "env": "schemaopt_env",
-            "model": model_name,
-            "max_steps": effective_max_steps,
-        },
-    )
+    _print_start_line(task_id, "schemaopt_env", model_name, effective_max_steps)
 
     terminated_due_to_max_steps = False
+    caught_error: Optional[str] = None
+    try:
+        for step in range(1, effective_max_steps + 1):
+            if observation.done:
+                break
 
-    for step in range(1, effective_max_steps + 1):
-        if observation.done:
-            break
+            with io.StringIO() as sink, redirect_stdout(sink):
+                action = choose_action(
+                    observation,
+                    history,
+                    step,
+                    benchmark_history,
+                    dict(cluster_context_requests),
+                    model_name,
+                    api_base_url,
+                    effective_max_steps,
+                    max_action_retries,
+                    SYSTEM_PROMPT,
+                )
 
-        with io.StringIO() as sink, redirect_stdout(sink):
-            action = choose_action(
-                observation,
-                history,
-                step,
-                benchmark_history,
-                dict(cluster_context_requests),
-                model_name,
-                api_base_url,
-                effective_max_steps,
-                max_action_retries,
-                SYSTEM_PROMPT,
+            observation = env.step(action)
+            reward = float(observation.reward or 0.0)
+            total_reward += reward
+            rewards.append(reward)
+
+            if action.operation in {"benchmark_cluster", "benchmark_subset"}:
+                benchmark_history.append(
+                    {
+                        "operation": action.operation,
+                        "cluster_id": action.cluster_id,
+                        "query_ids": list(action.query_ids),
+                        "benchmark_context": observation.benchmark_context,
+                        "router_summary": getattr(observation, "router_summary", {}) or {},
+                        "decision_state": getattr(observation, "decision_state", {}) or {},
+                    }
+                )
+            if action.operation == "get_cluster_context" and action.cluster_id:
+                cluster_context_requests[action.cluster_id] += 1
+
+            history_line = (
+                f"Step {step}: {action.operation} -> reward {reward:+.3f}, "
+                f"status={observation.status}, done={observation.done}, "
+                f"decision={json.dumps(getattr(observation, 'decision_state', {}) or {}, ensure_ascii=True)}"
             )
-
-        observation = env.step(action)
-        reward = float(observation.reward or 0.0)
-        total_reward += reward
-        rewards.append(reward)
-
-        if action.operation in {"benchmark_cluster", "benchmark_subset"}:
-            benchmark_history.append(
+            history.append(history_line)
+            action_trace.append(
                 {
+                    "step": step,
                     "operation": action.operation,
-                    "cluster_id": action.cluster_id,
-                    "query_ids": list(action.query_ids),
-                    "benchmark_context": observation.benchmark_context,
-                    "router_summary": getattr(observation, "router_summary", {}) or {},
-                    "decision_state": getattr(observation, "decision_state", {}) or {},
+                    "status": observation.status,
+                    "reward": round(float(reward), 6),
+                    "done": bool(observation.done),
+                    "message": observation.message,
                 }
             )
-        if action.operation == "get_cluster_context" and action.cluster_id:
-            cluster_context_requests[action.cluster_id] += 1
 
-        history_line = (
-            f"Step {step}: {action.operation} -> reward {reward:+.3f}, "
-            f"status={observation.status}, done={observation.done}, "
-            f"decision={json.dumps(getattr(observation, 'decision_state', {}) or {}, ensure_ascii=True)}"
-        )
-        history.append(history_line)
-        action_trace.append(
-            {
-                "step": step,
-                "operation": action.operation,
-                "status": observation.status,
-                "reward": round(float(reward), 6),
-                "done": bool(observation.done),
-                "message": observation.message,
-            }
-        )
+            _print_step_line(
+                step=step,
+                action=action,
+                reward=reward,
+                done=bool(observation.done),
+                error_token=_fmt_error_token(observation),
+            )
 
-        _print_json_line(
-            "[STEP]",
-            {
-                "step": step,
-                "action": action.model_dump(exclude_none=True),
-                "reward": reward,
-                "done": bool(observation.done),
-                "error": observation.message if observation.status == "error" else None,
-            },
-        )
+            if observation.done:
+                break
+        else:
+            terminated_due_to_max_steps = True
+            termination_reason = "runner_max_steps_reached"
 
-        if observation.done:
-            break
-    else:
-        terminated_due_to_max_steps = True
+    except Exception as exc:
+        caught_error = str(exc)
+        termination_reason = "runner_exception"
+        final_feedback = {"error": caught_error}
+        if not rewards:
+            rewards = []
+    finally:
+        close_fn = getattr(env, "close", None)
+        if callable(close_fn):
+            try:
+                close_fn()
+            except Exception:
+                pass
 
-    final_feedback = observation.action_feedback or {}
+    final_feedback = (observation.action_feedback if observation is not None else None) or final_feedback
     warnings: List[str] = []
-    if not observation.done:
+    if observation is None or not observation.done:
         warnings.append("episode_not_completed")
     if env.state.final_score is None:
         warnings.append("final_score_unavailable")
+    if caught_error is not None:
+        warnings.append("runner_exception")
 
-    if observation.done:
+    if observation is not None and observation.done:
         termination_reason = str(final_feedback.get("termination_reason") or "submitted")
-    else:
-        termination_reason = "runner_max_steps_reached"
     terminated_due_to_max_steps = terminated_due_to_max_steps or termination_reason == "budget_exhausted"
     final_score = float(env.state.final_score or 0.0)
     score = _clamp01(final_score)
-    success = observation.done and final_score > 0.0
+    success = bool(observation is not None and observation.done and final_score > 0.0)
     result = {
         "task_id": task_id,
         "final_score": final_score,
@@ -483,12 +536,12 @@ def run_episode(
         "steps": env.state.step_count,
         "derived_object_count": env.state.derived_object_count,
         "benchmark_runs": env.state.benchmark_runs,
-        "final_message": observation.message,
+        "final_message": (observation.message if observation is not None else (caught_error or "episode failed before first step")),
         "terminated_due_to_max_steps": terminated_due_to_max_steps,
-        "done": observation.done,
-        "benchmark_context": observation.benchmark_context,
-        "router_summary": getattr(observation, "router_summary", {}) or {},
-        "decision_state": getattr(observation, "decision_state", {}) or {},
+        "done": bool(observation.done) if observation is not None else False,
+        "benchmark_context": (observation.benchmark_context if observation is not None else {}),
+        "router_summary": (getattr(observation, "router_summary", {}) or {}) if observation is not None else {},
+        "decision_state": (getattr(observation, "decision_state", {}) or {}) if observation is not None else {},
         "final_feedback": final_feedback,
         "run_summary": {
             "model_name": model_name,
@@ -503,15 +556,11 @@ def run_episode(
         "rewards": rewards,
     }
 
-    _print_json_line(
-        "[END]",
-        {
-            "task": task_id,
-            "success": success,
-            "steps": env.state.step_count,
-            "score": score,
-            "rewards": rewards,
-        },
+    _print_end_line(
+        success=success,
+        steps=env.state.step_count,
+        score=score,
+        rewards=rewards,
     )
 
     if output_path is None:
