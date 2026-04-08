@@ -5,8 +5,9 @@ policy logic and emits structured stdout logs using the required
 [START] / [STEP] / [END] tags.
 
 Environment variables:
-- OPENAI_API_KEY: required for OpenAI client auth
-- HF_TOKEN: optional fallback token if OPENAI_API_KEY is not set
+- API_KEY: primary key for OpenAI-compatible client auth in hackathon evaluation
+- OPENAI_API_KEY: optional local-dev fallback if API_KEY is not set
+- HF_TOKEN: optional final fallback if neither API_KEY nor OPENAI_API_KEY is set
 - MODEL_NAME: optional model id to call (default: gpt-5.4-mini)
 - API_BASE_URL: optional custom OpenAI-compatible base URL
 - MAX_STEPS: optional max steps per episode (defaults to the task budget when unset)
@@ -129,7 +130,7 @@ def _task_list_from_arg(raw: str) -> List[str]:
 
 DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.4-mini")
 DEFAULT_API_BASE_URL = os.getenv("API_BASE_URL")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
+API_KEY = os.getenv("API_KEY") or os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
 DEFAULT_MAX_STEPS = _safe_int_from_env("MAX_STEPS", None)
 DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
 DEFAULT_MAX_ACTION_RETRIES = _safe_int_from_env("MAX_ACTION_RETRIES", 4) or 4
@@ -301,17 +302,17 @@ def request_model_action(
 ) -> str:
     if OpenAI is None:
         raise RuntimeError("openai package is not installed. Install it to run model-driven inference.")
-    if not OPENAI_API_KEY:
-        raise RuntimeError("OPENAI_API_KEY or HF_TOKEN must be set for model-driven inference.")
+    if not API_KEY:
+        raise RuntimeError("API_KEY must be set for evaluation runs. OPENAI_API_KEY or HF_TOKEN may be used only as local fallbacks.")
 
     try:
-        client_key = f"{api_base_url or ''}|{OPENAI_API_KEY}"
+        client_key = f"{api_base_url or ''}|{API_KEY}"
         if not hasattr(request_model_action, "_clients"):
             request_model_action._clients = {}
         client_cache: Dict[str, Any] = request_model_action._clients
         client = client_cache.get(client_key)
         if client is None:
-            client_kwargs: Dict[str, Any] = {"api_key": OPENAI_API_KEY}
+            client_kwargs: Dict[str, Any] = {"api_key": API_KEY}
             if api_base_url:
                 client_kwargs["base_url"] = api_base_url
             client = OpenAI(**client_kwargs)

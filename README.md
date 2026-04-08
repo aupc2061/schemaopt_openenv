@@ -292,8 +292,7 @@ python inference.py --task-id schemaopt_easy_hiring_pipeline --model-name gpt-5.
 
 Environment variables:
 
-- OPENAI_API_KEY
-- HF_TOKEN
+- API_KEY
 - API_BASE_URL
 - MODEL_NAME
 - MAX_STEPS
@@ -327,5 +326,4 @@ metaenv/
 
 - The environment can auto-submit when the step budget is exhausted.
 - Large or low-utility derived objects increase pressure and reduce rewards.
-
 
