@@ -308,7 +308,7 @@ def request_model_action(
         raise RuntimeError("API_KEY must be set for evaluation runs. OPENAI_API_KEY or HF_TOKEN may be used only as local fallbacks.")
 
     try:
-        client = OpenAI(base_url=DEFAULT_API_BASE_URL, api_key=API_KEY)
+        client = OpenAI(base_url=os.environ["API_BASE_URL"], api_key=os.environ["API_KEY"])
 
         response = client.responses.create(
             model=model_name,
