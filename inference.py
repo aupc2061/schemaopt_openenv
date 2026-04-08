@@ -28,18 +28,18 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-try:
-    from dotenv import load_dotenv
-except ImportError:
-    def load_dotenv() -> bool:
-        return False
+# try:
+#     from dotenv import load_dotenv
+# except ImportError:
+#     def load_dotenv() -> bool:
+#         return False
 
 try:
     from openai import OpenAI
 except ImportError:
     OpenAI = None
 
-load_dotenv()
+#load_dotenv()
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -130,9 +130,9 @@ def _task_list_from_arg(raw: str) -> List[str]:
     return [item for item in items if item]
 
 
-DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME")
-DEFAULT_API_BASE_URL = os.getenv("API_BASE_URL")
-API_KEY = os.getenv("API_KEY") or os.getenv("HF_TOKEN")
+DEFAULT_MODEL_NAME = os.environ["MODEL_NAME"]
+DEFAULT_API_BASE_URL = os.environ["API_BASE_URL"]
+API_KEY = os.environ["API_KEY"]
 DEFAULT_MAX_STEPS = _safe_int_from_env("MAX_STEPS", None)
 DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
 DEFAULT_MAX_ACTION_RETRIES = _safe_int_from_env("MAX_ACTION_RETRIES", 4) or 4
@@ -308,17 +308,8 @@ def request_model_action(
         raise RuntimeError("API_KEY must be set for evaluation runs. OPENAI_API_KEY or HF_TOKEN may be used only as local fallbacks.")
 
     try:
-        client_key = f"{api_base_url or ''}|{API_KEY}"
-        if not hasattr(request_model_action, "_clients"):
-            request_model_action._clients = {}
-        client_cache: Dict[str, Any] = request_model_action._clients
-        client = client_cache.get(client_key)
-        if client is None:
-            client_kwargs: Dict[str, Any] = {"api_key": API_KEY}
-            if api_base_url:
-                client_kwargs["base_url"] = api_base_url
-            client = OpenAI(**client_kwargs)
-            client_cache[client_key] = client
+        client = OpenAI(base_url=os.environ["API_BASE_URL"], api_key=os.environ["API_KEY"])
+
         response = client.responses.create(
             model=model_name,
             input=[
