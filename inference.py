@@ -59,8 +59,10 @@ def _safe_int_from_env(name: str, default: Optional[int]) -> Optional[int]:
         raise RuntimeError(f"Environment variable {name} must be an integer, got: {raw!r}") from exc
 
 
-def _sanitize_filename_component(value: str) -> str:
-    sanitized = re.sub(r"[^A-Za-z0-9_.-]", "_", value.strip())
+def _sanitize_filename_component(value: Any) -> str:
+    if value is None:
+        return "unknown"
+    sanitized = re.sub(r"[^A-Za-z0-9_.-]", "_", str(value).strip())
     return sanitized or "unknown"
 
 
@@ -130,7 +132,7 @@ def _task_list_from_arg(raw: str) -> List[str]:
 
 DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME")
 DEFAULT_API_BASE_URL = os.getenv("API_BASE_URL")
-API_KEY = os.getenv("API_KEY")
+API_KEY = os.getenv("API_KEY") or os.getenv("HF_TOKEN")
 DEFAULT_MAX_STEPS = _safe_int_from_env("MAX_STEPS", None)
 DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
 DEFAULT_MAX_ACTION_RETRIES = _safe_int_from_env("MAX_ACTION_RETRIES", 4) or 4
@@ -561,14 +563,14 @@ def run_episode(
         rewards=rewards,
     )
 
-    if output_path is None:
-        safe_task_id = _sanitize_filename_component(task_id)
-        safe_model_name = _sanitize_filename_component(model_name)
-        result_path = Path(f"inference_result_{safe_task_id}_{safe_model_name}_v2.json")
-    else:
-        result_path = output_path
-    with result_path.open("w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2)
+    # if output_path is None:
+    #     safe_task_id = _sanitize_filename_component(task_id)
+    #     safe_model_name = _sanitize_filename_component(model_name)
+    #     result_path = Path(f"inference_result_{safe_task_id}_{safe_model_name}_v2.json")
+    # else:
+    #     result_path = output_path
+    # with result_path.open("w", encoding="utf-8") as f:
+    #     json.dump(result, f, indent=2)
     return result
 
 
@@ -608,9 +610,9 @@ def main() -> None:
         )
         for task_id in task_ids
     ]
-    if args.output is not None and len(task_ids) > 1:
-        with args.output.open("w", encoding="utf-8") as f:
-            json.dump({"results": results}, f, indent=2)
+    # if args.output is not None and len(task_ids) > 1:
+    #     with args.output.open("w", encoding="utf-8") as f:
+    #         json.dump({"results": results}, f, indent=2)
 
 
 if __name__ == "__main__":
