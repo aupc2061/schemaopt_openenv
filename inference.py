@@ -130,9 +130,9 @@ def _task_list_from_arg(raw: str) -> List[str]:
     return [item for item in items if item]
 
 
-DEFAULT_MODEL_NAME = os.environ["MODEL_NAME"] or "Qwen/Qwen2.5-72B-Instruct"
-DEFAULT_API_BASE_URL = os.environ["API_BASE_URL"] or "https://router.huggingface.co/v1"
-API_KEY = os.environ["API_KEY"] or os.environ["HF_TOKEN"]
+DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
+DEFAULT_API_BASE_URL = os.getenv("API_BASE_URL") or "https://router.huggingface.co/v1"
+API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
 DEFAULT_MAX_STEPS = _safe_int_from_env("MAX_STEPS", None)
 DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
 DEFAULT_MAX_ACTION_RETRIES = _safe_int_from_env("MAX_ACTION_RETRIES", 4) or 4
@@ -308,7 +308,7 @@ def request_model_action(
         raise RuntimeError("API_KEY must be set for evaluation runs. OPENAI_API_KEY or HF_TOKEN may be used only as local fallbacks.")
 
     try:
-        client = OpenAI(base_url=os.environ["API_BASE_URL"], api_key=os.environ["API_KEY"])
+        client = OpenAI(base_url=DEFAULT_API_BASE_URL, api_key=API_KEY)
 
         response = client.responses.create(
             model=model_name,
