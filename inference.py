@@ -133,13 +133,6 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
 DEFAULT_MAX_STEPS = _safe_int_from_env("MAX_STEPS", None)
 DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
 DEFAULT_MAX_ACTION_RETRIES = _safe_int_from_env("MAX_ACTION_RETRIES", 4) or 4
-DEFAULT_SUBMISSION_TASKS = ",".join(
-    [
-        "schemaopt_easy_hiring_pipeline",
-        "schemaopt_medium_campaign_performance",
-        "schemaopt_hard_mobile_revenue_ops",
-    ]
-)
 
 SYSTEM_PROMPT = """You are acting in a schema optimization environment.
 
@@ -580,12 +573,8 @@ def run_episode(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run submission-style inference against schemaopt_env.")
-    parser.add_argument(
-        "--tasks",
-        default=DEFAULT_SUBMISSION_TASKS,
-        help="Comma-separated task ids to run. Defaults to a representative easy/medium/hard sweep.",
-    )
-    parser.add_argument("--task-id", default=None, help="Optional single task id override.")
+    parser.add_argument("--tasks", default=None, help="Optional comma-separated task ids to run.")
+    parser.add_argument("--task-id", default=None, help="Optional single task id override. Defaults to TASK_ID or the built-in default task when omitted.")
     parser.add_argument("--model-name", default=DEFAULT_MODEL_NAME, help="Model id for the OpenAI-compatible API.")
     parser.add_argument("--api-base-url", default=DEFAULT_API_BASE_URL, help="Optional OpenAI-compatible API base URL.")
     parser.add_argument(
@@ -601,7 +590,12 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    task_ids = [args.task_id] if args.task_id else _task_list_from_arg(args.tasks)
+    if args.tasks:
+        task_ids = _task_list_from_arg(args.tasks)
+    elif args.task_id:
+        task_ids = [args.task_id]
+    else:
+        task_ids = [DEFAULT_TASK_ID]
     results = [
         run_episode(
             task_id=task_id,
