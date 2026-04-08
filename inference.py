@@ -100,9 +100,9 @@ def _fmt_action_token(action: SchemaOptAction) -> str:
     return compact.replace(" ", "_")
 
 
-def _print_start_line(task: str, env_name: str, model: str, max_steps: int) -> None:
+def _print_start_line(task: str, env_name: str, model: str) -> None:
     print(
-        f"[START] task={task} env={env_name} model={model} max_steps={max_steps}",
+        f"[START] task={task} env={env_name} model={model}",
         flush=True,
     )
 
@@ -247,7 +247,7 @@ def _prompt_task_view(observation: Any) -> Dict[str, Any]:
     metadata = observation.metadata or {}
     task = metadata.get("task", {})
     return {
-        "task_id": task.get("task_id"),
+        "task_id": task.get("task_id") or task.get("id"),
         "difficulty": task.get("difficulty"),
         "budgets": task.get("budgets", {}),
     }
@@ -402,34 +402,38 @@ def run_episode(
     budgets: Dict[str, Any] = {}
     final_feedback: Dict[str, Any] = {}
     termination_reason = "runner_exception"
-
-    observation = env.reset(task_id=task_id)
-    budgets = (observation.metadata or {}).get("task", {}).get("budgets", {})
-    task_budget = budgets.get("max_steps")
-    if max_steps is None:
-        effective_max_steps = int(task_budget or 0)
-    elif task_budget is None:
-        effective_max_steps = max_steps
-    else:
-        effective_max_steps = min(max_steps, int(task_budget))
-
-    if effective_max_steps < 1:
-        raise RuntimeError(
-            "Effective max steps resolved to 0. Set --max-steps >= 1 or ensure task budget.max_steps is present."
-        )
-
-    history: List[str] = []
-    benchmark_history: List[Dict[str, Any]] = []
-    cluster_context_requests: Counter[str] = Counter()
-    action_trace: List[Dict[str, Any]] = []
+    task_budget: Optional[int] = None
+    effective_max_steps = max_steps if max_steps is not None else 0
+    if effective_max_steps < 0:
+        effective_max_steps = 0
     total_reward = 0.0
     rewards: List[float] = []
+    action_trace: List[Dict[str, Any]] = []
+    caught_error: Optional[str] = None
 
-    _print_start_line(task_id, "schemaopt_env", model_name, effective_max_steps)
+    _print_start_line(task_id, "schemaopt_env", model_name)
 
     terminated_due_to_max_steps = False
-    caught_error: Optional[str] = None
     try:
+        observation = env.reset(task_id=task_id)
+        budgets = (observation.metadata or {}).get("task", {}).get("budgets", {})
+        task_budget = budgets.get("max_steps")
+        if max_steps is None:
+            effective_max_steps = int(task_budget or 0)
+        elif task_budget is None:
+            effective_max_steps = max_steps
+        else:
+            effective_max_steps = min(max_steps, int(task_budget))
+
+        if effective_max_steps < 1:
+            raise RuntimeError(
+                "Effective max steps resolved to 0. Set --max-steps >= 1 or ensure task budget.max_steps is present."
+            )
+
+        history: List[str] = []
+        benchmark_history: List[Dict[str, Any]] = []
+        cluster_context_requests: Counter[str] = Counter()
+
         for step in range(1, effective_max_steps + 1):
             if observation.done:
                 break
