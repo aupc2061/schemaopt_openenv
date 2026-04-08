@@ -2,7 +2,7 @@
 title: SchemaOpt OpenEnv
 emoji: 🧠
 colorFrom: blue
-colorTo: teal
+colorTo: green
 sdk: docker
 pinned: false
 app_port: 8000
@@ -38,7 +38,7 @@ The environment is designed to model a realistic warehouse-tuning loop rather th
 
 ```bash
 pip install -r requirements.txt
-uvicorn schemaopt_env.server.app:app --host 0.0.0.0 --port 8000
+uvicorn server.app:app --host 0.0.0.0 --port 8000
 ```
 
 ### 2. Smoke test
@@ -60,7 +60,7 @@ python inference.py --tasks schemaopt_easy_hiring_pipeline,schemaopt_medium_camp
 
 ```bash
 pip install -r requirements.txt
-uvicorn schemaopt_env.server.app:app --host 0.0.0.0 --port 8000
+uvicorn server.app:app --host 0.0.0.0 --port 8000
 ```
 
 ### Local inference runner
@@ -85,8 +85,8 @@ The environment follows the standard OpenEnv HTTP contract.
 Reset starts a new episode and optionally selects a task. Step sends one action and returns the next observation, reward, and done flag.
 
 ```python
-from schemaopt_env.client import SchemaOptEnv
-from schemaopt_env.models import SchemaOptAction
+from client import SchemaOptEnv
+from models import SchemaOptAction
 
 async def main():
     async with SchemaOptEnv(base_url="http://localhost:8000") as env:
@@ -105,8 +105,8 @@ async def main():
 For synchronous usage:
 
 ```python
-from schemaopt_env.client import SchemaOptEnv
-from schemaopt_env.models import SchemaOptAction
+from client import SchemaOptEnv
+from models import SchemaOptAction
 
 with SchemaOptEnv(base_url="http://localhost:8000").sync() as env:
     result = env.reset(task_id="schemaopt_easy_hiring_pipeline")
@@ -222,7 +222,7 @@ Final score combines:
 
 ## Tasks
 
-Task assets live in schemaopt_env/task_assets and schemaopt_env/task_assets/databases.
+Task assets live in task_assets and task_assets/databases.
 
 SchemaOpt tasks are grouped by difficulty and by workload family. Easy tasks usually reward a small number of obvious reusable rollups, medium tasks require broader reuse across related clusters, and hard tasks demand cross-cluster tradeoffs under tighter budget pressure.
 
@@ -306,24 +306,26 @@ Environment variables:
 ```text
 metaenv/
 |- Dockerfile
+|- client.py
 |- inference.py
+|- models.py
 |- openenv.yaml
+|- pyproject.toml
 |- requirements.txt
-|- schemaopt_env/
-|  |- client.py
-|  |- models.py
-|  |- tasks.py
-|  |- openenv.yaml
-|  |- server/
-|  |  |- app.py
-|  |  |- rubrics.py
-|  |  |- schemaopt_environment.py
-|  |- task_assets/
-|     |- *.json
-|     |- databases/*.duckdb
+|- tasks.py
+|- server/
+|  |- app.py
+|  |- rubrics.py
+|  |- schemaopt_environment.py
+|- scripts/
+|- task_assets/
+|  |- *.json
+|  |- databases/*.duckdb
 ```
 
 ## Notes
 
 - The environment can auto-submit when the step budget is exhausted.
 - Large or low-utility derived objects increase pressure and reduce rewards.
+
+
