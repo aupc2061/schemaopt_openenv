@@ -98,51 +98,11 @@ DEFAULT_SUBMISSION_TASKS = ",".join(
     ]
 )
 
-SYSTEM_PROMPT = """You are operating a workload-adaptive schema optimization environment.
+SYSTEM_PROMPT = """You are acting in a schema optimization environment.
 
-Your job is to maximize final whole-workload score, not to stop after the first local win.
-The final objective depends on visible and holdout gated improvement, correctness coverage, migration quality, and storage efficiency.
-You cannot rewrite workload queries directly. Query text is fixed. You must use environment actions only.
-
-Optimization objective:
-- Prefer actions that improve the overall visible+holdout workload, not just one cluster in isolation.
-- A cluster benchmark is local evidence only. Do not assume a strong cluster-local gain means the whole workload is solved.
-- Favor multiple correct, reusable objects across high-hotspot clusters over one narrow object with early submit.
-- Correctness is mandatory. A wider but incorrect routing pattern is worse than a narrower correct one.
-
-Primary loop:
-1. Call get_cluster_context for a hotspot or currently unsolved cluster.
-2. Create or modify one focused derived object for that cluster.
-3. Immediately call inspect_rewrite_status or benchmark_cluster/benchmark_subset for the same scope.
-4. Use decision_state to decide whether to continue exploring other hotspots or submit.
-5. Submit only when overall progress is likely near-best for the remaining step budget.
-
-Operation guide:
-- inspect_catalog: inspect base and derived objects.
-- inspect_table_stats: inspect one base table using target_id.
-- get_cluster_context: return one cluster summary, representative visible queries, query context, router summary, latest benchmark snapshot, and relevant derived objects. Always pass cluster_id.
-- inspect_rewrite_status: inspect plan and routing status for exactly one scope: target_id, cluster_id, or query_ids.
-- create_derived_object: create one derived object from SQL and metadata.
-- modify_derived_object: replace an existing derived object definition.
-- drop_derived_object: remove one derived object by target_id.
-- benchmark_subset: benchmark specific visible query_ids.
-- benchmark_cluster: benchmark all visible queries in one cluster_id.
-- submit: run final visible+holdout evaluation and finish episode.
-
-Decision policy:
-- Before the first create_derived_object for a cluster, call get_cluster_context for that cluster.
-- After create_derived_object or modify_derived_object, the next schema-related action should be inspect_rewrite_status or benchmark_cluster/benchmark_subset for the same scope.
-- Prefer modify_derived_object over creating near-duplicate objects in the same cluster.
-- Treat decision_state.best_visible_gated_improvement as the best local verified gain seen so far, not the final workload gain.
-- If only one cluster is verified_positive and several hotspot clusters remain untouched, prefer exploring the next unsolved hotspot instead of submitting.
-- On hard tasks, avoid immediate submit after a single verified-positive cluster unless remaining steps are very low or other top hotspots have already been checked and look unpromising.
-- Prefer covering additional top-hotspot clusters when the current object is narrow and decision_state.unsolved_clusters is still large.
-- Strongly prefer submit only when one of these is true:
-  - decision_state.phase == "submit" and there is evidence of more than one useful object or more than one resolved hotspot,
-  - remaining_budget_summary.steps_remaining <= 3 and there is at least one verified_positive cluster,
-  - most top-hotspot clusters have been attempted and further exploration is unlikely to beat the current solution.
-- Do not repeat get_cluster_context for the same cluster unless rewrite or benchmark evidence changed your plan.
-- Do not submit immediately after one positive benchmark if the task is hard and the remaining budget is still ample.
+Objective:
+- Maximize final episode reward using valid environment actions only.
+- Query text is fixed. You cannot edit workload queries directly.
 
 Action schema:
 {
@@ -167,14 +127,21 @@ Action schema:
 }
 
 Rules:
-- Return ONLY a JSON object, with no markdown and no explanation.
-- Do not invent query ids or cluster ids; use only ids provided in the observation.
+- Return ONLY a single JSON object, with no markdown and no explanation.
+- Use only ids and fields provided by the observation.
 - inspect_rewrite_status must include exactly one scope: target_id, cluster_id, or query_ids.
 - Derived object names must match ^[A-Za-z_][A-Za-z0-9_]*$.
 - Never use dots, spaces, or schema prefixes in the name field.
 - For create_derived_object and modify_derived_object, always include source_objects and ensure they match tables used in sql_definition.
-- Never rely on any local heuristic policy. If earlier attempts were invalid, fix the output format and return a valid action.
+- If a previous attempt was invalid, return a valid action that matches the schema.
 """
+
+# Prompt-neutrality standard for this runner:
+# - Allowed: high-level objective, action schema, formatting constraints, and
+#   environment-native observation payload.
+# - Disallowed: evaluator decomposition, hidden controller heuristics,
+#   task-family playbooks, difficulty-specific behavior rules, and prompt-side
+#   strategy recommendations.
 
 
 def _extract_json_object_candidates(text: str) -> List[Dict[str, Any]]:
@@ -209,6 +176,8 @@ def _extract_json_object_candidates(text: str) -> List[Dict[str, Any]]:
 
 
 def _normalize_action_payload(payload: Dict[str, Any]) -> Dict[str, Any]:
+    # Parsing may repair superficial syntax/field aliases, but must not invent
+    # scope, ids, or strategy on the model's behalf.
     normalized = dict(payload)
     op = normalized.get("operation")
 
@@ -238,17 +207,39 @@ def parse_action(response_text: str) -> tuple[Optional[SchemaOptAction], List[st
     return None, parse_issues[-5:]
 
 
-def _cluster_attempts_from_decision_state(decision_state: Dict[str, Any]) -> Dict[str, int]:
-    attempts: Dict[str, int] = {}
-    for cluster_entry in decision_state.get("clusters", []):
-        cluster_id = cluster_entry.get("cluster_id")
-        if not cluster_id:
-            continue
-        try:
-            attempts[cluster_id] = int(cluster_entry.get("attempt_count", 0))
-        except (TypeError, ValueError):
-            attempts[cluster_id] = 0
-    return attempts
+def _prompt_task_view(observation: Any) -> Dict[str, Any]:
+    metadata = observation.metadata or {}
+    task = metadata.get("task", {})
+    return {
+        "task_id": task.get("task_id"),
+        "difficulty": task.get("difficulty"),
+        "budgets": task.get("budgets", {}),
+    }
+
+
+def _prompt_observation_view(observation: Any) -> Dict[str, Any]:
+    decision_state = getattr(observation, "decision_state", {}) or {}
+    payload = {
+        "task": _prompt_task_view(observation),
+        "decision_state": decision_state,
+        "benchmark_context": getattr(observation, "benchmark_context", {}) or {},
+        "router_summary": getattr(observation, "router_summary", {}) or {},
+        "action_feedback": getattr(observation, "action_feedback", {}) or {},
+        "done": bool(getattr(observation, "done", False)),
+    }
+    derived_object_summaries = ((getattr(observation, "catalog_summary", {}) or {}).get("derived_objects")) or []
+    if derived_object_summaries:
+        payload["derived_object_summaries"] = derived_object_summaries
+    return payload
+
+
+def _prompt_retry_context(parse_errors: Optional[List[str]]) -> str:
+    if not parse_errors:
+        return ""
+    return (
+        "\n\nPrevious action attempts were invalid. Return only a valid JSON action matching the schema."
+        "\nValidation issues:\n- " + "\n- ".join(parse_errors[-3:])
+    )
 
 
 def build_user_prompt(
@@ -260,49 +251,25 @@ def build_user_prompt(
     max_steps: int,
     parse_errors: Optional[List[str]] = None,
 ) -> str:
-    metadata = observation.metadata or {}
-    task = metadata.get("task", {})
-    budgets = task.get("budgets", {})
     history_text = "\n".join(history[-6:]) if history else "(none)"
-    decision_state = getattr(observation, "decision_state", {}) or {}
-    repeated_cluster_context_requests = {
-        key: value for key, value in cluster_context_requests.items() if value > 1
-    }
-    derived_object_summaries = (observation.catalog_summary or {}).get("derived_objects", [])
-    cluster_attempts = _cluster_attempts_from_decision_state(decision_state)
-    prompt_payload = {
-        "task": {
-            "task_id": task.get("task_id"),
-            "difficulty": task.get("difficulty"),
-            "budgets": budgets,
-        },
-        "decision_state": decision_state,
-        "benchmark_context": observation.benchmark_context,
-        "router_summary": getattr(observation, "router_summary", {}) or {},
-        "action_feedback": observation.action_feedback,
-        "recent_history": history_text,
-        "recent_benchmark_history": benchmark_history[-3:],
-        "cluster_attempts": dict(cluster_attempts),
-        "repeated_cluster_context_requests": repeated_cluster_context_requests,
-        "derived_object_summaries": derived_object_summaries,
-        "remaining_budget_summary": decision_state.get("remaining_budget_summary", {
+    prompt_payload = _prompt_observation_view(observation)
+    prompt_payload["recent_history"] = history_text
+    if "remaining_budget_summary" not in prompt_payload["decision_state"]:
+        prompt_payload["remaining_budget_summary"] = {
             "steps_remaining": max(0, max_steps - step + 1),
             "max_steps": max_steps,
-        }),
-        "step_reward": observation.reward,
-        "done": observation.done,
-    }
+        }
 
     prompt = json.dumps(prompt_payload, indent=2, default=str)
-    if parse_errors:
-        prompt += (
-            "\n\nPrevious action attempts were invalid. Return only a valid JSON action matching the schema."
-            "\nValidation issues:\n- " + "\n- ".join(parse_errors[-3:])
-        )
-    return prompt
+    return prompt + _prompt_retry_context(parse_errors)
 
 
-def request_model_action(user_content: str, model_name: str, api_base_url: Optional[str]) -> str:
+def request_model_action(
+    user_content: str,
+    model_name: str,
+    api_base_url: Optional[str],
+    system_prompt: str,
+) -> str:
     if OpenAI is None:
         raise RuntimeError("openai package is not installed. Install it to run model-driven inference.")
     if not OPENAI_API_KEY:
@@ -323,7 +290,7 @@ def request_model_action(user_content: str, model_name: str, api_base_url: Optio
         response = client.responses.create(
             model=model_name,
             input=[
-                {"role": "developer", "content": SYSTEM_PROMPT},
+                {"role": "developer", "content": system_prompt},
                 {"role": "user", "content": user_content},
             ],
         )
@@ -342,6 +309,7 @@ def choose_action(
     api_base_url: Optional[str],
     max_steps: int,
     max_action_retries: int,
+    system_prompt: str,
 ) -> SchemaOptAction:
     if max_action_retries < 1:
         raise RuntimeError("max_action_retries must be at least 1")
@@ -358,7 +326,7 @@ def choose_action(
             max_steps,
             parse_errors=errors,
         )
-        response_text = request_model_action(user_content, model_name, api_base_url)
+        response_text = request_model_action(user_content, model_name, api_base_url, system_prompt)
         if not response_text.strip():
             errors.append("empty model response")
             print(f"Attempt {attempt} produced an empty model response.")
@@ -443,6 +411,7 @@ def run_episode(
                 api_base_url,
                 effective_max_steps,
                 max_action_retries,
+                SYSTEM_PROMPT,
             )
 
         observation = env.step(action)
@@ -532,6 +501,7 @@ def run_episode(
             "model_name": model_name,
             "max_steps_config": max_steps,
             "effective_max_steps": effective_max_steps,
+            "task_budget_max_steps": task_budget,
             "max_action_retries": max_action_retries,
             "termination_reason": termination_reason,
             "warnings": warnings,
@@ -572,7 +542,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--task-id", default=None, help="Optional single task id override.")
     parser.add_argument("--model-name", default=DEFAULT_MODEL_NAME, help="Model id for the OpenAI-compatible API.")
     parser.add_argument("--api-base-url", default=DEFAULT_API_BASE_URL, help="Optional OpenAI-compatible API base URL.")
-    parser.add_argument("--max-steps", type=int, default=DEFAULT_MAX_STEPS, help="Maximum number of environment steps. Defaults to the task budget when omitted.")
+    parser.add_argument(
+        "--max-steps",
+        type=int,
+        default=DEFAULT_MAX_STEPS,
+        help="Optional external runner cap on steps. When omitted, the task budget is used as the episode limit.",
+    )
     parser.add_argument("--max-action-retries", type=int, default=DEFAULT_MAX_ACTION_RETRIES, help="Maximum model retries per step.")
     parser.add_argument("--output", type=Path, default=None, help="Optional path for the result JSON.")
     return parser.parse_args()
