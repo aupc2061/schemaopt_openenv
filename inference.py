@@ -128,9 +128,9 @@ def _task_list_from_arg(raw: str) -> List[str]:
     return [item for item in items if item]
 
 
-DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.4-mini")
+DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME")
 DEFAULT_API_BASE_URL = os.getenv("API_BASE_URL")
-API_KEY = os.getenv("API_KEY") or os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
+API_KEY = os.getenv("API_KEY")
 DEFAULT_MAX_STEPS = _safe_int_from_env("MAX_STEPS", None)
 DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
 DEFAULT_MAX_ACTION_RETRIES = _safe_int_from_env("MAX_ACTION_RETRIES", 4) or 4
