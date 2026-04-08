@@ -80,27 +80,43 @@ docker run --rm -p 8000:8000 schemaopt-openenv
 
 The environment follows the standard OpenEnv HTTP contract.
 
-### Reset
+### Python example
 
-Reset starts a new episode and optionally selects a task:
+Reset starts a new episode and optionally selects a task. Step sends one action and returns the next observation, reward, and done flag.
 
-```bash
-curl -X POST http://localhost:8000/reset \
-  -H "Content-Type: application/json" \
-  -d '{"task_id":"schemaopt_easy_hiring_pipeline"}'
+```python
+from schemaopt_env.client import SchemaOptEnv
+from schemaopt_env.models import SchemaOptAction
+
+async def main():
+    async with SchemaOptEnv(base_url="http://localhost:8000") as env:
+        result = await env.reset(task_id="schemaopt_easy_hiring_pipeline")
+        print(result.observation.decision_state)
+
+        result = await env.step(
+            SchemaOptAction(
+                operation="get_cluster_context",
+                cluster_id="schemaopt_easy_hiring_pipeline_cluster_03",
+            )
+        )
+        print(result.observation.action_feedback)
 ```
 
-### Step
+For synchronous usage:
 
-Step sends one action and returns the next observation, reward, and done flag:
+```python
+from schemaopt_env.client import SchemaOptEnv
+from schemaopt_env.models import SchemaOptAction
 
-```bash
-curl -X POST http://localhost:8000/step \
-  -H "Content-Type: application/json" \
-  -d '{
-    "operation":"get_cluster_context",
-    "cluster_id":"schemaopt_easy_hiring_pipeline_cluster_03"
-  }'
+with SchemaOptEnv(base_url="http://localhost:8000").sync() as env:
+    result = env.reset(task_id="schemaopt_easy_hiring_pipeline")
+    result = env.step(
+        SchemaOptAction(
+            operation="get_cluster_context",
+            cluster_id="schemaopt_easy_hiring_pipeline_cluster_03",
+        )
+    )
+    print(result.observation.decision_state)
 ```
 
 Typical optimization loop:
