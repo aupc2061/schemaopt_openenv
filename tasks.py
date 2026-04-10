@@ -15,6 +15,11 @@ _TASK_ASSET_ROOTS = (
 )
 _ALIAS_TOKEN_RE = re.compile(r'\b[a-zA-Z_][a-zA-Z0-9_]*\.((?:"[^"]+")|(?:[a-zA-Z_][a-zA-Z0-9_]*))')
 _GIT_LFS_POINTER_PREFIX = b"version https://git-lfs.github.com/spec/v1"
+_COMMON_RUNTIME_ROOTS = (
+    "/app",
+    "/workspace",
+    "/tmp/workspace",
+)
 
 
 def _normalize_sql(sql: str) -> str:
@@ -395,6 +400,16 @@ class TaskSpec:
 def _resolve_repo_path(path_str: str) -> str:
     path = Path(path_str)
     if path.is_absolute():
+        if path.exists():
+            return str(path)
+        path_parts = path.parts
+        for runtime_root in _COMMON_RUNTIME_ROOTS:
+            root_parts = Path(runtime_root).parts
+            if path_parts[: len(root_parts)] != root_parts:
+                continue
+            candidate = (_REPO_ROOT / Path(*path_parts[len(root_parts):])).resolve()
+            if candidate.exists():
+                return str(candidate)
         return str(path)
     return str((_REPO_ROOT / path).resolve())
 

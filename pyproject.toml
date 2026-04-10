@@ -9,7 +9,7 @@ description = "Schema optimization OpenEnv environment"
 requires-python = ">=3.10"
 dependencies = [
   "openenv-core[core]>=0.2.1",
-  "duckdb>=1.1.3",
+  "duckdb>=1.5.1",
   "fastapi>=0.115.0",
   "huggingface_hub>=0.30.0",
   "pydantic>=2.0.0",

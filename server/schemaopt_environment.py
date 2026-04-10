@@ -107,6 +107,7 @@ class DerivedObject:
 class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, SchemaOptState]):
     SUPPORTS_CONCURRENT_SESSIONS: bool = True
     LAST_GRADER_REPORT: Dict[str, Any] = {"available": False, "reason": "No episode executed yet."}
+    GRADER_REPORTS_BY_TASK: Dict[str, Dict[str, Any]] = {}
 
     def __init__(self):
         try:
@@ -166,7 +167,12 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         return self._state
 
     @classmethod
-    def latest_report(cls) -> Dict[str, Any]:
+    def latest_report(cls, task_id: Optional[str] = None) -> Dict[str, Any]:
+        if task_id:
+            return cls.GRADER_REPORTS_BY_TASK.get(
+                task_id,
+                {"available": False, "task_id": task_id, "reason": f"No episode executed yet for task {task_id}."},
+            )
         return cls.LAST_GRADER_REPORT
 
     @classmethod
@@ -847,7 +853,21 @@ class SchemaOptEnvironment(Environment[SchemaOptAction, SchemaOptObservation, Sc
         self._router_summary = self._summarize_routes(visible["per_query"], "submit")
         self._state.benchmark_runs += 1
         self._state.final_score = final_score
-        SchemaOptEnvironment.LAST_GRADER_REPORT = {"available": True, "task_id": self._task.task_id, "episode_id": self._state.episode_id, "score": final_score, "visible_summary": visible, "holdout_summary": holdout, "migration_score": migration, "storage_score": storage}
+        grader_report = {
+            "available": True,
+            "task_id": self._task.task_id,
+            "episode_id": self._state.episode_id,
+            "score": final_score,
+            "resolved": final_score > 0.0,
+            "details": {
+                "visible_summary": visible,
+                "holdout_summary": holdout,
+                "migration_score": migration,
+                "storage_score": storage,
+            },
+        }
+        SchemaOptEnvironment.LAST_GRADER_REPORT = grader_report
+        SchemaOptEnvironment.GRADER_REPORTS_BY_TASK[self._task.task_id] = grader_report
         return {"event": "submit", "final_score": final_score, "visible_summary": visible, "holdout_summary": holdout, "migration_score": migration, "storage_score": storage, "reward_inputs": {"final_score": final_score, "visible_gated_improvement": visible["gated_improvement"], "holdout_gated_improvement": holdout["gated_improvement"], "correctness": correctness, "migration": migration, "storage": storage}, "final_score_inputs": {"visible_gated_improvement": visible["gated_improvement"], "holdout_gated_improvement": holdout["gated_improvement"], "correctness": correctness, "migration": migration, "storage": storage}}
 
     def _benchmark_queries(self, queries: Sequence[QuerySpec], mark_usage: bool) -> Dict[str, Any]:

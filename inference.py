@@ -5,9 +5,8 @@ policy logic and emits structured stdout logs using the required
 [START] / [STEP] / [END] tags.
 
 Environment variables:
-- OPENAI_API_KEY: required for OpenAI client auth
-- HF_TOKEN: optional fallback token if OPENAI_API_KEY is not set
-- MODEL_NAME: optional model id to call (default: gpt-5.4-mini)
+- API_KEY: primary key for OpenAI-compatible client auth in hackathon evaluation
+- MODEL_NAME: optional model id to call
 - API_BASE_URL: optional custom OpenAI-compatible base URL
 - MAX_STEPS: optional max steps per episode (defaults to the task budget when unset)
 - TASK_ID: optional benchmark task id (default: schemaopt_hard_mobile_revenue_ops)
@@ -18,34 +17,32 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
-import io
 import json
 import os
 import re
 import sys
-from contextlib import redirect_stdout
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-try:
-    from dotenv import load_dotenv
-except ImportError:
-    def load_dotenv() -> bool:
-        return False
+# try:
+#     from dotenv import load_dotenv
+# except ImportError:
+#     def load_dotenv() -> bool:
+#         return False
 
 try:
     from openai import OpenAI
 except ImportError:
     OpenAI = None
 
-load_dotenv()
+# load_dotenv()
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from schemaopt_env.models import SchemaOptAction
-from schemaopt_env.server.schemaopt_environment import SchemaOptEnvironment
+from client import SchemaOptEnv
+from models import SchemaOptAction
 
 
 def _safe_int_from_env(name: str, default: Optional[int]) -> Optional[int]:
@@ -58,8 +55,10 @@ def _safe_int_from_env(name: str, default: Optional[int]) -> Optional[int]:
         raise RuntimeError(f"Environment variable {name} must be an integer, got: {raw!r}") from exc
 
 
-def _sanitize_filename_component(value: str) -> str:
-    sanitized = re.sub(r"[^A-Za-z0-9_.-]", "_", value.strip())
+def _sanitize_filename_component(value: Any) -> str:
+    if value is None:
+        return "unknown"
+    sanitized = re.sub(r"[^A-Za-z0-9_.-]", "_", str(value).strip())
     return sanitized or "unknown"
 
 
@@ -74,12 +73,20 @@ def _clamp01(value: float) -> float:
     return max(0.0, min(1.0, value))
 
 
+def _strict_score(value: float) -> float:
+    return max(0.001, min(0.999, _clamp01(value)))
+
+
 def _bool_to_token(value: bool) -> str:
     return "true" if value else "false"
 
 
 def _fmt_reward(value: float) -> str:
     return f"{float(value):.2f}"
+
+
+def _fmt_score(value: float) -> str:
+    return f"{float(value):.3f}"
 
 
 def _fmt_error_token(observation: Any) -> str:
@@ -100,9 +107,9 @@ def _fmt_action_token(action: SchemaOptAction) -> str:
     return compact.replace(" ", "_")
 
 
-def _print_start_line(task: str, env_name: str, model: str, max_steps: int) -> None:
+def _print_start_line(task: str, env_name: str, model: str) -> None:
     print(
-        f"[START] task={task} env={env_name} model={model} max_steps={max_steps}",
+        f"[START] task={task} env={env_name} model={model}",
         flush=True,
     )
 
@@ -114,10 +121,10 @@ def _print_step_line(step: int, action: SchemaOptAction, reward: float, done: bo
     )
 
 
-def _print_end_line(success: bool, steps: int, score: float, rewards: List[float]) -> None:
+def _print_end_line(task: str, success: bool, steps: int, score: float, rewards: List[float]) -> None:
     reward_list = ",".join(_fmt_reward(item) for item in rewards)
     print(
-        f"[END] success={_bool_to_token(success)} steps={steps} score={_fmt_reward(score)} rewards={reward_list}",
+        f"[END] task={task} success={_bool_to_token(success)} steps={steps} score={_fmt_score(score)} rewards={reward_list}",
         flush=True,
     )
 
@@ -127,12 +134,13 @@ def _task_list_from_arg(raw: str) -> List[str]:
     return [item for item in items if item]
 
 
-DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "gpt-5.4-mini")
-DEFAULT_API_BASE_URL = os.getenv("API_BASE_URL")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
-DEFAULT_MAX_STEPS = _safe_int_from_env("MAX_STEPS", None)
-DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
+API_KEY = os.environ.get("API_KEY")
+API_BASE_URL = os.environ.get("API_BASE_URL", "https://router.huggingface.co/v1")
+MODEL_NAME = os.environ.get("MODEL_NAME") or "Qwen/Qwen2.5-72B-Instruct"
+DEFAULT_MAX_STEPS = _safe_int_from_env("MAX_STEPS", 30) or 30
+DEFAULT_TASK_ID = os.getenv("TASK_ID")
 DEFAULT_MAX_ACTION_RETRIES = _safe_int_from_env("MAX_ACTION_RETRIES", 4) or 4
+DEFAULT_ENV_BASE_URL = os.getenv("ENV_URL", "https://CodeVats-SchemaOpt-openenv.hf.space")
 DEFAULT_SUBMISSION_TASKS = ",".join(
     [
         "schemaopt_easy_hiring_pipeline",
@@ -140,6 +148,32 @@ DEFAULT_SUBMISSION_TASKS = ",".join(
         "schemaopt_hard_mobile_revenue_ops",
     ]
 )
+
+
+def _state_snapshot(env: Any) -> Any:
+    state_attr = getattr(env, "state", None)
+    if callable(state_attr):
+        return state_attr()
+    return state_attr
+
+
+def _budget_from_remote_observation(observation: Any) -> Optional[int]:
+    metadata = getattr(observation, "metadata", {}) or {}
+    task_budget = ((metadata.get("task") or {}).get("budgets") or {}).get("max_steps")
+    if task_budget is not None:
+        try:
+            return int(task_budget)
+        except (TypeError, ValueError):
+            pass
+
+    decision_state = getattr(observation, "decision_state", {}) or {}
+    remaining_budget = (decision_state.get("remaining_budget_summary") or {}).get("steps_remaining")
+    if remaining_budget is not None:
+        try:
+            return int(remaining_budget)
+        except (TypeError, ValueError):
+            pass
+    return None
 
 SYSTEM_PROMPT = """You are acting in a schema optimization environment.
 
@@ -238,7 +272,6 @@ def parse_action(response_text: str) -> tuple[Optional[SchemaOptAction], List[st
         except Exception as exc:
             issue = f"candidate {idx}: {exc}"
             parse_issues.append(issue)
-            print(f"Rejected candidate: {json.dumps(normalized, ensure_ascii=True)} | reason: {exc}")
 
     return None, parse_issues[-5:]
 
@@ -247,7 +280,7 @@ def _prompt_task_view(observation: Any) -> Dict[str, Any]:
     metadata = observation.metadata or {}
     task = metadata.get("task", {})
     return {
-        "task_id": task.get("task_id"),
+        "task_id": task.get("task_id") or task.get("id"),
         "difficulty": task.get("difficulty"),
         "budgets": task.get("budgets", {}),
     }
@@ -308,29 +341,28 @@ def request_model_action(
 ) -> str:
     if OpenAI is None:
         raise RuntimeError("openai package is not installed. Install it to run model-driven inference.")
-    if not OPENAI_API_KEY:
-        raise RuntimeError("OPENAI_API_KEY or HF_TOKEN must be set for model-driven inference.")
+    api_key = os.getenv("API_KEY") or API_KEY
+    if not api_key:
+        raise RuntimeError("API_KEY must be set for evaluation runs.")
+    base_url = api_base_url or os.getenv("API_BASE_URL") or API_BASE_URL
+    if not base_url:
+        raise RuntimeError("API_BASE_URL must be set for evaluation runs.")
+    resolved_model_name = model_name or MODEL_NAME
+    if not resolved_model_name:
+        raise RuntimeError("MODEL_NAME must be set for evaluation runs.")
 
     try:
-        client_key = f"{api_base_url or ''}|{OPENAI_API_KEY}"
-        if not hasattr(request_model_action, "_clients"):
-            request_model_action._clients = {}
-        client_cache: Dict[str, Any] = request_model_action._clients
-        client = client_cache.get(client_key)
-        if client is None:
-            client_kwargs: Dict[str, Any] = {"api_key": OPENAI_API_KEY}
-            if api_base_url:
-                client_kwargs["base_url"] = api_base_url
-            client = OpenAI(**client_kwargs)
-            client_cache[client_key] = client
-        response = client.responses.create(
-            model=model_name,
-            input=[
-                {"role": "developer", "content": system_prompt},
+        client = OpenAI(base_url=base_url, api_key=api_key)
+        completion = client.chat.completions.create(
+            model=resolved_model_name,
+            messages=[
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_content},
             ],
+            stream=False,
         )
-        return response.output_text or ""
+        text = (completion.choices[0].message.content or "").strip()
+        return text if text else "hello"
     except Exception as exc:
         raise RuntimeError(f"Model request failed: {exc}") from exc
 
@@ -352,7 +384,6 @@ def choose_action(
 
     errors: List[str] = []
     for attempt in range(1, max_action_retries + 1):
-        print(f"Choosing action: step={step} attempt={attempt}/{max_action_retries}")
         user_content = build_user_prompt(
             observation,
             history,
@@ -365,17 +396,14 @@ def choose_action(
         response_text = request_model_action(user_content, model_name, api_base_url, system_prompt)
         if not response_text.strip():
             errors.append("empty model response")
-            print(f"Attempt {attempt} produced an empty model response.")
             continue
         action, parse_issues = parse_action(response_text)
         if action is not None:
-            print(f"Model action parsed successfully on attempt {attempt}.")
             return action
         truncated = response_text.strip().replace("\n", " ")
         errors.append(f"unparseable action payload: {truncated[:300]}")
         if parse_issues:
             errors.extend(parse_issues[-2:])
-            print(f"Attempt {attempt} parse issues: {_shorten_for_log(' | '.join(parse_issues[-2:]))}")
 
     tail = " | ".join(errors[-3:]) if errors else "unknown error"
     raise RuntimeError(
@@ -388,6 +416,7 @@ def run_episode(
     task_id: str,
     model_name: str,
     api_base_url: Optional[str],
+    env_base_url: str,
     max_steps: Optional[int],
     max_action_retries: int,
     output_path: Optional[Path] = None,
@@ -397,44 +426,47 @@ def run_episode(
     if max_action_retries < 1:
         raise RuntimeError("max_action_retries must be at least 1")
 
-    env = SchemaOptEnvironment()
     observation = None
-    budgets: Dict[str, Any] = {}
     final_feedback: Dict[str, Any] = {}
     termination_reason = "runner_exception"
-
-    observation = env.reset(task_id=task_id)
-    budgets = (observation.metadata or {}).get("task", {}).get("budgets", {})
-    task_budget = budgets.get("max_steps")
-    if max_steps is None:
-        effective_max_steps = int(task_budget or 0)
-    elif task_budget is None:
-        effective_max_steps = max_steps
-    else:
-        effective_max_steps = min(max_steps, int(task_budget))
-
-    if effective_max_steps < 1:
-        raise RuntimeError(
-            "Effective max steps resolved to 0. Set --max-steps >= 1 or ensure task budget.max_steps is present."
-        )
-
-    history: List[str] = []
-    benchmark_history: List[Dict[str, Any]] = []
-    cluster_context_requests: Counter[str] = Counter()
-    action_trace: List[Dict[str, Any]] = []
+    task_budget: Optional[int] = None
+    effective_max_steps = max_steps if max_steps is not None else 0
+    if effective_max_steps < 0:
+        effective_max_steps = 0
     total_reward = 0.0
     rewards: List[float] = []
+    action_trace: List[Dict[str, Any]] = []
+    caught_error: Optional[str] = None
+    final_state: Any = None
 
-    _print_start_line(task_id, "schemaopt_env", model_name, effective_max_steps)
+    _print_start_line(task_id, "schemaopt_env", model_name)
 
     terminated_due_to_max_steps = False
-    caught_error: Optional[str] = None
     try:
-        for step in range(1, effective_max_steps + 1):
-            if observation.done:
-                break
+        with SchemaOptEnv(base_url=env_base_url).sync() as env:
+            reset_result = env.reset(task_id=task_id)
+            observation = reset_result.observation
+            task_budget = _budget_from_remote_observation(observation)
+            if max_steps is None:
+                effective_max_steps = int(task_budget or 0)
+            elif task_budget is None:
+                effective_max_steps = max_steps
+            else:
+                effective_max_steps = min(max_steps, int(task_budget))
 
-            with io.StringIO() as sink, redirect_stdout(sink):
+            if effective_max_steps < 1:
+                raise RuntimeError(
+                    "Effective max steps resolved to 0. Set --max-steps >= 1 or ensure task budget.max_steps is present."
+                )
+
+            history: List[str] = []
+            benchmark_history: List[Dict[str, Any]] = []
+            cluster_context_requests: Counter[str] = Counter()
+
+            for step in range(1, effective_max_steps + 1):
+                if observation.done:
+                    break
+
                 action = choose_action(
                     observation,
                     history,
@@ -448,75 +480,69 @@ def run_episode(
                     SYSTEM_PROMPT,
                 )
 
-            observation = env.step(action)
-            reward = float(observation.reward or 0.0)
-            total_reward += reward
-            rewards.append(reward)
+                step_result = env.step(action)
+                observation = step_result.observation
+                reward = float(step_result.reward if step_result.reward is not None else (observation.reward or 0.0))
+                total_reward += reward
+                rewards.append(reward)
 
-            if action.operation in {"benchmark_cluster", "benchmark_subset"}:
-                benchmark_history.append(
+                if action.operation in {"benchmark_cluster", "benchmark_subset"}:
+                    benchmark_history.append(
+                        {
+                            "operation": action.operation,
+                            "cluster_id": action.cluster_id,
+                            "query_ids": list(action.query_ids),
+                            "benchmark_context": observation.benchmark_context,
+                            "router_summary": getattr(observation, "router_summary", {}) or {},
+                            "decision_state": getattr(observation, "decision_state", {}) or {},
+                        }
+                    )
+                if action.operation == "get_cluster_context" and action.cluster_id:
+                    cluster_context_requests[action.cluster_id] += 1
+
+                history_line = (
+                    f"Step {step}: {action.operation} -> reward {reward:+.3f}, "
+                    f"status={observation.status}, done={observation.done}, "
+                    f"decision={json.dumps(getattr(observation, 'decision_state', {}) or {}, ensure_ascii=True)}"
+                )
+                history.append(history_line)
+                action_trace.append(
                     {
+                        "step": step,
                         "operation": action.operation,
-                        "cluster_id": action.cluster_id,
-                        "query_ids": list(action.query_ids),
-                        "benchmark_context": observation.benchmark_context,
-                        "router_summary": getattr(observation, "router_summary", {}) or {},
-                        "decision_state": getattr(observation, "decision_state", {}) or {},
+                        "status": observation.status,
+                        "reward": round(float(reward), 6),
+                        "done": bool(observation.done),
+                        "message": observation.message,
                     }
                 )
-            if action.operation == "get_cluster_context" and action.cluster_id:
-                cluster_context_requests[action.cluster_id] += 1
 
-            history_line = (
-                f"Step {step}: {action.operation} -> reward {reward:+.3f}, "
-                f"status={observation.status}, done={observation.done}, "
-                f"decision={json.dumps(getattr(observation, 'decision_state', {}) or {}, ensure_ascii=True)}"
-            )
-            history.append(history_line)
-            action_trace.append(
-                {
-                    "step": step,
-                    "operation": action.operation,
-                    "status": observation.status,
-                    "reward": round(float(reward), 6),
-                    "done": bool(observation.done),
-                    "message": observation.message,
-                }
-            )
+                _print_step_line(
+                    step=step,
+                    action=action,
+                    reward=reward,
+                    done=bool(observation.done),
+                    error_token=_fmt_error_token(observation),
+                )
 
-            _print_step_line(
-                step=step,
-                action=action,
-                reward=reward,
-                done=bool(observation.done),
-                error_token=_fmt_error_token(observation),
-            )
+                if observation.done:
+                    break
+            else:
+                terminated_due_to_max_steps = True
+                termination_reason = "runner_max_steps_reached"
 
-            if observation.done:
-                break
-        else:
-            terminated_due_to_max_steps = True
-            termination_reason = "runner_max_steps_reached"
+            final_state = _state_snapshot(env)
 
     except Exception as exc:
         caught_error = str(exc)
         termination_reason = "runner_exception"
         final_feedback = {"error": caught_error}
-        if not rewards:
-            rewards = []
-    finally:
-        close_fn = getattr(env, "close", None)
-        if callable(close_fn):
-            try:
-                close_fn()
-            except Exception:
-                pass
 
     final_feedback = (observation.action_feedback if observation is not None else None) or final_feedback
     warnings: List[str] = []
     if observation is None or not observation.done:
         warnings.append("episode_not_completed")
-    if env.state.final_score is None:
+    if getattr(final_state, "final_score", None) is None:
         warnings.append("final_score_unavailable")
     if caught_error is not None:
         warnings.append("runner_exception")
@@ -524,18 +550,22 @@ def run_episode(
     if observation is not None and observation.done:
         termination_reason = str(final_feedback.get("termination_reason") or "submitted")
     terminated_due_to_max_steps = terminated_due_to_max_steps or termination_reason == "budget_exhausted"
-    final_score = float(env.state.final_score or 0.0)
-    score = _clamp01(final_score)
+    steps = int(getattr(final_state, "step_count", 0) or 0)
+    derived_object_count = int(getattr(final_state, "derived_object_count", 0) or 0)
+    benchmark_runs = int(getattr(final_state, "benchmark_runs", 0) or 0)
+    final_score = float(getattr(final_state, "final_score", 0.0) or 0.0)
+    score = _strict_score(final_score)
     success = bool(observation is not None and observation.done and final_score > 0.0)
     result = {
         "task_id": task_id,
+        "env_base_url": env_base_url,
         "final_score": final_score,
         "score": score,
         "success": success,
         "total_reward": round(total_reward, 6),
-        "steps": env.state.step_count,
-        "derived_object_count": env.state.derived_object_count,
-        "benchmark_runs": env.state.benchmark_runs,
+        "steps": steps,
+        "derived_object_count": derived_object_count,
+        "benchmark_runs": benchmark_runs,
         "final_message": (observation.message if observation is not None else (caught_error or "episode failed before first step")),
         "terminated_due_to_max_steps": terminated_due_to_max_steps,
         "done": bool(observation.done) if observation is not None else False,
@@ -557,20 +587,21 @@ def run_episode(
     }
 
     _print_end_line(
+        task=task_id,
         success=success,
-        steps=env.state.step_count,
+        steps=steps,
         score=score,
         rewards=rewards,
     )
 
-    if output_path is None:
-        safe_task_id = _sanitize_filename_component(task_id)
-        safe_model_name = _sanitize_filename_component(model_name)
-        result_path = Path(f"inference_result_{safe_task_id}_{safe_model_name}_v2.json")
-    else:
-        result_path = output_path
-    with result_path.open("w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2)
+    # if output_path is None:
+    #     safe_task_id = _sanitize_filename_component(task_id)
+    #     safe_model_name = _sanitize_filename_component(model_name)
+    #     result_path = Path(f"inference_result_{safe_task_id}_{safe_model_name}_v2.json")
+    # else:
+    #     result_path = output_path
+    # with result_path.open("w", encoding="utf-8") as f:
+    #     json.dump(result, f, indent=2)
     return result
 
 
@@ -581,9 +612,10 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_SUBMISSION_TASKS,
         help="Comma-separated task ids to run. Defaults to a representative easy/medium/hard sweep.",
     )
-    parser.add_argument("--task-id", default=None, help="Optional single task id override.")
-    parser.add_argument("--model-name", default=DEFAULT_MODEL_NAME, help="Model id for the OpenAI-compatible API.")
-    parser.add_argument("--api-base-url", default=DEFAULT_API_BASE_URL, help="Optional OpenAI-compatible API base URL.")
+    parser.add_argument("--task-id", default=None, help="Optional single task id override. Defaults to TASK_ID or the built-in default task when omitted.")
+    parser.add_argument("--model-name", default=MODEL_NAME, help="Model id for the OpenAI-compatible API.")
+    parser.add_argument("--api-base-url", default=API_BASE_URL, help="Optional OpenAI-compatible API base URL.")
+    parser.add_argument("--env-base-url", default=DEFAULT_ENV_BASE_URL, help="Base URL of the deployed SchemaOpt OpenEnv server.")
     parser.add_argument(
         "--max-steps",
         type=int,
@@ -597,21 +629,25 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    task_ids = [args.task_id] if args.task_id else _task_list_from_arg(args.tasks)
+    if args.task_id:
+        task_ids = [args.task_id]
+    else:
+        task_ids = _task_list_from_arg(args.tasks) if args.tasks else [DEFAULT_TASK_ID]
     results = [
         run_episode(
             task_id=task_id,
             model_name=args.model_name,
             api_base_url=args.api_base_url,
+            env_base_url=args.env_base_url,
             max_steps=args.max_steps,
             max_action_retries=args.max_action_retries,
             output_path=(args.output if len(task_ids) == 1 else None),
         )
         for task_id in task_ids
     ]
-    if args.output is not None and len(task_ids) > 1:
-        with args.output.open("w", encoding="utf-8") as f:
-            json.dump({"results": results}, f, indent=2)
+    # if args.output is not None and len(task_ids) > 1:
+    #     with args.output.open("w", encoding="utf-8") as f:
+    #         json.dump({"results": results}, f, indent=2)
 
 
 if __name__ == "__main__":

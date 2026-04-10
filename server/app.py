@@ -1,6 +1,7 @@
 """FastAPI app entrypoint for the schema optimization environment."""
 
 import os
+from typing import Optional
 
 from fastapi import APIRouter
 
@@ -43,8 +44,9 @@ def run_baseline():
     return SchemaOptEnvironment.run_baseline()
 
 @router.get("/grader")
-def grader_result():
-    return SchemaOptEnvironment.latest_report()
+@router.post("/grader")
+def grader_result(task_id: Optional[str] = None):
+    return SchemaOptEnvironment.latest_report(task_id=task_id)
 
 
 app.include_router(router)

@@ -2,5 +2,31 @@ spec_version: 1
 name: schemaopt_env
 type: space
 runtime: fastapi
-app: schemaopt_env.server.app:app
+app: server.app:app
 port: 8000
+tasks:
+  - id: schemaopt_easy_hiring_pipeline
+    difficulty: easy
+    description: >
+      Optimize a hiring analytics workload by creating reusable derived objects
+      that accelerate recruiter funnel and requisition reporting while
+      preserving exact query results.
+    grader:
+      type: deterministic
+      endpoint: /grader
+  - id: schemaopt_medium_campaign_performance
+    difficulty: medium
+    description: >
+      Optimize a campaign performance workload with broader reuse across
+      campaign, ad-group, and keyword reporting clusters.
+    grader:
+      type: deterministic
+      endpoint: /grader
+  - id: schemaopt_hard_mobile_revenue_ops
+    difficulty: hard
+    description: >
+      Optimize a mobile revenue operations workload with cross-cluster tradeoffs
+      spanning installs, releases, geography, platform, and monetization views.
+    grader:
+      type: deterministic
+      endpoint: /grader
