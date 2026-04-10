@@ -128,12 +128,19 @@ def _task_list_from_arg(raw: str) -> List[str]:
     return [item for item in items if item]
 
 
-DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
-DEFAULT_API_BASE_URL = os.getenv("API_BASE_URL") or "https://router.huggingface.co/v1"
-API_KEY = os.getenv("API_KEY")
-DEFAULT_MAX_STEPS = _safe_int_from_env("MAX_STEPS", None)
-DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
+API_KEY = os.environ.get("API_KEY")
+API_BASE_URL = os.environ.get("API_BASE_URL", "https://router.huggingface.co/v1")
+MODEL_NAME = os.environ.get("MODEL_NAME") or "Qwen/Qwen2.5-72B-Instruct"
+DEFAULT_MAX_STEPS = _safe_int_from_env("MAX_STEPS", 30) or 30
+DEFAULT_TASK_ID = os.getenv("TASK_ID")
 DEFAULT_MAX_ACTION_RETRIES = _safe_int_from_env("MAX_ACTION_RETRIES", 4) or 4
+DEFAULT_SUBMISSION_TASKS = ",".join(
+    [
+        "schemaopt_easy_hiring_pipeline",
+        "schemaopt_medium_campaign_performance",
+        "schemaopt_hard_mobile_revenue_ops",
+    ]
+)
 
 SYSTEM_PROMPT = """You are acting in a schema optimization environment.
 
@@ -305,10 +312,10 @@ def request_model_action(
     api_key = os.getenv("API_KEY") or API_KEY
     if not api_key:
         raise RuntimeError("API_KEY must be set for evaluation runs.")
-    base_url = api_base_url or os.getenv("API_BASE_URL") or DEFAULT_API_BASE_URL
+    base_url = api_base_url or os.getenv("API_BASE_URL") or API_BASE_URL
     if not base_url:
         raise RuntimeError("API_BASE_URL must be set for evaluation runs.")
-    resolved_model_name = model_name or DEFAULT_MODEL_NAME
+    resolved_model_name = model_name or MODEL_NAME
     if not resolved_model_name:
         raise RuntimeError("MODEL_NAME must be set for evaluation runs.")
 
@@ -573,10 +580,14 @@ def run_episode(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run submission-style inference against schemaopt_env.")
-    parser.add_argument("--tasks", default=None, help="Optional comma-separated task ids to run.")
+    parser.add_argument(
+        "--tasks",
+        default=DEFAULT_SUBMISSION_TASKS,
+        help="Comma-separated task ids to run. Defaults to a representative easy/medium/hard sweep.",
+    )
     parser.add_argument("--task-id", default=None, help="Optional single task id override. Defaults to TASK_ID or the built-in default task when omitted.")
-    parser.add_argument("--model-name", default=DEFAULT_MODEL_NAME, help="Model id for the OpenAI-compatible API.")
-    parser.add_argument("--api-base-url", default=DEFAULT_API_BASE_URL, help="Optional OpenAI-compatible API base URL.")
+    parser.add_argument("--model-name", default=MODEL_NAME, help="Model id for the OpenAI-compatible API.")
+    parser.add_argument("--api-base-url", default=API_BASE_URL, help="Optional OpenAI-compatible API base URL.")
     parser.add_argument(
         "--max-steps",
         type=int,
@@ -590,12 +601,10 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    if args.tasks:
-        task_ids = _task_list_from_arg(args.tasks)
-    elif args.task_id:
+    if args.task_id:
         task_ids = [args.task_id]
     else:
-        task_ids = [DEFAULT_TASK_ID]
+        task_ids = _task_list_from_arg(args.tasks) if args.tasks else [DEFAULT_TASK_ID]
     results = [
         run_episode(
             task_id=task_id,
