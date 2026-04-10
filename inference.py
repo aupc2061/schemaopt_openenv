@@ -6,9 +6,7 @@ policy logic and emits structured stdout logs using the required
 
 Environment variables:
 - API_KEY: primary key for OpenAI-compatible client auth in hackathon evaluation
-- OPENAI_API_KEY: optional local-dev fallback if API_KEY is not set
-- HF_TOKEN: optional final fallback if neither API_KEY nor OPENAI_API_KEY is set
-- MODEL_NAME: optional model id to call (default: gpt-5.4-mini)
+- MODEL_NAME: optional model id to call
 - API_BASE_URL: optional custom OpenAI-compatible base URL
 - MAX_STEPS: optional max steps per episode (defaults to the task budget when unset)
 - TASK_ID: optional benchmark task id (default: schemaopt_hard_mobile_revenue_ops)
@@ -132,7 +130,7 @@ def _task_list_from_arg(raw: str) -> List[str]:
 
 DEFAULT_MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 DEFAULT_API_BASE_URL = os.getenv("API_BASE_URL") or "https://router.huggingface.co/v1"
-API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
+API_KEY = os.getenv("API_KEY")
 DEFAULT_MAX_STEPS = _safe_int_from_env("MAX_STEPS", None)
 DEFAULT_TASK_ID = os.getenv("TASK_ID", "schemaopt_hard_mobile_revenue_ops")
 DEFAULT_MAX_ACTION_RETRIES = _safe_int_from_env("MAX_ACTION_RETRIES", 4) or 4
@@ -304,15 +302,22 @@ def request_model_action(
 ) -> str:
     if OpenAI is None:
         raise RuntimeError("openai package is not installed. Install it to run model-driven inference.")
-    if not API_KEY:
-        raise RuntimeError("API_KEY must be set for evaluation runs. OPENAI_API_KEY or HF_TOKEN may be used only as local fallbacks.")
+    api_key = os.getenv("API_KEY") or API_KEY
+    if not api_key:
+        raise RuntimeError("API_KEY must be set for evaluation runs.")
+    base_url = api_base_url or os.getenv("API_BASE_URL") or DEFAULT_API_BASE_URL
+    if not base_url:
+        raise RuntimeError("API_BASE_URL must be set for evaluation runs.")
+    resolved_model_name = model_name or DEFAULT_MODEL_NAME
+    if not resolved_model_name:
+        raise RuntimeError("MODEL_NAME must be set for evaluation runs.")
 
     try:
-        client = OpenAI(base_url=DEFAULT_API_BASE_URL, api_key=API_KEY)
+        client = OpenAI(base_url=base_url, api_key=api_key)
         completion = client.chat.completions.create(
-            model=DEFAULT_MODEL_NAME,
+            model=resolved_model_name,
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_content},
             ],
             stream=False,
