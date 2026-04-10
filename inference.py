@@ -24,18 +24,18 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-try:
-    from dotenv import load_dotenv
-except ImportError:
-    def load_dotenv() -> bool:
-        return False
+# try:
+#     from dotenv import load_dotenv
+# except ImportError:
+#     def load_dotenv() -> bool:
+#         return False
 
 try:
     from openai import OpenAI
 except ImportError:
     OpenAI = None
 
-load_dotenv()
+# load_dotenv()
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
